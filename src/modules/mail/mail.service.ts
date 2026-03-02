@@ -13,10 +13,10 @@ export class MailService {
         this.senderName = this.config.get<string>('MAIL_SENDER_NAME')!;
     }
 
-    async sendMail(to: string, subject: string, html: string) {
-        const finalHtml = `
+  async sendMail(to: string, subject: string, html: string, themeColor: string = '#4f46e5') {
+  const finalHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
-      <div style="background-color: #4f46e5; color: white; padding: 20px; text-align: center;">
+      <div style="background-color: ${themeColor}; color: white; padding: 20px; text-align: center;">
         <h1 style="margin: 0; font-size: 24px;">${subject}</h1>
       </div>
       <div style="padding: 30px; text-align: center; color: #333;">

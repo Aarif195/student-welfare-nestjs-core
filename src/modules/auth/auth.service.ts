@@ -62,9 +62,11 @@ export class AuthService {
       await this.mailService.sendMail(
         dto.email,
         'Verify Your Account',
-        `<p>Hi ${dto.firstName},</p>
-       <p>Your verification code is: <strong>${otpCode}</strong></p>
-       <p>This code expires in 10 minutes.</p>`,
+        `<p style="font-size: 16px;">Hi ${dto.firstName},</p>
+         <div style="margin: 30px 0; padding: 15px; background-color: #f3f4f6; border-radius: 8px; display: inline-block;">
+           <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #4f46e5;">${otpCode}</span>
+         </div>
+         <p style="font-size: 14px; color: #666;">This code expires in 10 minutes.</p>`
       );
     } catch (error) {
       console.error('Email failed to send:', error.message);
@@ -123,7 +125,7 @@ export class AuthService {
 
     //  Generate new OTP
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); 
 
     //  Clean up old OTPs and create new one
     await this.prisma.emailOtp.deleteMany({ where: { email: dto.email } });
@@ -136,17 +138,20 @@ export class AuthService {
     });
 
     //  Send Email
-    try {
+   try {
       await this.mailService.sendMail(
         dto.email,
         'New Verification Code',
-        `<p>We received a request for a new verification code.</p>
-         <p>Your code is: <strong>${otpCode}</strong></p>
-         <p>This code expires in 5 minutes.</p>`,
+        `<p style="font-size: 16px;">We received a request for a new verification code.</p>
+         <div style="margin: 30px 0; padding: 15px; background-color: #f3f4f6; border-radius: 8px; display: inline-block;">
+           <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #4f46e5;">${otpCode}</span>
+         </div>
+         <p style="font-size: 14px; color: #666;">This code expires in 5 minutes.</p>`
       );
     } catch (error) {
       console.error('Resend Email failed:', error.message);
     }
+
 
     return { success: true, message: 'New OTP sent to your email.' };
   }
