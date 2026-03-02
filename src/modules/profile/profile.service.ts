@@ -6,6 +6,7 @@ import { DatabaseService } from '@/database/database.service';
 export class ProfileService {
   constructor(private prisma: DatabaseService) {}
 
+//   getProfile
   async getProfile(userId: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -25,13 +26,13 @@ export class ProfileService {
     return user;
   }
 
+//   updateProfile
   async updateProfile(userId: number, dto: UpdateProfileDto) {
     const user = await this.prisma.user.update({
       where: { id: userId },
       data: dto,
     });
 
-    // Remove password from response
     const { password, ...result } = user;
     return result;
   }
