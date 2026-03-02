@@ -235,7 +235,7 @@ export class AuthController {
     @Get('profile')
     @ApiBearerAuth()
     @UseGuards(AuthGuard, RolesGuard)
-    @Roles('student', 'superadmin')
+    @Roles('student', 'hostelOwner', 'superadmin')
     @ApiOperation({ summary: 'Get profile (Protected Route Test)' })
     @ApiResponse({ status: 200, description: 'Returns user role and access confirmation' })
     getProfile() {
