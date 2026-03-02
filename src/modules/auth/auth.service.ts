@@ -12,6 +12,7 @@ import { MailService } from '../mail/mail.service';
 import { OAuth2Client } from 'google-auth-library';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResendOtpDto } from './dto/resend-otp.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 
 // Initialize the client
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -125,7 +126,7 @@ export class AuthService {
 
     //  Generate new OTP
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); 
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
     //  Clean up old OTPs and create new one
     await this.prisma.emailOtp.deleteMany({ where: { email: dto.email } });
@@ -138,7 +139,7 @@ export class AuthService {
     });
 
     //  Send Email
-   try {
+    try {
       await this.mailService.sendMail(
         dto.email,
         'New Verification Code',
@@ -150,6 +151,51 @@ export class AuthService {
       );
     } catch (error) {
       console.error('Resend Email failed:', error.message);
+    }
+
+
+    return { success: true, message: 'New OTP sent to your email.' };
+  }
+
+  // forgotPassword
+  async forgotPassword(dto: ForgotPasswordDto) {
+    //  Check if user exists
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User with this email does not exist');
+    }
+
+    //  Generate new OTP
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+    //  Clean up old OTPs and create new one
+    await this.prisma.emailOtp.deleteMany({ where: { email: dto.email } });
+    await this.prisma.emailOtp.create({
+      data: {
+        email: dto.email,
+        otp_code: otpCode,
+        expires_at: expiresAt,
+      },
+    });
+
+    //  Send Email
+    try {
+      await this.mailService.sendMail(
+        dto.email,
+        'Reset Your Password',
+        `<p style="font-size: 16px;">We received a request to reset your password. Use the code below to proceed:</p>
+         <div style="margin: 30px 0; padding: 15px; background-color: #fef2f2; border-radius: 8px; display: inline-block;">
+           <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #ef4444;">${otpCode}</span>
+         </div>
+         <p style="font-size: 14px; color: #666;">This code expires in 5 minutes.</p>`,
+        '#ef4444',
+      );
+    } catch (error) {
+      console.error('Forgot Password Email failed:', error.message);
     }
 
 

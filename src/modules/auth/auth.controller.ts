@@ -12,6 +12,7 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResendOtpDto } from './dto/resend-otp.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 
 
 @ApiTags('Authentication')
@@ -104,6 +105,35 @@ export class AuthController {
     })
     resendOTP(@Body() resendOtpDto: ResendOtpDto) {
         return this.authService.resendOTP(resendOtpDto);
+    }
+
+    // forgot-password
+    @Post('forgot-password')
+    @ApiOperation({ summary: 'Request password reset OTP' })
+    @ApiBody({ type: ForgotPasswordDto })
+    @ApiResponse({
+        status: 200,
+        description: 'Reset OTP sent successfully',
+        schema: {
+            example: {
+                success: true,
+                message: 'Reset OTP sent to your email'
+            }
+        }
+    })
+    @ApiResponse({
+        status: 404,
+        description: 'User not found',
+        schema: {
+            example: {
+                success: false,
+                message: 'User with this email does not exist',
+                statusCode: 404
+            }
+        }
+    })
+    forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+        return this.authService.forgotPassword(forgotPasswordDto);
     }
 
     // login
