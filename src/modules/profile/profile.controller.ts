@@ -1,5 +1,5 @@
 import { Controller, Get, Patch, Body, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { ProfileService } from './profile.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { AuthGuard } from 'src/common/guards/auth.guard';
@@ -17,8 +17,21 @@ export class ProfileController {
   @Get('me')
   @Roles('student', 'hostelOwner', 'superadmin')
   @ApiOperation({ summary: 'Get current user profile' })
-  @ApiResponse({ status: 200, description: 'Profile retrieved successfully' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Profile retrieved successfully',
+    schema: {
+      example: {
+        id: 1,
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'john@example.com',
+        phone: '+1234567890',
+        image: 'https://cloudinary.com/path',
+        role: 'student'
+      }
+    }
+  })
   getProfile(@GetUser('id') userId: number) {
     return this.profileService.getProfile(userId);
   }
@@ -26,8 +39,12 @@ export class ProfileController {
   @Patch('update')
   @Roles('student', 'hostelOwner', 'superadmin')
   @ApiOperation({ summary: 'Update user profile' })
-  @ApiResponse({ status: 200, description: 'Profile updated successfully' })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiBody({ type: UpdateProfileDto }) 
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Profile updated successfully',
+    type: UpdateProfileDto
+  })
   updateProfile(
     @GetUser('id') userId: number,
     @Body() dto: UpdateProfileDto,
