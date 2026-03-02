@@ -11,6 +11,7 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { ResendOtpDto } from './dto/resend-otp.dto';
 
 
 @ApiTags('Authentication')
@@ -74,6 +75,35 @@ export class AuthController {
     })
     verifyOTP(@Body() verifyOtpDto: VerifyOtpDto) {
         return this.authService.verifyOTP(verifyOtpDto);
+    }
+
+    // resendOTP
+    @Post('resend-otp')
+    @ApiOperation({ summary: 'Resend verification OTP' })
+    @ApiBody({ type: ResendOtpDto })
+    @ApiResponse({
+        status: 200,
+        description: 'OTP resent successfully',
+        schema: {
+            example: {
+                success: true,
+                message: 'New OTP sent to your email.'
+            }
+        }
+    })
+    @ApiResponse({
+        status: 404,
+        description: 'User not found',
+        schema: {
+            example: {
+                success: false,
+                message: 'User not found',
+                statusCode: 404
+            }
+        }
+    })
+    resendOTP(@Body() resendOtpDto: ResendOtpDto) {
+        return this.authService.resendOTP(resendOtpDto);
     }
 
     // login

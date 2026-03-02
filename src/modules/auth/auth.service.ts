@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
 import { JwtService } from '@nestjs/jwt';
 import { hashPassword, comparePassword } from '../../common/utils/helpers';
@@ -11,6 +11,7 @@ import { Role } from '@prisma/client';
 import { MailService } from '../mail/mail.service';
 import { OAuth2Client } from 'google-auth-library';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { ResendOtpDto } from './dto/resend-otp.dto';
 
 // Initialize the client
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -36,7 +37,7 @@ export class AuthService {
     const user = await this.prisma.user.create({
       data: {
         ...userData,
-        role:( dto.role as unknown as Role) || Role.student,
+        role: (dto.role as unknown as Role) || Role.student,
         password: hashedPassword,
         is_verified: false,
       },
@@ -56,21 +57,99 @@ export class AuthService {
       },
     });
 
-   // Send OTP Email
-  try {
-    await this.mailService.sendMail(
-      dto.email,
-      'Verify Your Account',
-      `<p>Hi ${dto.firstName},</p>
+    // Send OTP Email
+    try {
+      await this.mailService.sendMail(
+        dto.email,
+        'Verify Your Account',
+        `<p>Hi ${dto.firstName},</p>
        <p>Your verification code is: <strong>${otpCode}</strong></p>
        <p>This code expires in 10 minutes.</p>`,
-    );
-  } catch (error) {
-    console.error('Email failed to send:', error.message);
+      );
+    } catch (error) {
+      console.error('Email failed to send:', error.message);
+    }
+
+    return { message: 'Registration successful. Please check your email for the OTP.' };
   }
 
-  return { message: 'Registration successful. Please check your email for the OTP.' };
-}
+  // verifyOTP
+  async verifyOTP(dto: VerifyOtpDto) {
+    //  Find the latest OTP for this email
+    const otpData = await this.prisma.emailOtp.findFirst({
+      where: {
+        email: dto.email,
+        otp_code: dto.otp_code
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!otpData) {
+      throw new BadRequestException('Invalid OTP code');
+    }
+
+    //  Check expiry
+    if (new Date() > otpData.expires_at) {
+      throw new BadRequestException('OTP has expired');
+    }
+
+    //  Update User status
+    await this.prisma.user.update({
+      where: { email: dto.email },
+      data: { is_verified: true },
+    });
+
+    //  Delete the used OTP
+    await this.prisma.emailOtp.delete({
+      where: { id: otpData.id },
+    });
+
+    return {
+      success: true,
+      message: 'Email verified successfully. You can now login.'
+    };
+  }
+
+  // resendOTP
+  async resendOTP(dto: ResendOtpDto) {
+    //  Check if user exists
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    //  Generate new OTP
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
+
+    //  Clean up old OTPs and create new one
+    await this.prisma.emailOtp.deleteMany({ where: { email: dto.email } });
+    await this.prisma.emailOtp.create({
+      data: {
+        email: dto.email,
+        otp_code: otpCode,
+        expires_at: expiresAt,
+      },
+    });
+
+    //  Send Email
+    try {
+      await this.mailService.sendMail(
+        dto.email,
+        'New Verification Code',
+        `<p>We received a request for a new verification code.</p>
+         <p>Your code is: <strong>${otpCode}</strong></p>
+         <p>This code expires in 5 minutes.</p>`,
+      );
+    } catch (error) {
+      console.error('Resend Email failed:', error.message);
+    }
+
+    return { success: true, message: 'New OTP sent to your email.' };
+  }
 
   // login
   async login(dto: LoginDto) {
@@ -101,43 +180,6 @@ export class AuthService {
         lastName: user.lastName
       },
       token: this.jwtService.sign(payload),
-    };
-  }
-
-// verifyOTP
- async verifyOTP(dto: VerifyOtpDto) {
-    //  Find the latest OTP for this email
-    const otpData = await this.prisma.emailOtp.findFirst({
-      where: { 
-        email: dto.email, 
-        otp_code: dto.otp_code 
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    if (!otpData) {
-      throw new BadRequestException('Invalid OTP code');
-    }
-
-    //  Check expiry
-    if (new Date() > otpData.expires_at) {
-      throw new BadRequestException('OTP has expired');
-    }
-
-    //  Update User status
-    await this.prisma.user.update({
-      where: { email: dto.email },
-      data: { is_verified: true },
-    });
-
-    //  Delete the used OTP
-    await this.prisma.emailOtp.delete({
-      where: { id: otpData.id },
-    });
-
-    return { 
-      success: true, 
-      message: 'Email verified successfully. You can now login.' 
     };
   }
 
