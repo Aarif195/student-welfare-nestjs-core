@@ -13,6 +13,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResendOtpDto } from './dto/resend-otp.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 // Initialize the client
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -200,6 +201,46 @@ export class AuthService {
 
 
     return { success: true, message: 'New OTP sent to your email.' };
+  }
+
+  // resetPassword
+  async resetPassword(dto: ResetPasswordDto) {
+    //  Verify OTP
+    const otpData = await this.prisma.emailOtp.findFirst({
+      where: { 
+        email: dto.email, 
+        otp_code: dto.otp_code 
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!otpData) {
+      throw new BadRequestException('Invalid OTP code');
+    }
+
+    // Check Expiry
+    if (new Date() > otpData.expires_at) {
+      throw new BadRequestException('OTP has expired');
+    }
+
+    //  Hash the new password
+    const hashedPassword = await hashPassword(dto.newPassword);
+
+    //  Update password (since we use a single User table)
+    await this.prisma.user.update({
+      where: { email: dto.email },
+      data: { password: hashedPassword },
+    });
+
+    //  Delete OTP
+    await this.prisma.emailOtp.deleteMany({
+      where: { email: dto.email },
+    });
+
+    return { 
+      success: true, 
+      message: 'Password updated successfully. You can now login.' 
+    };
   }
 
   // login

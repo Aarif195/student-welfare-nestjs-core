@@ -13,6 +13,7 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResendOtpDto } from './dto/resend-otp.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 
 @ApiTags('Authentication')
@@ -134,6 +135,35 @@ export class AuthController {
     })
     forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
         return this.authService.forgotPassword(forgotPasswordDto);
+    }
+
+    // reset-password
+@Post('reset-password')
+    @ApiOperation({ summary: 'Reset password using OTP' })
+    @ApiBody({ type: ResetPasswordDto })
+    @ApiResponse({
+        status: 200,
+        description: 'Password updated successfully',
+        schema: {
+            example: {
+                success: true,
+                message: 'Password updated successfully. You can now login.'
+            }
+        }
+    })
+    @ApiResponse({
+        status: 400,
+        description: 'Invalid or expired OTP',
+        schema: {
+            example: {
+                success: false,
+                message: 'Invalid OTP code',
+                statusCode: 400
+            }
+        }
+    })
+    resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+        return this.authService.resetPassword(resetPasswordDto);
     }
 
     // login
