@@ -28,7 +28,6 @@ import { ProfileModule } from './modules/profile/profile.module';
     MailModule,
     AdminModule,
     ProfileModule,
-    
   ],
   controllers: [AppController],
   providers: [AppService],
