@@ -32,6 +32,8 @@ export class ProfileController {
       }
     }
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'User not found' })
   getProfile(@GetUser('id') userId: number) {
     return this.profileService.getProfile(userId);
   }
@@ -45,6 +47,9 @@ export class ProfileController {
     description: 'Profile updated successfully',
     type: UpdateProfileDto
   })
+  @ApiResponse({ status: 400, description: 'Bad Request - Validation failed' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'User not found' })
   updateProfile(
     @GetUser('id') userId: number,
     @Body() dto: UpdateProfileDto,
