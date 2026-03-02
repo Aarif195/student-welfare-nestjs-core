@@ -82,6 +82,11 @@ export class AuthService {
     const isMatch = await comparePassword(dto.password, user.password);
     if (!isMatch) throw new UnauthorizedException('Invalid credentials');
 
+    // Add this check
+    if (!user.is_verified) {
+      throw new UnauthorizedException('Please verify your email before logging in');
+    }
+
     return this.generateUserToken(user);
   }
 
