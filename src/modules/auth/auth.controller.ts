@@ -10,6 +10,7 @@ import { GoogleLoginDto } from './dto/google-login.dto';
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
 
 
 @ApiTags('Authentication')
@@ -17,6 +18,7 @@ import { Roles } from '../../common/decorators/roles.decorator';
 export class AuthController {
     constructor(private readonly authService: AuthService) { }
 
+    // register
     @Post('register')
     @ApiOperation({ summary: 'Register a new user' })
     @ApiBody({ type: RegisterDto })
@@ -43,6 +45,35 @@ export class AuthController {
     })
     register(@Body() registerDto: RegisterDto) {
         return this.authService.register(registerDto);
+    }
+
+    // verify otp
+    @Post('verify-otp')
+    @ApiOperation({ summary: 'Verify email with OTP' })
+    @ApiBody({ type: VerifyOtpDto })
+    @ApiResponse({
+        status: 200,
+        description: 'Email verified successfully',
+        schema: {
+            example: {
+                success: true,
+                message: 'Email verified successfully. You can now login.'
+            }
+        }
+    })
+    @ApiResponse({
+        status: 400,
+        description: 'Invalid or expired OTP',
+        schema: {
+            example: {
+                success: false,
+                message: 'Invalid OTP code',
+                statusCode: 400
+            }
+        }
+    })
+    verifyOTP(@Body() verifyOtpDto: VerifyOtpDto) {
+        return this.authService.verifyOTP(verifyOtpDto);
     }
 
     // login

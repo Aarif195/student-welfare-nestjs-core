@@ -25,6 +25,7 @@ model User {
   address   String?
   role      Role     @default(student)
   image     String?
+  is_verified Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -34,6 +35,16 @@ enum Role {
   student
   hostelOwner 
   superadmin
+}
+
+model EmailOtp {
+  id         Int      @id @default(autoincrement())
+  email      String
+  otp_code   String
+  expires_at DateTime
+  createdAt  DateTime @default(now())
+
+  @@index([email])
 }
 
 model Admin {

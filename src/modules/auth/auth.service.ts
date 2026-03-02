@@ -10,6 +10,7 @@ import { Role } from '@prisma/client';
 
 import { MailService } from '../mail/mail.service';
 import { OAuth2Client } from 'google-auth-library';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
 
 // Initialize the client
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -36,28 +37,40 @@ export class AuthService {
       data: {
         ...userData,
         role:( dto.role as unknown as Role) || Role.student,
-        password: hashedPassword
+        password: hashedPassword,
+        is_verified: false,
       },
     });
 
 
-    // Send Welcome Email
-    try {
-      await this.mailService.sendMail(
-        dto.email,
-        'Welcome to our platform!',
-        `<p>Hi ${dto.firstName},</p>
-       <p>Thank you for registering with us. You can now login to your account.</p>
-       <p>Best regards,</p>
-       <p>${process.env.MAIL_SENDER_NAME || 'Our Team'}</p>`,
-      );
+    // Generate 6-digit OTP
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 mins expiry
 
-    } catch (error) {
-      console.error('Email failed to send:', error.message);
-    }
+    // Save OTP in database
+    await this.prisma.emailOtp.create({
+      data: {
+        email: dto.email,
+        otp_code: otpCode,
+        expires_at: expiresAt,
+      },
+    });
 
-    return this.generateUserToken(user);
+   // Send OTP Email
+  try {
+    await this.mailService.sendMail(
+      dto.email,
+      'Verify Your Account',
+      `<p>Hi ${dto.firstName},</p>
+       <p>Your verification code is: <strong>${otpCode}</strong></p>
+       <p>This code expires in 10 minutes.</p>`,
+    );
+  } catch (error) {
+    console.error('Email failed to send:', error.message);
   }
+
+  return { message: 'Registration successful. Please check your email for the OTP.' };
+}
 
   // login
   async login(dto: LoginDto) {
@@ -83,6 +96,43 @@ export class AuthService {
         lastName: user.lastName
       },
       token: this.jwtService.sign(payload),
+    };
+  }
+
+// verifyOTP
+ async verifyOTP(dto: VerifyOtpDto) {
+    //  Find the latest OTP for this email
+    const otpData = await this.prisma.emailOtp.findFirst({
+      where: { 
+        email: dto.email, 
+        otp_code: dto.otp_code 
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!otpData) {
+      throw new BadRequestException('Invalid OTP code');
+    }
+
+    //  Check expiry
+    if (new Date() > otpData.expires_at) {
+      throw new BadRequestException('OTP has expired');
+    }
+
+    //  Update User status
+    await this.prisma.user.update({
+      where: { email: dto.email },
+      data: { is_verified: true },
+    });
+
+    //  Delete the used OTP
+    await this.prisma.emailOtp.delete({
+      where: { id: otpData.id },
+    });
+
+    return { 
+      success: true, 
+      message: 'Email verified successfully. You can now login.' 
     };
   }
 
@@ -114,6 +164,7 @@ export class AuthService {
             role: dto.role as unknown as Role,
             phone: dto.phone || '',
             password: await hashPassword(Math.random().toString(36).slice(-10)),
+            is_verified: true,
           },
         });
 
