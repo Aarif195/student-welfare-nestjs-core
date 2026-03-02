@@ -1,10 +1,6 @@
 import { IsNotEmpty, IsString, IsEnum, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-
-export enum UserRole {
-  STUDENT = 'student',
-  OWNER = 'hostelOwner',
-}
+import { UserRole } from '@/common/guards/types';
 
 export class GoogleLoginDto {
   @ApiProperty({ example: 'eyJhbGciOiJSUzI1NiIs...', description: 'Google ID Token' })

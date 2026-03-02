@@ -30,7 +30,6 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
-
 enum Role {
   student
   hostelOwner 

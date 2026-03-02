@@ -8,3 +8,8 @@ export interface AuthRequest extends Request {
 
   };
 }
+
+export enum UserRole {
+  STUDENT = 'student',
+  OWNER = 'hostelOwner',
+}
