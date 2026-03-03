@@ -15,12 +15,14 @@ import { MailModule } from '../mail/mail.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        secret: config.get('JWT_SECRET'),
-        signOptions: { expiresIn: '1d' },
+        secret: config.get('jwt.secret'),
+        signOptions: {
+          expiresIn: config.get('jwt.expiresIn')
+        },
       }),
     }),
   ],
   controllers: [AuthController],
   providers: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule { }

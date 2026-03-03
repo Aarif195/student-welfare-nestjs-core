@@ -17,8 +17,8 @@ import { ProfileModule } from './modules/profile/profile.module';
     }),
     JwtModule.registerAsync({
       useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '1d' },
+        secret: config.get('jwt.secret'),
+        signOptions: { expiresIn: config.get('jwt.expiresIn') },
       }),
       inject: [ConfigService],
     }),
