@@ -1,7 +1,7 @@
-import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, HttpCode } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiBody, ApiResponse, ApiCreatedResponse, ApiOkResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiForbiddenResponse } from '@nestjs/swagger';
 
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -14,6 +14,8 @@ import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResendOtpDto } from './dto/resend-otp.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { AuthResponseDto } from './dto/auth-response.dto';
+import { ErrorResponseDto } from '@/common/dto/error-response.dto';
 
 
 @ApiTags('Authentication')
@@ -24,27 +26,10 @@ export class AuthController {
     // register
     @Post('register')
     @ApiOperation({ summary: 'Register a new user' })
-    @ApiBody({ type: RegisterDto })
-    @ApiResponse({
-        status: 201,
-        description: 'User registered successfully',
-        schema: {
-            example: {
-                user: { id: 1, email: 'user@example.com', role: 'student', firstName: 'John', lastName: 'Doe' },
-                token: 'jwt_token_here'
-            }
-        }
-    })
-    @ApiResponse({
-        status: 400,
+    @ApiCreatedResponse({ type: AuthResponseDto })
+    @ApiBadRequestResponse({
         description: 'Email already exists',
-        schema: {
-            example: {
-                success: false,
-                message: 'Email already exists',
-                statusCode: 400
-            }
-        }
+        type: ErrorResponseDto
     })
     register(@Body() registerDto: RegisterDto) {
         return this.authService.register(registerDto);
@@ -168,28 +153,12 @@ export class AuthController {
 
     // login
     @Post('login')
+    @HttpCode(200)
     @ApiOperation({ summary: 'User login' })
-    @ApiBody({ type: LoginDto })
-    @ApiResponse({
-        status: 201,
-        description: 'User logged in successfully',
-        schema: {
-            example: {
-                user: { id: 1, email: 'john@example.com', role: 'student', firstName: 'John', lastName: 'Doe' },
-                token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
-            }
-        }
-    })
-    @ApiResponse({
-        status: 401,
+    @ApiOkResponse({ type: AuthResponseDto })
+    @ApiUnauthorizedResponse({
         description: 'Invalid credentials',
-        schema: {
-            example: {
-                success: false,
-                message: 'Invalid credentials',
-                statusCode: 401
-            }
-        }
+        type: ErrorResponseDto
     })
     login(@Body() loginDto: LoginDto) {
         return this.authService.login(loginDto);
@@ -197,35 +166,15 @@ export class AuthController {
 
     // google
     @Post('google')
+    @HttpCode(200) // Usually 200 for logins
     @ApiOperation({ summary: 'Google OAuth login/register' })
-    @ApiBody({ type: GoogleLoginDto })
-    @ApiResponse({
-        status: 201,
+    @ApiOkResponse({
         description: 'Google login successful',
-        schema: {
-            example: {
-                user: {
-                    id: 1,
-                    email: 'user@gmail.com',
-                    role: 'student',
-                    firstName: 'John',
-                    lastName: 'Doe',
-                    image: 'https://lh3.googleusercontent.com/...'
-                },
-                token: 'jwt_token_here'
-            }
-        }
+        type: AuthResponseDto
     })
-    @ApiResponse({
-        status: 401,
+    @ApiUnauthorizedResponse({
         description: 'Google authentication failed',
-        schema: {
-            example: {
-                success: false,
-                message: 'Google authentication failed',
-                statusCode: 401
-            }
-        }
+        type: ErrorResponseDto
     })
     googleLogin(@Body() googleLoginDto: GoogleLoginDto) {
         return this.authService.googleLogin(googleLoginDto);
@@ -235,10 +184,19 @@ export class AuthController {
     @Get('profile')
     @ApiBearerAuth()
     @UseGuards(AuthGuard, RolesGuard)
-    @Roles('student', 'hostelOwner', 'superadmin')
+    @Roles('student', 'superadmin')
     @ApiOperation({ summary: 'Get profile (Protected Route Test)' })
-    @ApiResponse({ status: 200, description: 'Returns user role and access confirmation' })
+    @ApiOkResponse({
+        description: 'Returns access confirmation',
+        schema: {
+            example: { message: 'If you see this, AuthGuard and RolesGuard are working!' }
+        }
+    })
+    @ApiUnauthorizedResponse({ type: ErrorResponseDto, description: 'Missing or invalid token' })
+    @ApiForbiddenResponse({ type: ErrorResponseDto, description: 'Role not authorized' })
     getProfile() {
-        return { message: 'If you see this, AuthGuard and RolesGuard are working!' };
+        return {
+            message: 'If you see this, AuthGuard and RolesGuard are working!',
+        };
     }
 }
