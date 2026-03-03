@@ -10,6 +10,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
+app.setGlobalPrefix('api/v1');
+
   // Global Validation
   app.useGlobalPipes(
     new ValidationPipe({
@@ -39,6 +41,8 @@ async function bootstrap() {
 
   const port = configService.get('PORT') || 4000;
   await app.listen(port);
+
+  console.log(`Application is running on: http://localhost:${port}/api/v1`);
   console.log(`Application is running on: http://localhost:${port}/api/docs`);
 
 
