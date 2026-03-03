@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Get, UseGuards, HttpCode } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiBody, ApiResponse, ApiCreatedResponse, ApiOkResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiForbiddenResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiBody, ApiResponse, ApiCreatedResponse, ApiOkResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 
 import { AuthGuard } from '../../common/guards/auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -16,6 +16,7 @@ import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { ErrorResponseDto } from '@/common/dto/error-response.dto';
+import { MessageResponseDto } from '@/common/dto/message-response.dto';
 
 
 @ApiTags('Authentication')
@@ -26,7 +27,11 @@ export class AuthController {
     // register
     @Post('register')
     @ApiOperation({ summary: 'Register a new user' })
-    @ApiCreatedResponse({ type: AuthResponseDto })
+    @ApiBody({ type: RegisterDto })
+    @ApiCreatedResponse({
+        description: 'User registered successfully',
+        type: AuthResponseDto
+    })
     @ApiBadRequestResponse({
         description: 'Email already exists',
         type: ErrorResponseDto
@@ -39,26 +44,13 @@ export class AuthController {
     @Post('verify-otp')
     @ApiOperation({ summary: 'Verify email with OTP' })
     @ApiBody({ type: VerifyOtpDto })
-    @ApiResponse({
-        status: 200,
+    @ApiOkResponse({
         description: 'Email verified successfully',
-        schema: {
-            example: {
-                success: true,
-                message: 'Email verified successfully. You can now login.'
-            }
-        }
+        type: MessageResponseDto
     })
-    @ApiResponse({
-        status: 400,
+    @ApiBadRequestResponse({
         description: 'Invalid or expired OTP',
-        schema: {
-            example: {
-                success: false,
-                message: 'Invalid OTP code',
-                statusCode: 400
-            }
-        }
+        type: ErrorResponseDto
     })
     verifyOTP(@Body() verifyOtpDto: VerifyOtpDto) {
         return this.authService.verifyOTP(verifyOtpDto);
@@ -68,26 +60,13 @@ export class AuthController {
     @Post('resend-otp')
     @ApiOperation({ summary: 'Resend verification OTP' })
     @ApiBody({ type: ResendOtpDto })
-    @ApiResponse({
-        status: 200,
+    @ApiOkResponse({
         description: 'OTP resent successfully',
-        schema: {
-            example: {
-                success: true,
-                message: 'New OTP sent to your email.'
-            }
-        }
+        type: MessageResponseDto
     })
-    @ApiResponse({
-        status: 404,
+    @ApiNotFoundResponse({
         description: 'User not found',
-        schema: {
-            example: {
-                success: false,
-                message: 'User not found',
-                statusCode: 404
-            }
-        }
+        type: ErrorResponseDto
     })
     resendOTP(@Body() resendOtpDto: ResendOtpDto) {
         return this.authService.resendOTP(resendOtpDto);
@@ -97,26 +76,13 @@ export class AuthController {
     @Post('forgot-password')
     @ApiOperation({ summary: 'Request password reset OTP' })
     @ApiBody({ type: ForgotPasswordDto })
-    @ApiResponse({
-        status: 200,
-        description: 'Reset OTP sent successfully',
-        schema: {
-            example: {
-                success: true,
-                message: 'Reset OTP sent to your email'
-            }
-        }
+    @ApiOkResponse({
+        description: 'Password reset OTP sent successfully',
+        type: MessageResponseDto
     })
-    @ApiResponse({
-        status: 404,
+    @ApiNotFoundResponse({
         description: 'User not found',
-        schema: {
-            example: {
-                success: false,
-                message: 'User with this email does not exist',
-                statusCode: 404
-            }
-        }
+        type: ErrorResponseDto
     })
     forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
         return this.authService.forgotPassword(forgotPasswordDto);
@@ -126,26 +92,13 @@ export class AuthController {
     @Post('reset-password')
     @ApiOperation({ summary: 'Reset password using OTP' })
     @ApiBody({ type: ResetPasswordDto })
-    @ApiResponse({
-        status: 200,
-        description: 'Password updated successfully',
-        schema: {
-            example: {
-                success: true,
-                message: 'Password updated successfully. You can now login.'
-            }
-        }
+    @ApiOkResponse({
+        description: 'Password reset successful',
+        type: MessageResponseDto
     })
-    @ApiResponse({
-        status: 400,
+    @ApiNotFoundResponse({
         description: 'Invalid or expired OTP',
-        schema: {
-            example: {
-                success: false,
-                message: 'Invalid OTP code',
-                statusCode: 400
-            }
-        }
+        type: ErrorResponseDto
     })
     resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
         return this.authService.resetPassword(resetPasswordDto);
@@ -155,7 +108,11 @@ export class AuthController {
     @Post('login')
     @HttpCode(200)
     @ApiOperation({ summary: 'User login' })
-    @ApiOkResponse({ type: AuthResponseDto })
+    @ApiBody({ type: LoginDto })
+    @ApiOkResponse({
+        description: 'User logged in successfully',
+        type: AuthResponseDto
+    })
     @ApiUnauthorizedResponse({
         description: 'Invalid credentials',
         type: ErrorResponseDto
@@ -166,8 +123,9 @@ export class AuthController {
 
     // google
     @Post('google')
-    @HttpCode(200) // Usually 200 for logins
+    @HttpCode(200)
     @ApiOperation({ summary: 'Google OAuth login/register' })
+    @ApiBody({ type: GoogleLoginDto })
     @ApiOkResponse({
         description: 'Google login successful',
         type: AuthResponseDto
