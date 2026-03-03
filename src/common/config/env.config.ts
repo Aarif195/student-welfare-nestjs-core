@@ -8,4 +8,9 @@ export const envConfig = () => ({
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
   },
+  mail: {
+    apiKey: process.env.BREVO_API_KEY,
+    senderEmail: process.env.MAIL_SENDER_EMAIL,
+    senderName: process.env.MAIL_SENDER_NAME,
+  },
 });

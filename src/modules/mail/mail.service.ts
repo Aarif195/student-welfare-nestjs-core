@@ -8,9 +8,9 @@ export class MailService {
     private readonly senderName: string;
 
     constructor(private config: ConfigService) {
-        this.brevoApiKey = this.config.get<string>('BREVO_API_KEY')!.trim();
-        this.senderEmail = this.config.get<string>('MAIL_SENDER_EMAIL')!;
-        this.senderName = this.config.get<string>('MAIL_SENDER_NAME')!;
+        this.brevoApiKey = this.config.get<string>('mail.apiKey')!.trim();
+        this.senderEmail = this.config.get<string>('mail.senderEmail')!;
+        this.senderName = this.config.get<string>('mail.senderName')!;
     }
 
   async sendMail(to: string, subject: string, html: string, themeColor: string = '#4f46e5') {
