@@ -4,11 +4,28 @@ import { DatabaseService } from '@/database/database.service';
 
 @Injectable()
 export class ProfileService {
-  constructor(private prisma: DatabaseService) {}
+  constructor(private prisma: DatabaseService) { }
 
-//   getProfile
-  async getProfile(userId: number) {
-    const user = await this.prisma.user.findUnique({
+  //   getProfile
+ async getProfile(userId: number, role: string) {
+  let user;
+
+  //  Check the role is admin to decide which table to query
+  if (role === 'superadmin') {
+    user = await this.prisma.admin.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        role: true,
+        createdAt: true,
+      },
+    });
+  } else {
+    //  Otherwise, look in the standard User table (for students/hostelOwners)
+    user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
         id: true,
@@ -21,12 +38,14 @@ export class ProfileService {
         createdAt: true,
       },
     });
-
-    if (!user) throw new NotFoundException('User not found');
-    return user;
   }
 
-//   updateProfile
+  if (!user) throw new NotFoundException('User profile not found');
+  
+  return user;
+}
+
+  //   updateProfile
   async updateProfile(userId: number, dto: UpdateProfileDto) {
     const user = await this.prisma.user.update({
       where: { id: userId },

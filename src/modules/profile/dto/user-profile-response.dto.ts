@@ -4,13 +4,13 @@ export class UserProfileResponseDto {
   @ApiProperty({ example: 1 })
   id: number;
 
-  @ApiProperty({ example: 'John' })
+  @ApiProperty({ example: 'Super' })
   firstName: string;
 
-  @ApiProperty({ example: 'Doe' })
+  @ApiProperty({ example: 'Admin' })
   lastName: string;
 
-  @ApiProperty({ example: 'john@example.com' })
+  @ApiProperty({ example: 'admin@hostel.com' })
   email: string;
 
   @ApiProperty({ example: '+1234567890' })
@@ -19,6 +19,12 @@ export class UserProfileResponseDto {
   @ApiProperty({ example: 'https://cloudinary.com/path' })
   image: string;
 
-  @ApiProperty({ example: 'student' })
+  @ApiProperty({ example: 'superadmin' })
   role: string;
+
+  @ApiProperty({ example: '2022-01-01T00:00:00.000Z' })
+  createdAt: Date;
+
+  @ApiProperty({ example: '2022-01-01T00:00:00.000Z' })
+  updatedAt: Date;
 }

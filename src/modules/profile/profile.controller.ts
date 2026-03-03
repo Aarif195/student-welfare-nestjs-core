@@ -25,8 +25,8 @@ export class ProfileController {
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized', type: ErrorResponseDto })
   @ApiNotFoundResponse({ description: 'User not found', type: ErrorResponseDto })
-  getProfile(@GetUser('id') userId: number) {
-    return this.profileService.getProfile(userId);
+  getProfile(@GetUser() user: any) {
+    return this.profileService.getProfile(user.id, user.role);
   }
 
   @Patch('update')
