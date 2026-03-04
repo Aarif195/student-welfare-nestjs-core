@@ -8,7 +8,7 @@ import { LoginDto } from './dto/login.dto';
 import { GoogleLoginDto } from './dto/google-login.dto';
 import { Role } from '@prisma/client';
 
-import { MailService } from '../mail/mail.service';
+import { MailService } from '../../providers/mail/mail.service';
 import { OAuth2Client } from 'google-auth-library';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResendOtpDto } from './dto/resend-otp.dto';
@@ -207,9 +207,9 @@ export class AuthService {
   async resetPassword(dto: ResetPasswordDto) {
     //  Verify OTP
     const otpData = await this.prisma.emailOtp.findFirst({
-      where: { 
-        email: dto.email, 
-        otp_code: dto.otp_code 
+      where: {
+        email: dto.email,
+        otp_code: dto.otp_code
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -237,9 +237,9 @@ export class AuthService {
       where: { email: dto.email },
     });
 
-    return { 
-      success: true, 
-      message: 'Password updated successfully. You can now login.' 
+    return {
+      success: true,
+      message: 'Password updated successfully. You can now login.'
     };
   }
 

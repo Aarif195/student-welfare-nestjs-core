@@ -3,8 +3,7 @@ import { AuthService } from './auth.service';
 
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiBody, ApiResponse, ApiCreatedResponse, ApiOkResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 
-import { AuthGuard } from '../../common/guards/auth.guard';
-import { RolesGuard } from '../../common/guards/roles.guard';
+
 import { Roles } from '../../common/decorators/roles.decorator';
 
 import { RegisterDto } from './dto/register.dto';
@@ -17,6 +16,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { ErrorResponseDto } from '@/common/dto/error-response.dto';
 import { MessageResponseDto } from '@/common/dto/message-response.dto';
+import { Public } from '@/common/decorators/public.decorator';
 
 
 @ApiTags('Authentication')
@@ -25,6 +25,7 @@ export class AuthController {
     constructor(private readonly authService: AuthService) { }
 
     // register
+    @Public()
     @Post('register')
     @ApiOperation({ summary: 'Register a new user' })
     @ApiBody({ type: RegisterDto })
@@ -41,6 +42,7 @@ export class AuthController {
     }
 
     // verify otp
+    @Public()
     @Post('verify-otp')
     @ApiOperation({ summary: 'Verify email with OTP' })
     @ApiBody({ type: VerifyOtpDto })
@@ -57,6 +59,7 @@ export class AuthController {
     }
 
     // resendOTP
+    @Public()
     @Post('resend-otp')
     @ApiOperation({ summary: 'Resend verification OTP' })
     @ApiBody({ type: ResendOtpDto })
@@ -73,6 +76,7 @@ export class AuthController {
     }
 
     // forgot-password
+    @Public()
     @Post('forgot-password')
     @ApiOperation({ summary: 'Request password reset OTP' })
     @ApiBody({ type: ForgotPasswordDto })
@@ -89,6 +93,7 @@ export class AuthController {
     }
 
     // reset-password
+    @Public()
     @Post('reset-password')
     @ApiOperation({ summary: 'Reset password using OTP' })
     @ApiBody({ type: ResetPasswordDto })
@@ -105,6 +110,7 @@ export class AuthController {
     }
 
     // login
+    @Public()
     @Post('login')
     @HttpCode(200)
     @ApiOperation({ summary: 'User login' })
@@ -122,6 +128,7 @@ export class AuthController {
     }
 
     // google
+    @Public()
     @Post('google')
     @HttpCode(200)
     @ApiOperation({ summary: 'Google OAuth login/register' })
@@ -141,7 +148,6 @@ export class AuthController {
     // Guards work
     @Get('profile')
     @ApiBearerAuth()
-    @UseGuards(AuthGuard, RolesGuard)
     @Roles('student', 'superadmin')
     @ApiOperation({ summary: 'Get profile (Protected Route Test)' })
     @ApiOkResponse({

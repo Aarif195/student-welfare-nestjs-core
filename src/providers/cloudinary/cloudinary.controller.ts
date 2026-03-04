@@ -4,6 +4,7 @@ import { AuthGuard } from '../../common/guards/auth.guard';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery, ApiResponse, ApiOkResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { CloudinarySignatureResponseDto } from './dto/cloudinary-signature-response.dto';
 import { ErrorResponseDto } from '@/common/dto/error-response.dto';
+import { Public } from '@/common/decorators/public.decorator';
 
 @ApiTags('Cloudinary')
 @Controller('cloudinary')

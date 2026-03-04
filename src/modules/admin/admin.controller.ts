@@ -2,23 +2,21 @@ import { Body, Controller, Post, HttpCode, HttpStatus, UseGuards } from '@nestjs
 import { ApiOperation, ApiResponse, ApiTags, ApiBody, ApiOkResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 
-
-import { AuthGuard } from '@/common/guards/auth.guard';
-import { RolesGuard } from '@/common/guards/roles.guard';
 import { Roles } from '@/common/decorators/roles.decorator';
 
 import { AdminLoginDto } from './dto/admin-login.dto';
 import { AdminResponseDto } from './dto/admin-response.dto';
 import { ErrorResponseDto } from '@/common/dto/error-response.dto';
+import { Public } from '@/common/decorators/public.decorator';
 
 @ApiTags('Admin Dashboard')
 @Controller('admin')
-// @UseGuards(AuthGuard, RolesGuard)
 @Roles('superadmin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) { }
 
   // login
+  @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Admin login' })
