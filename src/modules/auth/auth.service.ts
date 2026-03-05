@@ -14,9 +14,8 @@ import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResendOtpDto } from './dto/resend-otp.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ConfigService } from '@nestjs/config';
 
-// Initialize the client
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 @Injectable()
 export class AuthService {
@@ -24,7 +23,9 @@ export class AuthService {
     private prisma: DatabaseService,
     private jwtService: JwtService,
     private mailService: MailService,
+    private configService: ConfigService,
   ) { }
+
 
   // register
   async register(dto: RegisterDto) {
@@ -278,9 +279,13 @@ export class AuthService {
   // googleLogin
   async googleLogin(dto: GoogleLoginDto) {
     try {
+
+      const googleClientId = this.configService.get<string>('google.clientId');
+      const client = new OAuth2Client(googleClientId);
+
       const ticket = await client.verifyIdToken({
         idToken: dto.idToken,
-        audience: process.env.GOOGLE_CLIENT_ID,
+        audience: googleClientId,
       });
 
       const payload = ticket.getPayload();
