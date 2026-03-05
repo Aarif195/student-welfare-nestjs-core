@@ -15,6 +15,7 @@ import { ResendOtpDto } from './dto/resend-otp.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ConfigService } from '@nestjs/config';
+import { otpEmailTemplate, resendOtpEmailTemplate } from '@/common/templates/auth-emails.template';
 
 
 @Injectable()
@@ -62,14 +63,13 @@ export class AuthService {
 
     // Send OTP Email
     try {
+      const emailBody = otpEmailTemplate(dto.firstName, otpCode);
+
       await this.mailService.sendMail(
         dto.email,
         'Verify Your Account',
-        `<p style="font-size: 16px;">Hi ${dto.firstName},</p>
-         <div style="margin: 30px 0; padding: 15px; background-color: #f3f4f6; border-radius: 8px; display: inline-block;">
-           <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #4f46e5;">${otpCode}</span>
-         </div>
-         <p style="font-size: 14px; color: #666;">This code expires in 10 minutes.</p>`
+        emailBody,
+        '#4f46e5'
       );
     } catch (error) {
       console.error('Email failed to send:', error.message);
@@ -142,14 +142,11 @@ export class AuthService {
 
     //  Send Email
     try {
+      const emailBody = resendOtpEmailTemplate(otpCode);
       await this.mailService.sendMail(
         dto.email,
         'New Verification Code',
-        `<p style="font-size: 16px;">We received a request for a new verification code.</p>
-         <div style="margin: 30px 0; padding: 15px; background-color: #f3f4f6; border-radius: 8px; display: inline-block;">
-           <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #4f46e5;">${otpCode}</span>
-         </div>
-         <p style="font-size: 14px; color: #666;">This code expires in 5 minutes.</p>`
+       emailBody
       );
     } catch (error) {
       console.error('Resend Email failed:', error.message);
