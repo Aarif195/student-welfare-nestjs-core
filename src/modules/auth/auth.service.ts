@@ -15,7 +15,7 @@ import { ResendOtpDto } from './dto/resend-otp.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ConfigService } from '@nestjs/config';
-import { otpEmailTemplate, resendOtpEmailTemplate } from '@/common/templates/auth-emails.template';
+import { forgotPasswordEmailTemplate, otpEmailTemplate, resendOtpEmailTemplate } from '@/common/templates/auth-emails.template';
 
 
 @Injectable()
@@ -146,12 +146,11 @@ export class AuthService {
       await this.mailService.sendMail(
         dto.email,
         'New Verification Code',
-       emailBody
+        emailBody
       );
     } catch (error) {
       console.error('Resend Email failed:', error.message);
     }
-
 
     return { success: true, message: 'New OTP sent to your email.' };
   }
@@ -183,15 +182,12 @@ export class AuthService {
 
     //  Send Email
     try {
+      const emailBody = forgotPasswordEmailTemplate(otpCode);
       await this.mailService.sendMail(
         dto.email,
         'Reset Your Password',
-        `<p style="font-size: 16px;">We received a request to reset your password. Use the code below to proceed:</p>
-         <div style="margin: 30px 0; padding: 15px; background-color: #fef2f2; border-radius: 8px; display: inline-block;">
-           <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #ef4444;">${otpCode}</span>
-         </div>
-         <p style="font-size: 14px; color: #666;">This code expires in 5 minutes.</p>`,
-        '#ef4444',
+        emailBody,
+        '#ef4444'
       );
     } catch (error) {
       console.error('Forgot Password Email failed:', error.message);
