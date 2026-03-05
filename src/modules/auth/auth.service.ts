@@ -15,7 +15,7 @@ import { ResendOtpDto } from './dto/resend-otp.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ConfigService } from '@nestjs/config';
-import { forgotPasswordEmailTemplate, otpEmailTemplate, resendOtpEmailTemplate } from '@/common/templates/auth-emails.template';
+import { forgotPasswordEmailTemplate, googleWelcomeEmailTemplate, otpEmailTemplate, resendOtpEmailTemplate } from '@/common/templates/auth-emails.template';
 
 
 @Injectable()
@@ -305,12 +305,19 @@ export class AuthService {
           },
         });
 
-        //Welcome Email for Google users
-        await this.mailService.sendMail(
-          email,
-          'Welcome to our platform!',
-          `<p>Hi ${firstName}, your account has been created via Google.</p>`
-        );
+       // Welcome Email for Google users
+        try {
+          const emailBody = googleWelcomeEmailTemplate(firstName);
+          
+          await this.mailService.sendMail(
+            email,
+            'Welcome to our platform!',
+            emailBody
+          );
+        } catch (error) {
+          console.error('Google Welcome Email failed:', error.message);
+        }
+
       }
 
 

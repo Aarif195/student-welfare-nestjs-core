@@ -22,3 +22,9 @@ export const forgotPasswordEmailTemplate = (otpCode: string) => `
   </div>
   <p style="font-size: 14px; color: #666;">This code expires in 5 minutes.</p>
 `;
+
+export const googleWelcomeEmailTemplate = (firstName: string) => `
+  <p style="font-size: 16px;">Hi ${firstName},</p>
+  <p>Your account has been successfully created via Google.</p>
+ 
+`;
