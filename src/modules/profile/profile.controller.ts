@@ -9,6 +9,7 @@ import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { ErrorResponseDto } from '@/common/dto/error-response.dto';
 import { Throttle } from '@nestjs/throttler';
+import { Role } from '@prisma/client';
 
 @ApiTags('Profile')
 @ApiBearerAuth()
@@ -19,7 +20,7 @@ export class ProfileController {
 
   @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Get('me')
-  @Roles('student', 'hostelOwner', 'superadmin')
+  @Roles(Role.student, Role.hostelOwner, Role.superadmin)
   @ApiOperation({ summary: 'Get current user profile' })
   @ApiOkResponse({
     description: 'Profile retrieved successfully',
@@ -32,7 +33,7 @@ export class ProfileController {
   }
 
   @Patch('update')
-  @Roles('student', 'hostelOwner', 'superadmin')
+  @Roles(Role.student, Role.hostelOwner, Role.superadmin)
   @ApiOperation({ summary: 'Update user profile' })
   @ApiBody({ type: UpdateProfileDto })
   @ApiOkResponse({

@@ -6,7 +6,7 @@ import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CloudinaryModule } from './providers/cloudinary/cloudinary.module';
 
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 import { envConfig } from './common/config/env.config';
 
@@ -17,6 +17,7 @@ import { RolesGuard } from './common/guards/roles.guard';
 import { MailModule } from './providers/mail/mail.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ProfileModule } from './modules/profile/profile.module';
+import { CustomThrottlerGuard } from './common/guards/throttler-proxy.guard';
 
 
 @Module({
@@ -41,7 +42,7 @@ import { ProfileModule } from './modules/profile/profile.module';
     AppService,
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard,
+      useClass: CustomThrottlerGuard,
     },
     {
       provide: APP_GUARD,

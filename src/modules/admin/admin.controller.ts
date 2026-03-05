@@ -8,10 +8,11 @@ import { AdminLoginDto } from './dto/admin-login.dto';
 import { AdminResponseDto } from './dto/admin-response.dto';
 import { ErrorResponseDto } from '@/common/dto/error-response.dto';
 import { Public } from '@/common/decorators/public.decorator';
+import { Role } from '@prisma/client';
 
 @ApiTags('Admin Dashboard')
 @Controller('admin')
-@Roles('superadmin')
+@Roles(Role.superadmin)
 export class AdminController {
   constructor(private readonly adminService: AdminService) { }
 
