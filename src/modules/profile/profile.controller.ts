@@ -8,6 +8,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { ErrorResponseDto } from '@/common/dto/error-response.dto';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('Profile')
 @ApiBearerAuth()
@@ -16,6 +17,7 @@ import { ErrorResponseDto } from '@/common/dto/error-response.dto';
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) { }
 
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Get('me')
   @Roles('student', 'hostelOwner', 'superadmin')
   @ApiOperation({ summary: 'Get current user profile' })

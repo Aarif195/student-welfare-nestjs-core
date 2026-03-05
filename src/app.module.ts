@@ -6,6 +6,8 @@ import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CloudinaryModule } from './providers/cloudinary/cloudinary.module';
 
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+
 import { envConfig } from './common/config/env.config';
 
 import { APP_GUARD } from '@nestjs/core';
@@ -16,12 +18,17 @@ import { MailModule } from './providers/mail/mail.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ProfileModule } from './modules/profile/profile.module';
 
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [envConfig],
     }),
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 10, // 10 requests per minute
+    }]),
     DatabaseModule,
     AuthModule,
     CloudinaryModule,
@@ -32,6 +39,10 @@ import { ProfileModule } from './modules/profile/profile.module';
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     {
       provide: APP_GUARD,
       useExisting: AuthGuard,

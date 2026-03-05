@@ -17,6 +17,7 @@ import { AuthResponseDto } from './dto/auth-response.dto';
 import { ErrorResponseDto } from '@/common/dto/error-response.dto';
 import { MessageResponseDto } from '@/common/dto/message-response.dto';
 import { Public } from '@/common/decorators/public.decorator';
+import { Throttle } from '@nestjs/throttler';
 
 
 @ApiTags('Authentication')
@@ -26,6 +27,7 @@ export class AuthController {
 
     // register
     @Public()
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Post('register')
     @ApiOperation({ summary: 'Register a new user' })
     @ApiBody({ type: RegisterDto })
@@ -43,6 +45,7 @@ export class AuthController {
 
     // verify otp
     @Public()
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Post('verify-otp')
     @ApiOperation({ summary: 'Verify email with OTP' })
     @ApiBody({ type: VerifyOtpDto })
@@ -60,6 +63,7 @@ export class AuthController {
 
     // resendOTP
     @Public()
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Post('resend-otp')
     @ApiOperation({ summary: 'Resend verification OTP' })
     @ApiBody({ type: ResendOtpDto })
@@ -77,6 +81,7 @@ export class AuthController {
 
     // forgot-password
     @Public()
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Post('forgot-password')
     @ApiOperation({ summary: 'Request password reset OTP' })
     @ApiBody({ type: ForgotPasswordDto })
@@ -94,6 +99,7 @@ export class AuthController {
 
     // reset-password
     @Public()
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Post('reset-password')
     @ApiOperation({ summary: 'Reset password using OTP' })
     @ApiBody({ type: ResetPasswordDto })
@@ -111,6 +117,7 @@ export class AuthController {
 
     // login
     @Public()
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Post('login')
     @HttpCode(200)
     @ApiOperation({ summary: 'User login' })
@@ -153,14 +160,14 @@ export class AuthController {
     @ApiOkResponse({
         description: 'Returns access confirmation',
         schema: {
-            example: { message: 'If you see this, AuthGuard and RolesGuard are working!' }
+            example: { message: 'AuthGuard and RolesGuard are working!' }
         }
     })
     @ApiUnauthorizedResponse({ type: ErrorResponseDto, description: 'Missing or invalid token' })
     @ApiForbiddenResponse({ type: ErrorResponseDto, description: 'Role not authorized' })
     getProfile() {
         return {
-            message: 'If you see this, AuthGuard and RolesGuard are working!',
+            message: 'AuthGuard and RolesGuard are working!',
         };
     }
 }
