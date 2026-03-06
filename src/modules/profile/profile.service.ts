@@ -8,37 +8,21 @@ export class ProfileService {
 
   //   getProfile
  async getProfile(userId: number, role: string) {
-  let user;
 
-  //  Check the role is admin to decide which table to query
-  if (role === 'superadmin') {
-    user = await this.prisma.admin.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        role: true,
-        createdAt: true,
-      },
-    });
-  } else {
-    //  Otherwise, look in the standard User table (for students/hostelOwners)
-    user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        phone: true,
-        image: true,
-        role: true,
-        createdAt: true,
-      },
-    });
-  }
+const user = await this.prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      phone: true,
+      address: true,
+      image: true,
+      role: true,
+      createdAt: true,
+    },
+  });
 
   if (!user) throw new NotFoundException('User profile not found');
   

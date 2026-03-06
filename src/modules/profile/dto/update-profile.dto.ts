@@ -24,4 +24,9 @@ export class UpdateProfileDto {
   @ApiProperty({ example: 'https://example.com/profile.jpg', required: false })
   image?: string;
 
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ example: '123 Main St', required: false })
+  address?: string;
 }

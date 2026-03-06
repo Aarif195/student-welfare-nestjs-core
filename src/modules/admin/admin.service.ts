@@ -13,8 +13,8 @@ export class AdminService {
 
   // login
   async login(dto: AdminLoginDto) {
-    const admin = await this.prisma.admin.findUnique({
-      where: { email: dto.email },
+    const admin = await this.prisma.user.findUnique({
+      where: { email: dto.email, role: 'superadmin' },
     });
 
     if (!admin) {
