@@ -28,12 +28,50 @@ model User {
   is_verified Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+// Relations
+  hostels       Hostel[]     // This links to the owner_id in the Hostel model
+}
+
+model Hostel {
+  id          Int                @id @default(autoincrement())
+  owner_id    Int
+  owner       User               @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+  name        String
+  location    String
+  description String?
+  status      VerificationStatus @default(PENDING)
+  created_at  DateTime           @default(now())
+  updated_at  DateTime           @updatedAt
+
+  // Relation to the new images model
+  images      HostelImage[]
+
+  @@map("hostels")
+}
+
+model HostelImage {
+  id         Int      @id @default(autoincrement())
+  hostel_id  Int
+  image_url  String   // The URL of the image
+  created_at DateTime @default(now())
+
+  // Relation back to the hostel
+  hostel     Hostel   @relation(fields: [hostel_id], references: [id], onDelete: Cascade)
+
+  @@map("hostel_images")
 }
 
 enum Role {
   student
   hostelOwner 
   superadmin
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 model EmailOtp {
@@ -46,15 +84,3 @@ model EmailOtp {
   @@index([email])
 }
 
-model Admin {
-  id        Int      @id @default(autoincrement())
-  firstName String   @db.VarChar(255)
-  lastName  String   @db.VarChar(255)
-  email     String   @unique @db.VarChar(255)
-  password  String   @db.VarChar(255)
-  role      String   @default("superadmin") @db.VarChar(50)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("admins")
-}

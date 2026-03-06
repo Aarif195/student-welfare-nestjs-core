@@ -3,18 +3,19 @@ import { DatabaseService } from '../../database/database.service';
 import { JwtService } from '@nestjs/jwt';
 import { hashPassword, comparePassword } from '../../common/utils/helpers';
 
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
-import { GoogleLoginDto } from './dto/google-login.dto';
 import { Role } from '@prisma/client';
-
 import { MailService } from '../../providers/mail/mail.service';
 import { OAuth2Client } from 'google-auth-library';
+
 import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { ResendOtpDto } from './dto/resend-otp.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ConfigService } from '@nestjs/config';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
+import { GoogleLoginDto } from './dto/google-login.dto';
+
 import { forgotPasswordEmailTemplate, googleWelcomeEmailTemplate, otpEmailTemplate, resendOtpEmailTemplate } from '@/common/templates/auth-emails.template';
 
 
@@ -97,6 +98,9 @@ export class AuthService {
     if (new Date() > otpData.expires_at) {
       throw new BadRequestException('OTP has expired');
     }
+
+    const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
+    if (!user) throw new BadRequestException('User not found');
 
     //  Update User status
     await this.prisma.user.update({
@@ -305,10 +309,10 @@ export class AuthService {
           },
         });
 
-       // Welcome Email for Google users
+        // Welcome Email for Google users
         try {
           const emailBody = googleWelcomeEmailTemplate(firstName);
-          
+
           await this.mailService.sendMail(
             email,
             'Welcome to our platform!',
@@ -326,6 +330,5 @@ export class AuthService {
       throw new UnauthorizedException('Google authentication failed');
     }
   }
-
 
 }

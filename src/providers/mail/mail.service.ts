@@ -58,4 +58,6 @@ export class MailService {
             throw new InternalServerErrorException(`Email failed: ${error.message}`);
         }
     }
+
+    
 }
