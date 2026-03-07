@@ -12,7 +12,7 @@ import { Role } from '@prisma/client';
 
 @ApiTags('Admin Dashboard')
 @Controller('admin')
-@Roles(Role.superadmin)
+// @Roles(Role.superadmin)
 export class AdminController {
   constructor(private readonly adminService: AdminService) { }
 

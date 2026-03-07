@@ -24,6 +24,8 @@ const user = await this.prisma.user.findUnique({
     },
   });
 
+console.log(user);
+
   if (!user) throw new NotFoundException('User profile not found');
   
   return user;

@@ -17,6 +17,7 @@ export class AdminService {
       where: { email: dto.email, role: 'superadmin' },
     });
 
+
     if (!admin) {
       throw new UnauthorizedException('Invalid admin credentials');
     }
