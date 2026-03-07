@@ -15,6 +15,10 @@ class UserData {
 
   @ApiProperty({ example: 'Doe' })
   lastName: string;
+
+  @ApiProperty({ example: 'https://res.cloudinary.com/path/to/image.jpg', nullable: true })
+  image: string;
+
 }
 
 export class AuthResponseDto {

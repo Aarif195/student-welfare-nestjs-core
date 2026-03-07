@@ -7,12 +7,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailModule } from '../../providers/mail/mail.module';
 import { RolesGuard } from '@/common/guards/roles.guard';
 import { AuthGuard } from '@/common/guards/auth.guard';
+import { CloudinaryModule } from '@/providers/cloudinary/cloudinary.module';
 
 
 @Module({
   imports: [
     DatabaseModule,
-    MailModule,
+    MailModule, CloudinaryModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

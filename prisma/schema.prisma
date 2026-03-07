@@ -44,11 +44,12 @@ model Hostel {
   created_at  DateTime           @default(now())
   updated_at  DateTime           @updatedAt
 
-  // Relation to the new images model
+   // Relation to the new images model
   images      HostelImage[]
 
   @@map("hostels")
 }
+
 
 model HostelImage {
   id         Int      @id @default(autoincrement())

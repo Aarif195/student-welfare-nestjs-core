@@ -1,7 +1,7 @@
-import { Controller, Post, Body, Get, UseGuards, HttpCode } from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards, HttpCode, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiBody, ApiResponse, ApiCreatedResponse, ApiOkResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiNotFoundResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiBody, ApiResponse, ApiCreatedResponse, ApiOkResponse, ApiBadRequestResponse, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiConsumes } from '@nestjs/swagger';
 
 
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -19,6 +19,7 @@ import { MessageResponseDto } from '@/common/dto/message-response.dto';
 import { Public } from '@/common/decorators/public.decorator';
 import { Throttle } from '@nestjs/throttler';
 import { Role } from '@prisma/client';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 
 @ApiTags('Authentication')

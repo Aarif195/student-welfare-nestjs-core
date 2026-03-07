@@ -8,13 +8,12 @@ import { Public } from '@/common/decorators/public.decorator';
 
 @ApiTags('Cloudinary')
 @Controller('cloudinary')
-@UseGuards(AuthGuard)
 export class CloudinaryController {
     constructor(private readonly cloudinaryService: CloudinaryService) { }
 
+    @Public()
     @Get('signature')
     @ApiOperation({ summary: 'Generate Cloudinary upload signature' })
-    @ApiBearerAuth()
     @ApiQuery({ name: 'folder', required: false, description: 'Cloudinary folder', example: 'avatars' })
     @ApiOkResponse({
         description: 'Returns upload signature and configuration',

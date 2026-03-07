@@ -31,6 +31,10 @@ export class RegisterDto {
   @IsString()
   address?: string;
 
+  @ApiProperty({ type: 'string', format: 'binary', required: true })
+  @IsOptional()
+  image?: any;
+
   @ApiProperty({ example: 'student', enum: ['student', 'hostelOwner'] })
   @IsOptional()
   @IsEnum(UserRole)
