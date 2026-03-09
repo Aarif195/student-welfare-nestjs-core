@@ -9,7 +9,7 @@ export class CreateHostelDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ example: '123 Campus Road, Ibadan' })
+  @ApiProperty({ example: '123 Campus Road, Tokyo' })
   @IsString()
   @IsNotEmpty()
   location: string;
