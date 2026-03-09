@@ -89,4 +89,17 @@ async getMyHostels(owner_id: number, page: number, limit: number) {
   };
 }
 
+// getSingleHostel
+async getOne(id: number, owner_id: number) {
+  const hostel = await this.prisma.hostel.findUnique({
+    where: { id },
+    include: { resources: true },
+  });
+
+  if (!hostel) throw new NotFoundException('Hostel not found');
+  if (hostel.owner_id !== owner_id) throw new ForbiddenException('Unauthorized: You do not own this hostel');
+
+  return { success: true, data: hostel };
+}
+
 }

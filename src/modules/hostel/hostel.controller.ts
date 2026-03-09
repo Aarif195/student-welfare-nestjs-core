@@ -44,12 +44,30 @@ export class HostelController {
     // getMyHostels
     @Get('my-hostels')
     @Roles(Role.hostelOwner)
+    @ApiOkResponse({ type: MessageResponseDto })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
     getMyHostels(
         @GetUser() user: { id: number },
         @Query() pagination: PaginationDto,
     ) {
-        const { page = 1, limit = 10 } = pagination;
+        const page = pagination.page || 1;
+        const limit = pagination.limit || 10;
         return this.hostelService.getMyHostels(user.id, page, limit);
     }
+
+    // getSingleHostel
+    @Get(':id')
+    @Roles(Role.hostelOwner)
+    @ApiOperation({ summary: 'Get a single hostel by ID' })
+    @ApiOkResponse({ type: MessageResponseDto })
+    @ApiBadRequestResponse({ type: ErrorResponseDto }) getOne(
+        @Param('id', ParseIntPipe) id: number,
+        @GetUser() user: { id: number },
+    ) {
+        return this.hostelService.getOne(id, user.id);
+    }
+
 
 }
