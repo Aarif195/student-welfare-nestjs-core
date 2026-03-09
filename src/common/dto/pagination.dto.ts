@@ -5,7 +5,7 @@ export class PaginationDto {
   @IsInt()
   @Min(1)
   @Type(() => Number)
-  readonly pageNumber: number;
+  readonly page: number;
 
   @IsInt()
   @Min(1)

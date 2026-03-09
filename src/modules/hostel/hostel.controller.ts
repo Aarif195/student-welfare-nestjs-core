@@ -1,5 +1,5 @@
-import { Controller, Post, Body, Patch, Param, ParseIntPipe } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiCreatedResponse, ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
+import { Controller, Post, Body, Patch, Param, ParseIntPipe, Get, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiCreatedResponse, ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiQuery } from '@nestjs/swagger';
 import { CreateHostelDto } from './dto/create-hostel.dto';
 import { Role } from '@prisma/client';
 import { MessageResponseDto } from '@/common/dto/message-response.dto';
@@ -8,6 +8,7 @@ import { GetUser } from '@/common/decorators/get-user.decorator';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { HostelService } from './hostel.service';
 import { UpdateHostelDto } from './dto/update-hostel.dto';
+import { PaginationDto } from '@/common/dto/pagination.dto';
 
 @Controller('hostels')
 @ApiTags('Hostels')
@@ -38,6 +39,17 @@ export class HostelController {
         @GetUser() user: { id: number; role: string },
     ) {
         return this.hostelService.updateHostel(id, user.id, updateHostelDto);
+    }
+
+    // getMyHostels
+    @Get('my-hostels')
+    @Roles(Role.hostelOwner)
+    getMyHostels(
+        @GetUser() user: { id: number },
+        @Query() pagination: PaginationDto,
+    ) {
+        const { page = 1, limit = 10 } = pagination;
+        return this.hostelService.getMyHostels(user.id, page, limit);
     }
 
 }

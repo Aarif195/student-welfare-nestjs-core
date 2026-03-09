@@ -69,6 +69,24 @@ async updateHostel(hostelId: number, owner_id: number, dto: UpdateHostelDto) {
   };
 }
 
+// getMyHostels
+async getMyHostels(owner_id: number, page: number, limit: number) {
+  const [total, data] = await this.prisma.$transaction([
+    this.prisma.hostel.count({ where: { owner_id } }),
+    this.prisma.hostel.findMany({
+      where: { owner_id },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: { created_at: 'desc' },
+      include: { resources: true },
+    }),
+  ]);
 
+  return {
+    success: true,
+    meta: { page, limit, total },
+    data,
+  };
+}
 
 }
