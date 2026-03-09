@@ -18,6 +18,7 @@ import { MailModule } from './providers/mail/mail.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { CustomThrottlerGuard } from './common/guards/throttler-proxy.guard';
+import { HostelModule } from './modules/hostel/hostel.module';
 
 
 @Module({
@@ -36,6 +37,7 @@ import { CustomThrottlerGuard } from './common/guards/throttler-proxy.guard';
     MailModule,
     AdminModule,
     ProfileModule,
+    HostelModule,
   ],
   controllers: [AppController],
   providers: [

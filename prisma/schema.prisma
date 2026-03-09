@@ -62,7 +62,6 @@ model HostelResource {
   @@map("hostel_resources")
 }
 
-
 enum ResourceType {
   IMAGE
   VIDEO
