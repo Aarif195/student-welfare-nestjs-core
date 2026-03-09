@@ -16,7 +16,7 @@ export class UserProfileResponseDto {
   @ApiProperty({ example: '+1234567890' })
   phone: string;
 
-  @ApiProperty({ example: 'https://cloudinary.com/path' })
+  @ApiProperty({ example: 'https://res.cloudinary.com/path' })
   image: string;
 
   @ApiProperty({ example: 'superadmin' })

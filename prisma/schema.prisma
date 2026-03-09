@@ -44,23 +44,35 @@ model Hostel {
   created_at  DateTime           @default(now())
   updated_at  DateTime           @updatedAt
 
-   // Relation to the new images model
-  images      HostelImage[]
+   // Relation to the resource model
+    resources   HostelResource[]
 
   @@map("hostels")
 }
 
+model HostelResource {
+  id          Int          @id @default(autoincrement())
+  hostel_id   Int
+  file_url    String       // The URL of the file (Image, Video, or PDF)
+  file_type   ResourceType // Enum to distinguish between IMAGE, VIDEO, PDF
+  created_at  DateTime     @default(now())
 
-model HostelImage {
-  id         Int      @id @default(autoincrement())
-  hostel_id  Int
-  image_url  String   // The URL of the image
-  created_at DateTime @default(now())
+  hostel      Hostel       @relation(fields: [hostel_id], references: [id], onDelete: Cascade)
 
-  // Relation back to the hostel
-  hostel     Hostel   @relation(fields: [hostel_id], references: [id], onDelete: Cascade)
+  @@map("hostel_resources")
+}
 
-  @@map("hostel_images")
+
+enum ResourceType {
+  IMAGE
+  VIDEO
+  PDF
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 enum Role {
@@ -69,11 +81,6 @@ enum Role {
   superadmin
 }
 
-enum VerificationStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
 
 model EmailOtp {
   id         Int      @id @default(autoincrement())
