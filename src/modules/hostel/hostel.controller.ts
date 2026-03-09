@@ -1,5 +1,5 @@
-import { Controller, Post, Body, Patch, Param, ParseIntPipe, Get, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiCreatedResponse, ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiQuery } from '@nestjs/swagger';
+import { Controller, Post, Body, Patch, Param, ParseIntPipe, Get, Query, Delete } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiCreatedResponse, ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiQuery, ApiNoContentResponse } from '@nestjs/swagger';
 import { CreateHostelDto } from './dto/create-hostel.dto';
 import { Role } from '@prisma/client';
 import { MessageResponseDto } from '@/common/dto/message-response.dto';
@@ -69,5 +69,17 @@ export class HostelController {
         return this.hostelService.getOne(id, user.id);
     }
 
+// deleteHostel
+@Delete(':id')
+@Roles(Role.hostelOwner)
+@ApiOperation({ summary: 'Delete a hostel' })
+@ApiNoContentResponse({ description: 'Hostel deleted successfully' })
+@ApiBadRequestResponse({ type: ErrorResponseDto })
+deleteHostel(
+  @Param('id', ParseIntPipe) id: number,
+  @GetUser() user: { id: number },
+) {
+  return this.hostelService.deleteHostel(id, user.id);
+}
 
 }

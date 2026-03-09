@@ -102,4 +102,18 @@ async getOne(id: number, owner_id: number) {
   return { success: true, data: hostel };
 }
 
+// deleteHostel
+async deleteHostel(id: number, owner_id: number) {
+  const hostel = await this.prisma.hostel.findUnique({
+    where: { id },
+    select: { owner_id: true },
+  });
+
+  if (!hostel) throw new NotFoundException('Hostel not found');
+  if (hostel.owner_id !== owner_id) throw new ForbiddenException('Unauthorized: Access denied');
+
+  await this.prisma.hostel.delete({ where: { id } });
+  return { success: true, message: 'Hostel deleted successfully' };
+}
+
 }
