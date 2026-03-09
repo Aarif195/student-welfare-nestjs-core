@@ -4,33 +4,31 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "mysql"
-    url      = env("DATABASE_URL")
-
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  firstName String
-  lastName  String
-  email     String   @unique
-  password  String
-  phone     String
-  address   String?
-  role      Role     @default(student)
-  image     String?
+  id          Int      @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  email       String   @unique
+  password    String
+  phone       String
+  address     String?
+  role        Role     @default(student)
+  image       String?
   is_verified Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-// Relations
-  hostels       Hostel[]     // This links to the owner_id in the Hostel model
+  // Relations
+  hostels Hostel[] // This links to the owner_id in the Hostel model
 }
 
 model Hostel {
@@ -41,23 +39,24 @@ model Hostel {
   location    String
   description String?
   status      VerificationStatus @default(PENDING)
+  rooms       Room[]
   created_at  DateTime           @default(now())
   updated_at  DateTime           @updatedAt
 
-   // Relation to the resource model
-    resources   HostelResource[]
+  // Relation to the resource model
+  resources HostelResource[]
 
   @@map("hostels")
 }
 
 model HostelResource {
-  id          Int          @id @default(autoincrement())
-  hostel_id   Int
-  file_url    String       // The URL of the file (Image, Video, or PDF)
-  file_type   ResourceType // Enum to distinguish between IMAGE, VIDEO, PDF
-  created_at  DateTime     @default(now())
+  id         Int          @id @default(autoincrement())
+  hostel_id  Int
+  file_url   String // The URL of the file (Image, Video, or PDF)
+  file_type  ResourceType // Enum to distinguish between IMAGE, VIDEO, PDF
+  created_at DateTime     @default(now())
 
-  hostel      Hostel       @relation(fields: [hostel_id], references: [id], onDelete: Cascade)
+  hostel Hostel @relation(fields: [hostel_id], references: [id], onDelete: Cascade)
 
   @@map("hostel_resources")
 }
@@ -76,10 +75,9 @@ enum VerificationStatus {
 
 enum Role {
   student
-  hostelOwner 
+  hostelOwner
   superadmin
 }
-
 
 model EmailOtp {
   id         Int      @id @default(autoincrement())
@@ -91,3 +89,26 @@ model EmailOtp {
   @@index([email])
 }
 
+model Room {
+  id           Int            @id @default(autoincrement())
+  hostel_id    Int
+  hostel       Hostel         @relation(fields: [hostel_id], references: [id], onDelete: Cascade)
+  room_number  String
+  type         String?
+  capacity     Int?
+  price        Decimal        @db.Decimal(10, 2)
+  availability Boolean        @default(true)
+  resources    RoomResource[] // Replaces the TEXT[] array
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+
+  @@unique([hostel_id, room_number])
+}
+
+model RoomResource {
+  id      Int          @id @default(autoincrement())
+  url     String
+  type    ResourceType // Uses existing enum
+  room_id Int
+  room    Room         @relation(fields: [room_id], references: [id], onDelete: Cascade)
+}
