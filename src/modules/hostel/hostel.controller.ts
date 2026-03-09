@@ -9,6 +9,7 @@ import { Roles } from '@/common/decorators/roles.decorator';
 import { HostelService } from './hostel.service';
 import { UpdateHostelDto } from './dto/update-hostel.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
+import { CreateRoomDto } from './dto/create-room.dto';
 
 @Controller('hostels')
 @ApiTags('Hostels')
@@ -81,5 +82,21 @@ deleteHostel(
 ) {
   return this.hostelService.deleteHostel(id, user.id);
 }
+
+
+// createRoom
+@Post(':hostelId/rooms')
+@Roles(Role.hostelOwner)
+@ApiOperation({ summary: 'Create a new room' })
+@ApiCreatedResponse({ type: MessageResponseDto })
+@ApiBadRequestResponse({ type: ErrorResponseDto })
+createRoom(
+    @Param('hostelId', ParseIntPipe) hostelId: number,
+    @Body() createRoomDto: CreateRoomDto,
+    @GetUser() user: { id: number }
+) {
+    return this.hostelService.createRoom(hostelId, user.id, createRoomDto);
+}
+
 
 }
