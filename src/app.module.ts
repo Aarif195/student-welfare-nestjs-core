@@ -19,6 +19,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { CustomThrottlerGuard } from './common/guards/throttler-proxy.guard';
 import { HostelModule } from './modules/hostel/hostel.module';
+import { StudentModule } from './modules/student/student.module';
 
 
 @Module({
@@ -38,6 +39,7 @@ import { HostelModule } from './modules/hostel/hostel.module';
     AdminModule,
     ProfileModule,
     HostelModule,
+    StudentModule,
   ],
   controllers: [AppController],
   providers: [
