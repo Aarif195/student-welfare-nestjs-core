@@ -98,5 +98,21 @@ createRoom(
     return this.hostelService.createRoom(hostelId, user.id, createRoomDto);
 }
 
+// getRoomsByHostel
+@Get(':hostelId/rooms')
+@Roles(Role.hostelOwner)
+@ApiOperation({ summary: 'Get all rooms in a hostel' })
+@ApiOkResponse({ type: MessageResponseDto })
+@ApiQuery({ name: 'page', required: false, type: Number })
+@ApiQuery({ name: 'limit', required: false, type: Number })
+getRoomsByHostel(
+    @Param('hostelId', ParseIntPipe) hostelId: number,
+    @GetUser() user: { id: number },
+    @Query() pagination: PaginationDto,
+) {
+    const page = pagination.page || 1;
+    const limit = pagination.limit || 10;
+    return this.hostelService.getRoomsByHostel(hostelId, user.id, page, limit);
+}
 
 }

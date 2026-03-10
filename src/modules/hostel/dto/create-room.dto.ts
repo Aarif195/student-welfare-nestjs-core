@@ -3,7 +3,6 @@ import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateRoomResourceDto } from './create-room-resource.dto';
 
-// modules/hostel/dto/create-room.dto.ts
 export class CreateRoomDto {
   @ApiProperty({ example: 'Room 101' })
   @IsString()

@@ -143,5 +143,31 @@ async createRoom(hostelId: number, owner_id: number, dto: CreateRoomDto) {
   });
 }
 
+// getRoomsByHostel
+async getRoomsByHostel(hostelId: number, owner_id: number, page: number, limit: number) {
+  //  Verify ownership
+  const hostel = await this.prisma.hostel.findUnique({ where: { id: hostelId } });
+  if (!hostel || hostel.owner_id !== owner_id) {
+    throw new ForbiddenException('Unauthorized access');
+  }
+
+  //  Count and find
+  const [total, rooms] = await this.prisma.$transaction([
+    this.prisma.room.count({ where: { hostel_id: hostelId } }),
+    this.prisma.room.findMany({
+      where: { hostel_id: hostelId },
+      orderBy: { created_at: 'desc' },
+      skip: (page - 1) * limit,
+      take: limit,
+      include: { resources: true },
+    }),
+  ]);
+
+  return {
+    success: true,
+    meta: { page, limit, total },
+    MyRooms: rooms,
+  };
+}
 
 }
