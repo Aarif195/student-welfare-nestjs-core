@@ -119,38 +119,28 @@ async deleteHostel(id: number, owner_id: number) {
 
 // createRoom
 async createRoom(hostelId: number, owner_id: number, dto: CreateRoomDto) {
-  try {
-    // 1. Verify ownership
-    const hostel = await this.prisma.hostel.findUnique({ where: { id: hostelId } });
-    if (!hostel || hostel.owner_id !== owner_id) {
-        throw new ForbiddenException('Unauthorized access');
-    }
+  const { resources, ...roomData } = dto;
 
-    const { resources, ...roomData } = dto;
-
-    // 2. Create room with nested resources
-    const room = await this.prisma.room.create({
-      data: {
-        ...roomData,
-        hostel_id: hostelId,
-        resources: {
-          create: resources,
-        },
-      },
-      include: { resources: true },
-    });
-
-    return {
-      success: true,
-      message: 'Room created successfully',
-      data: room,
-    };
-  } catch (error) {
-    if (error.code === 'P2002') {
-        throw new BadRequestException('Room number already exists in this hostel');
-    }
-    throw new BadRequestException('Error creating room. Please check your data.');
+  //  Verify ownership
+  const hostel = await this.prisma.hostel.findUnique({ where: { id: hostelId } });
+  if (!hostel || hostel.owner_id !== owner_id) {
+    throw new ForbiddenException('Unauthorized access');
   }
+
+  //  Create room with mapped resources
+  return await this.prisma.room.create({
+    data: {
+      ...roomData,
+      hostel_id: hostelId,
+      resources: resources ? {
+        create: resources.map(r => ({
+          url: r.file_url,
+          type: r.file_type
+        }))
+      } : undefined,
+    },
+    include: { resources: true },
+  });
 }
 
 
