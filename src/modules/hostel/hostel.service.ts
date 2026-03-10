@@ -170,4 +170,25 @@ async getRoomsByHostel(hostelId: number, owner_id: number, page: number, limit: 
   };
 }
 
+// getSingleRoom
+async getSingleRoom(hostelId: number, roomId: number, owner_id: number) {
+  //  Verify ownership
+  const hostel = await this.prisma.hostel.findUnique({ where: { id: hostelId } });
+  if (!hostel || hostel.owner_id !== owner_id) {
+    throw new ForbiddenException('Unauthorized access');
+  }
+
+  //  Fetch room
+  const room = await this.prisma.room.findFirst({
+    where: { id: roomId, hostel_id: hostelId },
+    include: { resources: true },
+  });
+
+  if (!room) {
+    throw new NotFoundException('Room not found in this hostel');
+  }
+
+  return { success: true, data: room };
+}
+
 }

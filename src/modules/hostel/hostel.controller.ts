@@ -115,4 +115,17 @@ getRoomsByHostel(
     return this.hostelService.getRoomsByHostel(hostelId, user.id, page, limit);
 }
 
+// getSingleRoom
+@Get(':hostelId/rooms/:roomId')
+@Roles(Role.hostelOwner)
+@ApiOperation({ summary: 'Get single room details' })
+@ApiOkResponse({ type: MessageResponseDto })
+getSingleRoom(
+    @Param('hostelId', ParseIntPipe) hostelId: number,
+    @Param('roomId', ParseIntPipe) roomId: number,
+    @GetUser() user: { id: number },
+) {
+    return this.hostelService.getSingleRoom(hostelId, roomId, user.id);
+}
+
 }
