@@ -10,6 +10,7 @@ import { HostelService } from './hostel.service';
 import { UpdateHostelDto } from './dto/update-hostel.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
+import { UpdateRoomDto } from './dto/update-room.dto';
 
 @Controller('hostels')
 @ApiTags('Hostels')
@@ -103,6 +104,7 @@ createRoom(
 @Roles(Role.hostelOwner)
 @ApiOperation({ summary: 'Get all rooms in a hostel' })
 @ApiOkResponse({ type: MessageResponseDto })
+@ApiBadRequestResponse({ type: ErrorResponseDto })
 @ApiQuery({ name: 'page', required: false, type: Number })
 @ApiQuery({ name: 'limit', required: false, type: Number })
 getRoomsByHostel(
@@ -120,12 +122,28 @@ getRoomsByHostel(
 @Roles(Role.hostelOwner)
 @ApiOperation({ summary: 'Get single room details' })
 @ApiOkResponse({ type: MessageResponseDto })
+@ApiBadRequestResponse({ type: ErrorResponseDto })
 getSingleRoom(
     @Param('hostelId', ParseIntPipe) hostelId: number,
     @Param('roomId', ParseIntPipe) roomId: number,
     @GetUser() user: { id: number },
 ) {
     return this.hostelService.getSingleRoom(hostelId, roomId, user.id);
+}
+
+// updateRoom
+@Patch(':hostelId/rooms/:roomId')
+@Roles(Role.hostelOwner)
+@ApiOperation({ summary: 'Update room details' })
+@ApiOkResponse({ type: MessageResponseDto })
+@ApiBadRequestResponse({ type: ErrorResponseDto })
+updateRoom(
+    @Param('hostelId', ParseIntPipe) hostelId: number,
+    @Param('roomId', ParseIntPipe) roomId: number,
+    @GetUser() user: { id: number },
+    @Body() updateRoomDto: UpdateRoomDto,
+) {
+    return this.hostelService.updateRoom(hostelId, roomId, user.id, updateRoomDto);
 }
 
 }

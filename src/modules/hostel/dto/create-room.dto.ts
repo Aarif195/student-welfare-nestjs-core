@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsInt, IsNumber, Min, IsPositive, IsOptional, IsArray, ValidateNested } from 'class-validator';
+import { IsString, IsNotEmpty, IsInt, IsNumber, Min, IsPositive, IsOptional, IsArray, ValidateNested, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateRoomResourceDto } from './create-room-resource.dto';
@@ -20,6 +20,11 @@ export class CreateRoomDto {
   @IsPositive()
   @Type(() => Number)
   readonly price: number;
+
+  @ApiProperty({ example: true, required: false })
+  @IsBoolean()
+  @IsOptional()
+  readonly availability?: boolean;
 
   @ApiProperty({ type: [CreateRoomResourceDto], required: false })
   @IsOptional()

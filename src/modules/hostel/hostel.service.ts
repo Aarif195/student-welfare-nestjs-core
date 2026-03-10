@@ -3,6 +3,7 @@ import { BadRequestException, ForbiddenException, Injectable, NotFoundException 
 import { CreateHostelDto } from './dto/create-hostel.dto';
 import { UpdateHostelDto } from './dto/update-hostel.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
+import { UpdateRoomDto } from './dto/update-room.dto';
 
 @Injectable()
 export class HostelService {
@@ -190,5 +191,27 @@ async getSingleRoom(hostelId: number, roomId: number, owner_id: number) {
 
   return { success: true, data: room };
 }
+
+// updateRoom
+async updateRoom(hostelId: number, roomId: number, owner_id: number, data: UpdateRoomDto) {
+  const hostel = await this.prisma.hostel.findUnique({ where: { id: hostelId } });
+  if (!hostel || hostel.owner_id !== owner_id) {
+    throw new ForbiddenException('Unauthorized access');
+  }
+
+  const room = await this.prisma.room.findFirst({
+    where: { id: roomId, hostel_id: hostelId },
+  });
+
+  if (!room) {
+    throw new NotFoundException('Room not found in this hostel');
+  }
+
+  return await this.prisma.room.update({
+    where: { id: roomId },
+    data,
+  });
+}
+
 
 }
