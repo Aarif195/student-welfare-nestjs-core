@@ -146,4 +146,18 @@ updateRoom(
     return this.hostelService.updateRoom(hostelId, roomId, user.id, updateRoomDto);
 }
 
+// deleteRoom
+@Delete(':hostelId/rooms/:roomId')
+@Roles(Role.hostelOwner)
+@ApiOperation({ summary: 'Delete a room' })
+@ApiNoContentResponse({ description: 'Room deleted' })
+@ApiBadRequestResponse({ type: ErrorResponseDto })
+deleteRoom(
+    @Param('hostelId', ParseIntPipe) hostelId: number,
+    @Param('roomId', ParseIntPipe) roomId: number,
+    @GetUser() user: { id: number },
+) {
+    return this.hostelService.deleteRoom(hostelId, roomId, user.id);
+}
+
 }

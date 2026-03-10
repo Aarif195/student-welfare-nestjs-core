@@ -213,5 +213,26 @@ async updateRoom(hostelId: number, roomId: number, owner_id: number, data: Updat
   });
 }
 
+// deleteRoom
+async deleteRoom(hostelId: number, roomId: number, owner_id: number) {
+  //  Verify ownership
+  const hostel = await this.prisma.hostel.findUnique({ where: { id: hostelId } });
+  if (!hostel || hostel.owner_id !== owner_id) {
+    throw new ForbiddenException('Unauthorized access');
+  }
+
+  //  Verify room in hostel
+  const room = await this.prisma.room.findFirst({
+    where: { id: roomId, hostel_id: hostelId },
+  });
+  if (!room) {
+    throw new NotFoundException('Room not found in this hostel');
+  }
+
+  //  Delete room
+  await this.prisma.room.delete({ where: { id: roomId } });
+  return { success: true, message: 'Room deleted successfully' };
+}
+
 
 }
