@@ -28,7 +28,7 @@ model User {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  hostels Hostel[] // This links to the owner_id in the Hostel model
+  hostels  Hostel[] // This links to the owner_id in the Hostel model
   bookings Booking[]
   payments Payment[]
 }
@@ -104,6 +104,8 @@ model Room {
   created_at   DateTime       @default(now())
   updated_at   DateTime       @updatedAt
 
+  bookings Booking[]
+
   @@unique([hostel_id, room_number])
 }
 
@@ -115,36 +117,35 @@ model RoomResource {
   room    Room         @relation(fields: [room_id], references: [id], onDelete: Cascade)
 }
 
-
 model Booking {
-  id              Int      @id @default(autoincrement())
-  student_id      Int
-  student         User     @relation(fields: [student_id], references: [id], onDelete: Cascade)
-  room_id         Int
-  room            Room     @relation(fields: [room_id], references: [id], onDelete: Cascade)
-  booking_status  String   @default("pending")
-  booked_at       DateTime @default(now())
-  start_date      DateTime @db.Date
-  end_date        DateTime @db.Date
-  price           Decimal  @db.Decimal(10, 2)
+  id               Int       @id @default(autoincrement())
+  student_id       Int
+  student          User      @relation(fields: [student_id], references: [id], onDelete: Cascade)
+  room_id          Int
+  room             Room      @relation(fields: [room_id], references: [id], onDelete: Cascade)
+  booking_status   String    @default("pending")
+  booked_at        DateTime  @default(now())
+  start_date       DateTime  @db.Date
+  end_date         DateTime  @db.Date
+  price            Decimal   @db.Decimal(10, 2)
   rejection_reason String?
-  payments        Payment[]
+  payments         Payment[]
 
   @@map("bookings")
 }
 
 model Payment {
-  id              Int      @id @default(autoincrement())
-  booking_id      Int
-  booking         Booking  @relation(fields: [booking_id], references: [id], onDelete: Cascade)
-  student_id      Int
-  student         User     @relation(fields: [student_id], references: [id], onDelete: Cascade)
-  amount          Decimal  @db.Decimal(10, 2)
-  payment_status  String   @default("pending")
-  payment_method  String?
-  reference       String?  @unique
-  paid_at         DateTime?
-  refund_status   String?  @default("none")
+  id             Int       @id @default(autoincrement())
+  booking_id     Int
+  booking        Booking   @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+  student_id     Int
+  student        User      @relation(fields: [student_id], references: [id], onDelete: Cascade)
+  amount         Decimal   @db.Decimal(10, 2)
+  payment_status String    @default("pending")
+  payment_method String?
+  reference      String?   @unique
+  paid_at        DateTime?
+  refund_status  String?   @default("none")
 
   @@map("payments")
 }
