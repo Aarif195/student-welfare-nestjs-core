@@ -69,4 +69,27 @@ export class StudentController {
         }
     }
 
+    // getAvailableHostels
+    @Get('hostels')
+    @Roles(Role.student)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Get all available hostels' })
+    @ApiOkResponse({ description: 'Hostels retrieved successfully' })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
+    async getAvailableHostels(@Query() pagination: PaginationDto) {
+        const page = Number(pagination.page) || 1;
+        const limit = Number(pagination.limit) || 10;
+        const { total, hostels } = await this.studentService.getAvailableHostels(page, limit);
+
+        return {
+            success: true,
+            meta: { page, limit, total },
+            AvailableHostels: hostels,
+        };
+    }
+
+    
+
 }

@@ -106,4 +106,21 @@ async cancelBooking(bookingId: number, studentId: number) {
   });
 }
 
+// getAvailableHostels
+async getAvailableHostels(page: number, limit: number) {
+  const skip = (page - 1) * limit;
+
+  const [total, hostels] = await this.prisma.$transaction([
+    this.prisma.hostel.count({ where: { status: 'APPROVED' } }),
+    this.prisma.hostel.findMany({
+      where: { status: 'APPROVED' },
+      orderBy: { created_at: 'desc' },
+      skip,
+      take: limit,
+    }),
+  ]);
+
+  return { total, hostels };
+}
+
 }
