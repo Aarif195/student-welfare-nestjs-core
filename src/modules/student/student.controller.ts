@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 
 import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiQuery } from '@nestjs/swagger';
 
@@ -37,7 +37,7 @@ export class StudentController {
     @Roles(Role.student)
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Get my bookings' })
-    @ApiOkResponse({ description: 'Bookings retrieved successfully' }) 
+    @ApiOkResponse({ description: 'Bookings retrieved successfully' })
     @ApiBadRequestResponse({ type: ErrorResponseDto })
     @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
@@ -50,5 +50,23 @@ export class StudentController {
         return this.studentService.getMyBookings(user.id, page, limit);
     }
 
+    // cancelBooking
+    @Patch('bookings/:bookingId/cancel')
+    @Roles(Role.student)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Cancel a pending booking' })
+    @ApiOkResponse({ description: 'Booking cancelled successfully', type: MessageResponseDto })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    async cancelBooking(
+        @GetUser() user: { id: number },
+        @Param('bookingId', ParseIntPipe) bookingId: number,
+    ) {
+        try {
+            const data = await this.studentService.cancelBooking(bookingId, user.id);
+            return { success: true, message: 'Booking cancelled successfully', data };
+        } catch (error) {
+            throw new BadRequestException(error.message);
+        }
+    }
 
 }

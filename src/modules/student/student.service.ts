@@ -76,6 +76,34 @@ export class StudentService {
     });
   }
 
+  // cancelBooking
+async cancelBooking(bookingId: number, studentId: number) {
+  return await this.prisma.$transaction(async (tx) => {
+    //  Find the booking
+    const booking = await tx.booking.findFirst({
+      where: { id: bookingId, student_id: studentId },
+    });
 
-  
+    if (!booking) throw new Error("Booking not found");
+    if (booking.booking_status !== "pending") {
+      throw new Error("Only pending bookings can be cancelled. Please contact admin.");
+    }
+
+    //  Update Booking
+    const updatedBooking = await tx.booking.update({
+      where: { id: bookingId },
+      data: { booking_status: 'cancelled' },
+      select: { id: true, booking_status: true },
+    });
+
+    //  Update Payment
+    const updatedPayment = await tx.payment.updateMany({
+      where: { booking_id: bookingId },
+      data: { refund_status: 'completed' },
+    });
+
+    return { ...updatedBooking, refund_status: 'completed' };
+  });
+}
+
 }
