@@ -90,6 +90,33 @@ export class StudentController {
         };
     }
 
-    
+// getAvailableRooms
+    @Get('rooms')
+    @Roles(Role.student)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Get available rooms with filters' })
+    @ApiOkResponse({ description: 'Rooms retrieved successfully' })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    @ApiQuery({ name: 'hostel_id', required: false, type: Number })
+    @ApiQuery({ name: 'price', required: false, type: Number })
+    @ApiQuery({ name: 'capacity', required: false, type: Number })
+    @ApiQuery({ name: 'sort', required: false, enum: ['price_asc', 'price_desc'] })
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
+    async getAvailableRooms(@Query() query: any) {
+        const { hostel_id, price, capacity, sort, page, limit } = query;
+        const data = await this.studentService.getAvailableRooms(
+            { hostel_id, price, capacity },
+            Number(page) || 1,
+            Number(limit) || 10,
+            sort
+        );
+
+        return {
+            success: true,
+            meta: { page: Number(page) || 1, limit: Number(limit) || 10, total: data.total },
+            AvailableRooms: data.rooms,
+        };
+    }
 
 }

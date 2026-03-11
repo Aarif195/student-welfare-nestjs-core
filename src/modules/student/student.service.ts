@@ -77,50 +77,88 @@ export class StudentService {
   }
 
   // cancelBooking
-async cancelBooking(bookingId: number, studentId: number) {
-  return await this.prisma.$transaction(async (tx) => {
-    //  Find the booking
-    const booking = await tx.booking.findFirst({
-      where: { id: bookingId, student_id: studentId },
+  async cancelBooking(bookingId: number, studentId: number) {
+    return await this.prisma.$transaction(async (tx) => {
+      //  Find the booking
+      const booking = await tx.booking.findFirst({
+        where: { id: bookingId, student_id: studentId },
+      });
+
+      if (!booking) throw new Error("Booking not found");
+      if (booking.booking_status !== "pending") {
+        throw new Error("Only pending bookings can be cancelled. Please contact admin.");
+      }
+
+      //  Update Booking
+      const updatedBooking = await tx.booking.update({
+        where: { id: bookingId },
+        data: { booking_status: 'cancelled' },
+        select: { id: true, booking_status: true },
+      });
+
+      //  Update Payment
+      const updatedPayment = await tx.payment.updateMany({
+        where: { booking_id: bookingId },
+        data: { refund_status: 'completed' },
+      });
+
+      return { ...updatedBooking, refund_status: 'completed' };
     });
+  }
 
-    if (!booking) throw new Error("Booking not found");
-    if (booking.booking_status !== "pending") {
-      throw new Error("Only pending bookings can be cancelled. Please contact admin.");
-    }
+  // getAvailableHostels
+  async getAvailableHostels(page: number, limit: number) {
+    const skip = (page - 1) * limit;
 
-    //  Update Booking
-    const updatedBooking = await tx.booking.update({
-      where: { id: bookingId },
-      data: { booking_status: 'cancelled' },
-      select: { id: true, booking_status: true },
-    });
+    const [total, hostels] = await this.prisma.$transaction([
+      this.prisma.hostel.count({ where: { status: 'APPROVED' } }),
+      this.prisma.hostel.findMany({
+        where: { status: 'APPROVED' },
+        orderBy: { created_at: 'desc' },
+        skip,
+        take: limit,
+      }),
+    ]);
 
-    //  Update Payment
-    const updatedPayment = await tx.payment.updateMany({
-      where: { booking_id: bookingId },
-      data: { refund_status: 'completed' },
-    });
+    return { total, hostels };
+  }
 
-    return { ...updatedBooking, refund_status: 'completed' };
-  });
-}
+  // getAvailableRooms
+  async getAvailableRooms(filters: any, page: number, limit: number, sort?: string) {
+    const { hostel_id, price, capacity } = filters;
+    const skip = (page - 1) * limit;
 
-// getAvailableHostels
-async getAvailableHostels(page: number, limit: number) {
-  const skip = (page - 1) * limit;
+    const where: any = {
+      availability: true,
+      hostel: { status: 'APPROVED' },
+      bookings: {
+        none: {
+          booking_status: { in: ['pending', 'approved'] }
+        }
+      },
+      ...(hostel_id && { hostel_id: Number(hostel_id) }),
+      ...(price && { price: { lte: Number(price) } }),
+      ...(capacity && { capacity: Number(capacity) }),
+    };
 
-  const [total, hostels] = await this.prisma.$transaction([
-    this.prisma.hostel.count({ where: { status: 'APPROVED' } }),
-    this.prisma.hostel.findMany({
-      where: { status: 'APPROVED' },
-      orderBy: { created_at: 'desc' },
-      skip,
-      take: limit,
-    }),
-  ]);
+    const orderBy: any = sort === 'price_asc'
+      ? { price: 'asc' }
+      : sort === 'price_desc'
+        ? { price: 'desc' }
+        : { created_at: 'desc' }
 
-  return { total, hostels };
-}
+    const [total, rooms] = await this.prisma.$transaction([
+      this.prisma.room.count({ where }),
+      this.prisma.room.findMany({
+        where,
+        orderBy,
+        skip,
+        take: limit,
+        include: { hostel: true }
+      }),
+    ]);
+
+    return { total, rooms };
+  }
 
 }
