@@ -1,13 +1,16 @@
 import { Controller, Post, Body, Patch, Param, ParseIntPipe, Get, Query, Delete } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiCreatedResponse, ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiQuery, ApiNoContentResponse } from '@nestjs/swagger';
-import { CreateHostelDto } from './dto/create-hostel.dto';
+
 import { Role } from '@prisma/client';
-import { MessageResponseDto } from '@/common/dto/message-response.dto';
-import { ErrorResponseDto } from '@/common/dto/error-response.dto';
 import { GetUser } from '@/common/decorators/get-user.decorator';
 import { Roles } from '@/common/decorators/roles.decorator';
+
 import { HostelService } from './hostel.service';
+
 import { UpdateHostelDto } from './dto/update-hostel.dto';
+import { MessageResponseDto } from '@/common/dto/message-response.dto';
+import { ErrorResponseDto } from '@/common/dto/error-response.dto';
+import { CreateHostelDto } from './dto/create-hostel.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';

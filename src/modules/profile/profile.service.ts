@@ -7,29 +7,29 @@ export class ProfileService {
   constructor(private prisma: DatabaseService) { }
 
   //   getProfile
- async getProfile(userId: number, role: string) {
+  async getProfile(userId: number, role: string) {
 
-const user = await this.prisma.user.findUnique({
-    where: { id: userId },
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      email: true,
-      phone: true,
-      address: true,
-      image: true,
-      role: true,
-      createdAt: true,
-    },
-  });
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        address: true,
+        image: true,
+        role: true,
+        createdAt: true,
+      },
+    });
 
-console.log(user);
+    // console.log(user);
 
-  if (!user) throw new NotFoundException('User profile not found');
-  
-  return user;
-}
+    if (!user) throw new NotFoundException('User profile not found');
+
+    return user;
+  }
 
   //   updateProfile
   async updateProfile(userId: number, dto: UpdateProfileDto) {
