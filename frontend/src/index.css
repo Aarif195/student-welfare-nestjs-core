@@ -1,4 +1,4 @@
-:root {
+/* :root {
   --text: #6b6375;
   --text-h: #08060d;
   --bg: #fff;
@@ -108,4 +108,24 @@ code {
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
+} */
+
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
+@import "tailwindcss";
+
+@theme {
+  /* This creates our professional Slate/Blue theme */
+  --color-primary-50: #f8fafc;
+  --color-primary-100: #f1f5f9;
+  --color-primary-500: #334155;
+  --color-primary-600: #1e293b;
+  --color-primary-700: #0f172a;
+  
+  --color-brand: #2563eb;
+
+  /* Strict rule: No gradients */
+  --background-image-none: none;
 }
