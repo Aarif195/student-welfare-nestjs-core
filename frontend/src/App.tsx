@@ -1,14 +1,20 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+
 function App() {
   return (
-    <div className="min-h-screen bg-primary-100 p-10">
-      <h1 className="text-3xl font-bold text-primary-700">
-        Student Welfare Platform
-      </h1>
-      <button className="mt-4 bg-brand text-white px-4 py-2 rounded">
-        Professional Button (No Purple)
-      </button>
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        {/* Placeholder for Register Page */}
+        <Route path="/register" element={<div className="p-10 text-primary-700">Registration Page Coming Soon</div>} />
+        
+        {/* Placeholder for Login Page */}
+        <Route path="/login" element={<div className="p-10 text-primary-700">Login Page Coming Soon</div>} />
+
+        {/* Redirect root to Register */}
+        <Route path="/" element={<Navigate to="/register" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
