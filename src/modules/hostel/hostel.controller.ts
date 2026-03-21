@@ -164,5 +164,21 @@ deleteRoom(
 }
 
 
+// getOwnerBookings
+@Get('bookings')
+@Roles(Role.hostelOwner)
+@ApiOperation({ summary: 'Get all bookings for all hostels owned by the user' })
+@ApiOkResponse({ type: MessageResponseDto })
+@ApiBadRequestResponse({ type: ErrorResponseDto })
+@ApiQuery({ name: 'page', required: false, type: Number })
+@ApiQuery({ name: 'limit', required: false, type: Number })
+getOwnerBookings(
+    @GetUser() user: { id: number },
+    @Query() pagination: PaginationDto,
+) {
+    const page = pagination.page || 1;
+    const limit = pagination.limit || 10;
+    return this.hostelService.getOwnerBookings(user.id, page, limit);
+}
 
 }

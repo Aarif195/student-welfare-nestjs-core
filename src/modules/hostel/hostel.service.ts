@@ -234,6 +234,30 @@ async deleteRoom(hostelId: number, roomId: number, owner_id: number) {
   return { success: true, message: 'Room deleted successfully' };
 }
 
+// getOwnerBookings
+async getOwnerBookings(ownerId: number, page: number, limit: number) {
+  const skip = (page - 1) * limit;
+
+  const [total, bookings] = await this.prisma.$transaction([
+    this.prisma.booking.count({
+      where: { room: { hostel: { owner_id: ownerId } } },
+    }),
+    this.prisma.booking.findMany({
+      where: { room: { hostel: { owner_id: ownerId } } },
+      skip,
+      take: limit,
+      orderBy: { booked_at: 'desc' },
+      select: {
+        booking_status: true,
+        start_date: true,
+        student: { select: { firstName: true, lastName: true, phone: true } },
+        room: { select: { room_number: true } },
+      },
+    }),
+  ]);
+
+  return { success: true, meta: { page, limit, total }, data: bookings };
+}
 
 
 }
