@@ -24,13 +24,6 @@ import type {
   UseQueryResult
 } from '@tanstack/react-query';
 
-import * as axios from 'axios';
-import type {
-  AxiosError,
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
 import type {
   AuthResponseDto,
   ErrorResponseDto,
@@ -44,6 +37,7 @@ import type {
   VerifyOtpDto
 } from '../../model';
 
+import { customInstance } from '../../axios-instance';
 
 
 
@@ -52,28 +46,31 @@ import type {
  * @summary Register a new user
  */
 export const authControllerRegister = (
-    registerDto: RegisterDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<AuthResponseDto>> => {
-    
-    
-    return axios.default.post(
-      `/api/v1/auth/register`,
-      registerDto,options
-    );
-  }
+    registerDto: RegisterDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<AuthResponseDto>(
+      {url: `/api/v1/auth/register`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: registerDto, signal
+    },
+      );
+    }
+  
 
 
-
-export const getAuthControllerRegisterMutationOptions = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRegister>>, TError,{data: RegisterDto}, TContext>, axios?: AxiosRequestConfig}
+export const getAuthControllerRegisterMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRegister>>, TError,{data: RegisterDto}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof authControllerRegister>>, TError,{data: RegisterDto}, TContext> => {
 
 const mutationKey = ['authControllerRegister'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }};
 
       
 
@@ -81,7 +78,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerRegister>>, {data: RegisterDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  authControllerRegister(data,axiosOptions)
+          return  authControllerRegister(data,)
         }
 
         
@@ -91,13 +88,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type AuthControllerRegisterMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerRegister>>>
     export type AuthControllerRegisterMutationBody = RegisterDto
-    export type AuthControllerRegisterMutationError = AxiosError<ErrorResponseDto>
+    export type AuthControllerRegisterMutationError = ErrorResponseDto
 
     /**
  * @summary Register a new user
  */
-export const useAuthControllerRegister = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRegister>>, TError,{data: RegisterDto}, TContext>, axios?: AxiosRequestConfig}
+export const useAuthControllerRegister = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerRegister>>, TError,{data: RegisterDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authControllerRegister>>,
         TError,
@@ -113,28 +110,31 @@ export const useAuthControllerRegister = <TError = AxiosError<ErrorResponseDto>,
  * @summary Verify email with OTP
  */
 export const authControllerVerifyOTP = (
-    verifyOtpDto: VerifyOtpDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<MessageResponseDto>> => {
-    
-    
-    return axios.default.post(
-      `/api/v1/auth/verify-otp`,
-      verifyOtpDto,options
-    );
-  }
+    verifyOtpDto: VerifyOtpDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/auth/verify-otp`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: verifyOtpDto, signal
+    },
+      );
+    }
+  
 
 
-
-export const getAuthControllerVerifyOTPMutationOptions = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyOTP>>, TError,{data: VerifyOtpDto}, TContext>, axios?: AxiosRequestConfig}
+export const getAuthControllerVerifyOTPMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyOTP>>, TError,{data: VerifyOtpDto}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyOTP>>, TError,{data: VerifyOtpDto}, TContext> => {
 
 const mutationKey = ['authControllerVerifyOTP'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }};
 
       
 
@@ -142,7 +142,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerVerifyOTP>>, {data: VerifyOtpDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  authControllerVerifyOTP(data,axiosOptions)
+          return  authControllerVerifyOTP(data,)
         }
 
         
@@ -152,13 +152,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type AuthControllerVerifyOTPMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerVerifyOTP>>>
     export type AuthControllerVerifyOTPMutationBody = VerifyOtpDto
-    export type AuthControllerVerifyOTPMutationError = AxiosError<ErrorResponseDto>
+    export type AuthControllerVerifyOTPMutationError = ErrorResponseDto
 
     /**
  * @summary Verify email with OTP
  */
-export const useAuthControllerVerifyOTP = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyOTP>>, TError,{data: VerifyOtpDto}, TContext>, axios?: AxiosRequestConfig}
+export const useAuthControllerVerifyOTP = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerVerifyOTP>>, TError,{data: VerifyOtpDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authControllerVerifyOTP>>,
         TError,
@@ -174,28 +174,31 @@ export const useAuthControllerVerifyOTP = <TError = AxiosError<ErrorResponseDto>
  * @summary Resend verification OTP
  */
 export const authControllerResendOTP = (
-    resendOtpDto: ResendOtpDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<MessageResponseDto>> => {
-    
-    
-    return axios.default.post(
-      `/api/v1/auth/resend-otp`,
-      resendOtpDto,options
-    );
-  }
+    resendOtpDto: ResendOtpDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/auth/resend-otp`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: resendOtpDto, signal
+    },
+      );
+    }
+  
 
 
-
-export const getAuthControllerResendOTPMutationOptions = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerResendOTP>>, TError,{data: ResendOtpDto}, TContext>, axios?: AxiosRequestConfig}
+export const getAuthControllerResendOTPMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerResendOTP>>, TError,{data: ResendOtpDto}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof authControllerResendOTP>>, TError,{data: ResendOtpDto}, TContext> => {
 
 const mutationKey = ['authControllerResendOTP'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }};
 
       
 
@@ -203,7 +206,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerResendOTP>>, {data: ResendOtpDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  authControllerResendOTP(data,axiosOptions)
+          return  authControllerResendOTP(data,)
         }
 
         
@@ -213,13 +216,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type AuthControllerResendOTPMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerResendOTP>>>
     export type AuthControllerResendOTPMutationBody = ResendOtpDto
-    export type AuthControllerResendOTPMutationError = AxiosError<ErrorResponseDto>
+    export type AuthControllerResendOTPMutationError = ErrorResponseDto
 
     /**
  * @summary Resend verification OTP
  */
-export const useAuthControllerResendOTP = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerResendOTP>>, TError,{data: ResendOtpDto}, TContext>, axios?: AxiosRequestConfig}
+export const useAuthControllerResendOTP = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerResendOTP>>, TError,{data: ResendOtpDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authControllerResendOTP>>,
         TError,
@@ -235,28 +238,31 @@ export const useAuthControllerResendOTP = <TError = AxiosError<ErrorResponseDto>
  * @summary Request password reset OTP
  */
 export const authControllerForgotPassword = (
-    forgotPasswordDto: ForgotPasswordDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<MessageResponseDto>> => {
-    
-    
-    return axios.default.post(
-      `/api/v1/auth/forgot-password`,
-      forgotPasswordDto,options
-    );
-  }
+    forgotPasswordDto: ForgotPasswordDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/auth/forgot-password`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: forgotPasswordDto, signal
+    },
+      );
+    }
+  
 
 
-
-export const getAuthControllerForgotPasswordMutationOptions = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerForgotPassword>>, TError,{data: ForgotPasswordDto}, TContext>, axios?: AxiosRequestConfig}
+export const getAuthControllerForgotPasswordMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerForgotPassword>>, TError,{data: ForgotPasswordDto}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof authControllerForgotPassword>>, TError,{data: ForgotPasswordDto}, TContext> => {
 
 const mutationKey = ['authControllerForgotPassword'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }};
 
       
 
@@ -264,7 +270,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerForgotPassword>>, {data: ForgotPasswordDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  authControllerForgotPassword(data,axiosOptions)
+          return  authControllerForgotPassword(data,)
         }
 
         
@@ -274,13 +280,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type AuthControllerForgotPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerForgotPassword>>>
     export type AuthControllerForgotPasswordMutationBody = ForgotPasswordDto
-    export type AuthControllerForgotPasswordMutationError = AxiosError<ErrorResponseDto>
+    export type AuthControllerForgotPasswordMutationError = ErrorResponseDto
 
     /**
  * @summary Request password reset OTP
  */
-export const useAuthControllerForgotPassword = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerForgotPassword>>, TError,{data: ForgotPasswordDto}, TContext>, axios?: AxiosRequestConfig}
+export const useAuthControllerForgotPassword = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerForgotPassword>>, TError,{data: ForgotPasswordDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authControllerForgotPassword>>,
         TError,
@@ -296,28 +302,31 @@ export const useAuthControllerForgotPassword = <TError = AxiosError<ErrorRespons
  * @summary Reset password using OTP
  */
 export const authControllerResetPassword = (
-    resetPasswordDto: ResetPasswordDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<MessageResponseDto>> => {
-    
-    
-    return axios.default.post(
-      `/api/v1/auth/reset-password`,
-      resetPasswordDto,options
-    );
-  }
+    resetPasswordDto: ResetPasswordDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/auth/reset-password`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: resetPasswordDto, signal
+    },
+      );
+    }
+  
 
 
-
-export const getAuthControllerResetPasswordMutationOptions = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerResetPassword>>, TError,{data: ResetPasswordDto}, TContext>, axios?: AxiosRequestConfig}
+export const getAuthControllerResetPasswordMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerResetPassword>>, TError,{data: ResetPasswordDto}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof authControllerResetPassword>>, TError,{data: ResetPasswordDto}, TContext> => {
 
 const mutationKey = ['authControllerResetPassword'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }};
 
       
 
@@ -325,7 +334,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerResetPassword>>, {data: ResetPasswordDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  authControllerResetPassword(data,axiosOptions)
+          return  authControllerResetPassword(data,)
         }
 
         
@@ -335,13 +344,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type AuthControllerResetPasswordMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerResetPassword>>>
     export type AuthControllerResetPasswordMutationBody = ResetPasswordDto
-    export type AuthControllerResetPasswordMutationError = AxiosError<ErrorResponseDto>
+    export type AuthControllerResetPasswordMutationError = ErrorResponseDto
 
     /**
  * @summary Reset password using OTP
  */
-export const useAuthControllerResetPassword = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerResetPassword>>, TError,{data: ResetPasswordDto}, TContext>, axios?: AxiosRequestConfig}
+export const useAuthControllerResetPassword = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerResetPassword>>, TError,{data: ResetPasswordDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authControllerResetPassword>>,
         TError,
@@ -357,28 +366,31 @@ export const useAuthControllerResetPassword = <TError = AxiosError<ErrorResponse
  * @summary User login
  */
 export const authControllerLogin = (
-    loginDto: LoginDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<AuthResponseDto>> => {
-    
-    
-    return axios.default.post(
-      `/api/v1/auth/login`,
-      loginDto,options
-    );
-  }
+    loginDto: LoginDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<AuthResponseDto>(
+      {url: `/api/v1/auth/login`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: loginDto, signal
+    },
+      );
+    }
+  
 
 
-
-export const getAuthControllerLoginMutationOptions = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogin>>, TError,{data: LoginDto}, TContext>, axios?: AxiosRequestConfig}
+export const getAuthControllerLoginMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogin>>, TError,{data: LoginDto}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof authControllerLogin>>, TError,{data: LoginDto}, TContext> => {
 
 const mutationKey = ['authControllerLogin'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }};
 
       
 
@@ -386,7 +398,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerLogin>>, {data: LoginDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  authControllerLogin(data,axiosOptions)
+          return  authControllerLogin(data,)
         }
 
         
@@ -396,13 +408,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type AuthControllerLoginMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerLogin>>>
     export type AuthControllerLoginMutationBody = LoginDto
-    export type AuthControllerLoginMutationError = AxiosError<ErrorResponseDto>
+    export type AuthControllerLoginMutationError = ErrorResponseDto
 
     /**
  * @summary User login
  */
-export const useAuthControllerLogin = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogin>>, TError,{data: LoginDto}, TContext>, axios?: AxiosRequestConfig}
+export const useAuthControllerLogin = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogin>>, TError,{data: LoginDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authControllerLogin>>,
         TError,
@@ -418,28 +430,31 @@ export const useAuthControllerLogin = <TError = AxiosError<ErrorResponseDto>,
  * @summary Google OAuth login/register
  */
 export const authControllerGoogleLogin = (
-    googleLoginDto: GoogleLoginDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<AuthResponseDto>> => {
-    
-    
-    return axios.default.post(
-      `/api/v1/auth/google`,
-      googleLoginDto,options
-    );
-  }
+    googleLoginDto: GoogleLoginDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<AuthResponseDto>(
+      {url: `/api/v1/auth/google`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: googleLoginDto, signal
+    },
+      );
+    }
+  
 
 
-
-export const getAuthControllerGoogleLoginMutationOptions = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError,{data: GoogleLoginDto}, TContext>, axios?: AxiosRequestConfig}
+export const getAuthControllerGoogleLoginMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError,{data: GoogleLoginDto}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError,{data: GoogleLoginDto}, TContext> => {
 
 const mutationKey = ['authControllerGoogleLogin'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }};
 
       
 
@@ -447,7 +462,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerGoogleLogin>>, {data: GoogleLoginDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  authControllerGoogleLogin(data,axiosOptions)
+          return  authControllerGoogleLogin(data,)
         }
 
         
@@ -457,13 +472,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type AuthControllerGoogleLoginMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerGoogleLogin>>>
     export type AuthControllerGoogleLoginMutationBody = GoogleLoginDto
-    export type AuthControllerGoogleLoginMutationError = AxiosError<ErrorResponseDto>
+    export type AuthControllerGoogleLoginMutationError = ErrorResponseDto
 
     /**
  * @summary Google OAuth login/register
  */
-export const useAuthControllerGoogleLogin = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError,{data: GoogleLoginDto}, TContext>, axios?: AxiosRequestConfig}
+export const useAuthControllerGoogleLogin = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerGoogleLogin>>, TError,{data: GoogleLoginDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof authControllerGoogleLogin>>,
         TError,
@@ -479,15 +494,17 @@ export const useAuthControllerGoogleLogin = <TError = AxiosError<ErrorResponseDt
  * @summary Get profile (Protected Route Test)
  */
 export const authControllerGetProfile = (
-     options?: AxiosRequestConfig
- ): Promise<AxiosResponse<unknown>> => {
     
-    
-    return axios.default.get(
-      `/api/v1/auth/profile`,options
-    );
-  }
-
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<unknown>(
+      {url: `/api/v1/auth/profile`, method: 'GET', signal
+    },
+      );
+    }
+  
 
 
 
@@ -498,16 +515,16 @@ export const getAuthControllerGetProfileQueryKey = () => {
     }
 
     
-export const getAuthControllerGetProfileQueryOptions = <TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = AxiosError<ErrorResponseDto | ErrorResponseDto>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getAuthControllerGetProfileQueryOptions = <TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = ErrorResponseDto | ErrorResponseDto>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData>>, }
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getAuthControllerGetProfileQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGetProfile>>> = ({ signal }) => authControllerGetProfile({ signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof authControllerGetProfile>>> = ({ signal }) => authControllerGetProfile(signal);
 
       
 
@@ -517,39 +534,39 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type AuthControllerGetProfileQueryResult = NonNullable<Awaited<ReturnType<typeof authControllerGetProfile>>>
-export type AuthControllerGetProfileQueryError = AxiosError<ErrorResponseDto | ErrorResponseDto>
+export type AuthControllerGetProfileQueryError = ErrorResponseDto | ErrorResponseDto
 
 
-export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = AxiosError<ErrorResponseDto | ErrorResponseDto>>(
+export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = ErrorResponseDto | ErrorResponseDto>(
   options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof authControllerGetProfile>>,
           TError,
           Awaited<ReturnType<typeof authControllerGetProfile>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = AxiosError<ErrorResponseDto | ErrorResponseDto>>(
+export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = ErrorResponseDto | ErrorResponseDto>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof authControllerGetProfile>>,
           TError,
           Awaited<ReturnType<typeof authControllerGetProfile>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = AxiosError<ErrorResponseDto | ErrorResponseDto>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = ErrorResponseDto | ErrorResponseDto>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get profile (Protected Route Test)
  */
 
-export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = AxiosError<ErrorResponseDto | ErrorResponseDto>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useAuthControllerGetProfile<TData = Awaited<ReturnType<typeof authControllerGetProfile>>, TError = ErrorResponseDto | ErrorResponseDto>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof authControllerGetProfile>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 

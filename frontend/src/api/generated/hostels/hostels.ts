@@ -24,13 +24,6 @@ import type {
   UseQueryResult
 } from '@tanstack/react-query';
 
-import * as axios from 'axios';
-import type {
-  AxiosError,
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
 import type {
   CreateHostelDto,
   CreateRoomDto,
@@ -43,6 +36,7 @@ import type {
   UpdateRoomDto
 } from '../../model';
 
+import { customInstance } from '../../axios-instance';
 
 
 
@@ -51,28 +45,31 @@ import type {
  * @summary Create a new hostel
  */
 export const hostelControllerCreate = (
-    createHostelDto: CreateHostelDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<MessageResponseDto>> => {
-    
-    
-    return axios.default.post(
-      `/api/v1/hostels`,
-      createHostelDto,options
-    );
-  }
+    createHostelDto: CreateHostelDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/hostels`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createHostelDto, signal
+    },
+      );
+    }
+  
 
 
-
-export const getHostelControllerCreateMutationOptions = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerCreate>>, TError,{data: CreateHostelDto}, TContext>, axios?: AxiosRequestConfig}
+export const getHostelControllerCreateMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerCreate>>, TError,{data: CreateHostelDto}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof hostelControllerCreate>>, TError,{data: CreateHostelDto}, TContext> => {
 
 const mutationKey = ['hostelControllerCreate'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }};
 
       
 
@@ -80,7 +77,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof hostelControllerCreate>>, {data: CreateHostelDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  hostelControllerCreate(data,axiosOptions)
+          return  hostelControllerCreate(data,)
         }
 
         
@@ -90,13 +87,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type HostelControllerCreateMutationResult = NonNullable<Awaited<ReturnType<typeof hostelControllerCreate>>>
     export type HostelControllerCreateMutationBody = CreateHostelDto
-    export type HostelControllerCreateMutationError = AxiosError<ErrorResponseDto>
+    export type HostelControllerCreateMutationError = ErrorResponseDto
 
     /**
  * @summary Create a new hostel
  */
-export const useHostelControllerCreate = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerCreate>>, TError,{data: CreateHostelDto}, TContext>, axios?: AxiosRequestConfig}
+export const useHostelControllerCreate = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerCreate>>, TError,{data: CreateHostelDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof hostelControllerCreate>>,
         TError,
@@ -113,28 +110,30 @@ export const useHostelControllerCreate = <TError = AxiosError<ErrorResponseDto>,
  */
 export const hostelControllerUpdate = (
     id: number,
-    updateHostelDto: UpdateHostelDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<MessageResponseDto>> => {
-    
-    
-    return axios.default.patch(
-      `/api/v1/hostels/${id}`,
-      updateHostelDto,options
-    );
-  }
+    updateHostelDto: UpdateHostelDto,
+ ) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/hostels/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateHostelDto
+    },
+      );
+    }
+  
 
 
-
-export const getHostelControllerUpdateMutationOptions = <TError = AxiosError<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerUpdate>>, TError,{id: number;data: UpdateHostelDto}, TContext>, axios?: AxiosRequestConfig}
+export const getHostelControllerUpdateMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerUpdate>>, TError,{id: number;data: UpdateHostelDto}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof hostelControllerUpdate>>, TError,{id: number;data: UpdateHostelDto}, TContext> => {
 
 const mutationKey = ['hostelControllerUpdate'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }};
 
       
 
@@ -142,7 +141,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof hostelControllerUpdate>>, {id: number;data: UpdateHostelDto}> = (props) => {
           const {id,data} = props ?? {};
 
-          return  hostelControllerUpdate(id,data,axiosOptions)
+          return  hostelControllerUpdate(id,data,)
         }
 
         
@@ -152,13 +151,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type HostelControllerUpdateMutationResult = NonNullable<Awaited<ReturnType<typeof hostelControllerUpdate>>>
     export type HostelControllerUpdateMutationBody = UpdateHostelDto
-    export type HostelControllerUpdateMutationError = AxiosError<unknown>
+    export type HostelControllerUpdateMutationError = unknown
 
     /**
  * @summary Update hostel details
  */
-export const useHostelControllerUpdate = <TError = AxiosError<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerUpdate>>, TError,{id: number;data: UpdateHostelDto}, TContext>, axios?: AxiosRequestConfig}
+export const useHostelControllerUpdate = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerUpdate>>, TError,{id: number;data: UpdateHostelDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof hostelControllerUpdate>>,
         TError,
@@ -174,15 +173,17 @@ export const useHostelControllerUpdate = <TError = AxiosError<unknown>,
  * @summary Get a single hostel by ID
  */
 export const hostelControllerGetOne = (
-    id: number, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<MessageResponseDto>> => {
-    
-    
-    return axios.default.get(
-      `/api/v1/hostels/${id}`,options
-    );
-  }
-
+    id: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/hostels/${id}`, method: 'GET', signal
+    },
+      );
+    }
+  
 
 
 
@@ -193,16 +194,16 @@ export const getHostelControllerGetOneQueryKey = (id?: number,) => {
     }
 
     
-export const getHostelControllerGetOneQueryOptions = <TData = Awaited<ReturnType<typeof hostelControllerGetOne>>, TError = AxiosError<ErrorResponseDto>>(id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOne>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getHostelControllerGetOneQueryOptions = <TData = Awaited<ReturnType<typeof hostelControllerGetOne>>, TError = ErrorResponseDto>(id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOne>>, TError, TData>>, }
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getHostelControllerGetOneQueryKey(id);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof hostelControllerGetOne>>> = ({ signal }) => hostelControllerGetOne(id, { signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof hostelControllerGetOne>>> = ({ signal }) => hostelControllerGetOne(id, signal);
 
       
 
@@ -212,39 +213,39 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type HostelControllerGetOneQueryResult = NonNullable<Awaited<ReturnType<typeof hostelControllerGetOne>>>
-export type HostelControllerGetOneQueryError = AxiosError<ErrorResponseDto>
+export type HostelControllerGetOneQueryError = ErrorResponseDto
 
 
-export function useHostelControllerGetOne<TData = Awaited<ReturnType<typeof hostelControllerGetOne>>, TError = AxiosError<ErrorResponseDto>>(
+export function useHostelControllerGetOne<TData = Awaited<ReturnType<typeof hostelControllerGetOne>>, TError = ErrorResponseDto>(
  id: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOne>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof hostelControllerGetOne>>,
           TError,
           Awaited<ReturnType<typeof hostelControllerGetOne>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useHostelControllerGetOne<TData = Awaited<ReturnType<typeof hostelControllerGetOne>>, TError = AxiosError<ErrorResponseDto>>(
+export function useHostelControllerGetOne<TData = Awaited<ReturnType<typeof hostelControllerGetOne>>, TError = ErrorResponseDto>(
  id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOne>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof hostelControllerGetOne>>,
           TError,
           Awaited<ReturnType<typeof hostelControllerGetOne>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useHostelControllerGetOne<TData = Awaited<ReturnType<typeof hostelControllerGetOne>>, TError = AxiosError<ErrorResponseDto>>(
- id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOne>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useHostelControllerGetOne<TData = Awaited<ReturnType<typeof hostelControllerGetOne>>, TError = ErrorResponseDto>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOne>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get a single hostel by ID
  */
 
-export function useHostelControllerGetOne<TData = Awaited<ReturnType<typeof hostelControllerGetOne>>, TError = AxiosError<ErrorResponseDto>>(
- id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOne>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useHostelControllerGetOne<TData = Awaited<ReturnType<typeof hostelControllerGetOne>>, TError = ErrorResponseDto>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOne>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -263,27 +264,28 @@ export function useHostelControllerGetOne<TData = Awaited<ReturnType<typeof host
  * @summary Delete a hostel
  */
 export const hostelControllerDeleteHostel = (
-    id: number, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    
-    
-    return axios.default.delete(
-      `/api/v1/hostels/${id}`,options
-    );
-  }
+    id: number,
+ ) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/hostels/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  
 
 
-
-export const getHostelControllerDeleteHostelMutationOptions = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerDeleteHostel>>, TError,{id: number}, TContext>, axios?: AxiosRequestConfig}
+export const getHostelControllerDeleteHostelMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerDeleteHostel>>, TError,{id: number}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof hostelControllerDeleteHostel>>, TError,{id: number}, TContext> => {
 
 const mutationKey = ['hostelControllerDeleteHostel'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }};
 
       
 
@@ -291,7 +293,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof hostelControllerDeleteHostel>>, {id: number}> = (props) => {
           const {id} = props ?? {};
 
-          return  hostelControllerDeleteHostel(id,axiosOptions)
+          return  hostelControllerDeleteHostel(id,)
         }
 
         
@@ -301,13 +303,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type HostelControllerDeleteHostelMutationResult = NonNullable<Awaited<ReturnType<typeof hostelControllerDeleteHostel>>>
     
-    export type HostelControllerDeleteHostelMutationError = AxiosError<ErrorResponseDto>
+    export type HostelControllerDeleteHostelMutationError = ErrorResponseDto
 
     /**
  * @summary Delete a hostel
  */
-export const useHostelControllerDeleteHostel = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerDeleteHostel>>, TError,{id: number}, TContext>, axios?: AxiosRequestConfig}
+export const useHostelControllerDeleteHostel = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerDeleteHostel>>, TError,{id: number}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof hostelControllerDeleteHostel>>,
         TError,
@@ -320,17 +322,18 @@ export const useHostelControllerDeleteHostel = <TError = AxiosError<ErrorRespons
       return useMutation(mutationOptions, queryClient);
     }
     export const hostelControllerGetMyHostels = (
-    params?: HostelControllerGetMyHostelsParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<MessageResponseDto>> => {
-    
-    
-    return axios.default.get(
-      `/api/v1/hostels/my-hostels`,{
-    ...options,
-        params: {...params, ...options?.params},}
-    );
-  }
-
+    params?: HostelControllerGetMyHostelsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/hostels/my-hostels`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
 
 
 
@@ -341,16 +344,16 @@ export const getHostelControllerGetMyHostelsQueryKey = (params?: HostelControlle
     }
 
     
-export const getHostelControllerGetMyHostelsQueryOptions = <TData = Awaited<ReturnType<typeof hostelControllerGetMyHostels>>, TError = AxiosError<ErrorResponseDto>>(params?: HostelControllerGetMyHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetMyHostels>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getHostelControllerGetMyHostelsQueryOptions = <TData = Awaited<ReturnType<typeof hostelControllerGetMyHostels>>, TError = ErrorResponseDto>(params?: HostelControllerGetMyHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetMyHostels>>, TError, TData>>, }
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getHostelControllerGetMyHostelsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof hostelControllerGetMyHostels>>> = ({ signal }) => hostelControllerGetMyHostels(params, { signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof hostelControllerGetMyHostels>>> = ({ signal }) => hostelControllerGetMyHostels(params, signal);
 
       
 
@@ -360,36 +363,36 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type HostelControllerGetMyHostelsQueryResult = NonNullable<Awaited<ReturnType<typeof hostelControllerGetMyHostels>>>
-export type HostelControllerGetMyHostelsQueryError = AxiosError<ErrorResponseDto>
+export type HostelControllerGetMyHostelsQueryError = ErrorResponseDto
 
 
-export function useHostelControllerGetMyHostels<TData = Awaited<ReturnType<typeof hostelControllerGetMyHostels>>, TError = AxiosError<ErrorResponseDto>>(
+export function useHostelControllerGetMyHostels<TData = Awaited<ReturnType<typeof hostelControllerGetMyHostels>>, TError = ErrorResponseDto>(
  params: undefined |  HostelControllerGetMyHostelsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetMyHostels>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof hostelControllerGetMyHostels>>,
           TError,
           Awaited<ReturnType<typeof hostelControllerGetMyHostels>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useHostelControllerGetMyHostels<TData = Awaited<ReturnType<typeof hostelControllerGetMyHostels>>, TError = AxiosError<ErrorResponseDto>>(
+export function useHostelControllerGetMyHostels<TData = Awaited<ReturnType<typeof hostelControllerGetMyHostels>>, TError = ErrorResponseDto>(
  params?: HostelControllerGetMyHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetMyHostels>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof hostelControllerGetMyHostels>>,
           TError,
           Awaited<ReturnType<typeof hostelControllerGetMyHostels>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useHostelControllerGetMyHostels<TData = Awaited<ReturnType<typeof hostelControllerGetMyHostels>>, TError = AxiosError<ErrorResponseDto>>(
- params?: HostelControllerGetMyHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetMyHostels>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useHostelControllerGetMyHostels<TData = Awaited<ReturnType<typeof hostelControllerGetMyHostels>>, TError = ErrorResponseDto>(
+ params?: HostelControllerGetMyHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetMyHostels>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useHostelControllerGetMyHostels<TData = Awaited<ReturnType<typeof hostelControllerGetMyHostels>>, TError = AxiosError<ErrorResponseDto>>(
- params?: HostelControllerGetMyHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetMyHostels>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useHostelControllerGetMyHostels<TData = Awaited<ReturnType<typeof hostelControllerGetMyHostels>>, TError = ErrorResponseDto>(
+ params?: HostelControllerGetMyHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetMyHostels>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -409,28 +412,31 @@ export function useHostelControllerGetMyHostels<TData = Awaited<ReturnType<typeo
  */
 export const hostelControllerCreateRoom = (
     hostelId: number,
-    createRoomDto: CreateRoomDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<MessageResponseDto>> => {
-    
-    
-    return axios.default.post(
-      `/api/v1/hostels/${hostelId}/rooms`,
-      createRoomDto,options
-    );
-  }
+    createRoomDto: CreateRoomDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/hostels/${hostelId}/rooms`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createRoomDto, signal
+    },
+      );
+    }
+  
 
 
-
-export const getHostelControllerCreateRoomMutationOptions = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerCreateRoom>>, TError,{hostelId: number;data: CreateRoomDto}, TContext>, axios?: AxiosRequestConfig}
+export const getHostelControllerCreateRoomMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerCreateRoom>>, TError,{hostelId: number;data: CreateRoomDto}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof hostelControllerCreateRoom>>, TError,{hostelId: number;data: CreateRoomDto}, TContext> => {
 
 const mutationKey = ['hostelControllerCreateRoom'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }};
 
       
 
@@ -438,7 +444,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof hostelControllerCreateRoom>>, {hostelId: number;data: CreateRoomDto}> = (props) => {
           const {hostelId,data} = props ?? {};
 
-          return  hostelControllerCreateRoom(hostelId,data,axiosOptions)
+          return  hostelControllerCreateRoom(hostelId,data,)
         }
 
         
@@ -448,13 +454,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type HostelControllerCreateRoomMutationResult = NonNullable<Awaited<ReturnType<typeof hostelControllerCreateRoom>>>
     export type HostelControllerCreateRoomMutationBody = CreateRoomDto
-    export type HostelControllerCreateRoomMutationError = AxiosError<ErrorResponseDto>
+    export type HostelControllerCreateRoomMutationError = ErrorResponseDto
 
     /**
  * @summary Create a new room
  */
-export const useHostelControllerCreateRoom = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerCreateRoom>>, TError,{hostelId: number;data: CreateRoomDto}, TContext>, axios?: AxiosRequestConfig}
+export const useHostelControllerCreateRoom = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerCreateRoom>>, TError,{hostelId: number;data: CreateRoomDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof hostelControllerCreateRoom>>,
         TError,
@@ -471,17 +477,18 @@ export const useHostelControllerCreateRoom = <TError = AxiosError<ErrorResponseD
  */
 export const hostelControllerGetRoomsByHostel = (
     hostelId: number,
-    params?: HostelControllerGetRoomsByHostelParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<MessageResponseDto>> => {
-    
-    
-    return axios.default.get(
-      `/api/v1/hostels/${hostelId}/rooms`,{
-    ...options,
-        params: {...params, ...options?.params},}
-    );
-  }
-
+    params?: HostelControllerGetRoomsByHostelParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/hostels/${hostelId}/rooms`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
 
 
 
@@ -493,17 +500,17 @@ export const getHostelControllerGetRoomsByHostelQueryKey = (hostelId?: number,
     }
 
     
-export const getHostelControllerGetRoomsByHostelQueryOptions = <TData = Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>, TError = AxiosError<ErrorResponseDto>>(hostelId: number,
-    params?: HostelControllerGetRoomsByHostelParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getHostelControllerGetRoomsByHostelQueryOptions = <TData = Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>, TError = ErrorResponseDto>(hostelId: number,
+    params?: HostelControllerGetRoomsByHostelParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>, TError, TData>>, }
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getHostelControllerGetRoomsByHostelQueryKey(hostelId,params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>> = ({ signal }) => hostelControllerGetRoomsByHostel(hostelId,params, { signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>> = ({ signal }) => hostelControllerGetRoomsByHostel(hostelId,params, signal);
 
       
 
@@ -513,10 +520,10 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type HostelControllerGetRoomsByHostelQueryResult = NonNullable<Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>>
-export type HostelControllerGetRoomsByHostelQueryError = AxiosError<ErrorResponseDto>
+export type HostelControllerGetRoomsByHostelQueryError = ErrorResponseDto
 
 
-export function useHostelControllerGetRoomsByHostel<TData = Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>, TError = AxiosError<ErrorResponseDto>>(
+export function useHostelControllerGetRoomsByHostel<TData = Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>, TError = ErrorResponseDto>(
  hostelId: number,
     params: undefined |  HostelControllerGetRoomsByHostelParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
@@ -524,10 +531,10 @@ export function useHostelControllerGetRoomsByHostel<TData = Awaited<ReturnType<t
           TError,
           Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useHostelControllerGetRoomsByHostel<TData = Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>, TError = AxiosError<ErrorResponseDto>>(
+export function useHostelControllerGetRoomsByHostel<TData = Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>, TError = ErrorResponseDto>(
  hostelId: number,
     params?: HostelControllerGetRoomsByHostelParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
@@ -535,21 +542,21 @@ export function useHostelControllerGetRoomsByHostel<TData = Awaited<ReturnType<t
           TError,
           Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useHostelControllerGetRoomsByHostel<TData = Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>, TError = AxiosError<ErrorResponseDto>>(
+export function useHostelControllerGetRoomsByHostel<TData = Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>, TError = ErrorResponseDto>(
  hostelId: number,
-    params?: HostelControllerGetRoomsByHostelParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>, TError, TData>>, axios?: AxiosRequestConfig}
+    params?: HostelControllerGetRoomsByHostelParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get all rooms in a hostel
  */
 
-export function useHostelControllerGetRoomsByHostel<TData = Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>, TError = AxiosError<ErrorResponseDto>>(
+export function useHostelControllerGetRoomsByHostel<TData = Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>, TError = ErrorResponseDto>(
  hostelId: number,
-    params?: HostelControllerGetRoomsByHostelParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>, TError, TData>>, axios?: AxiosRequestConfig}
+    params?: HostelControllerGetRoomsByHostelParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetRoomsByHostel>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -569,15 +576,17 @@ export function useHostelControllerGetRoomsByHostel<TData = Awaited<ReturnType<t
  */
 export const hostelControllerGetSingleRoom = (
     hostelId: number,
-    roomId: number, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<MessageResponseDto>> => {
-    
-    
-    return axios.default.get(
-      `/api/v1/hostels/${hostelId}/rooms/${roomId}`,options
-    );
-  }
-
+    roomId: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/hostels/${hostelId}/rooms/${roomId}`, method: 'GET', signal
+    },
+      );
+    }
+  
 
 
 
@@ -589,17 +598,17 @@ export const getHostelControllerGetSingleRoomQueryKey = (hostelId?: number,
     }
 
     
-export const getHostelControllerGetSingleRoomQueryOptions = <TData = Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>, TError = AxiosError<ErrorResponseDto>>(hostelId: number,
-    roomId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getHostelControllerGetSingleRoomQueryOptions = <TData = Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>, TError = ErrorResponseDto>(hostelId: number,
+    roomId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>, TError, TData>>, }
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getHostelControllerGetSingleRoomQueryKey(hostelId,roomId);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>> = ({ signal }) => hostelControllerGetSingleRoom(hostelId,roomId, { signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>> = ({ signal }) => hostelControllerGetSingleRoom(hostelId,roomId, signal);
 
       
 
@@ -609,10 +618,10 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type HostelControllerGetSingleRoomQueryResult = NonNullable<Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>>
-export type HostelControllerGetSingleRoomQueryError = AxiosError<ErrorResponseDto>
+export type HostelControllerGetSingleRoomQueryError = ErrorResponseDto
 
 
-export function useHostelControllerGetSingleRoom<TData = Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>, TError = AxiosError<ErrorResponseDto>>(
+export function useHostelControllerGetSingleRoom<TData = Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>, TError = ErrorResponseDto>(
  hostelId: number,
     roomId: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
@@ -620,10 +629,10 @@ export function useHostelControllerGetSingleRoom<TData = Awaited<ReturnType<type
           TError,
           Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useHostelControllerGetSingleRoom<TData = Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>, TError = AxiosError<ErrorResponseDto>>(
+export function useHostelControllerGetSingleRoom<TData = Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>, TError = ErrorResponseDto>(
  hostelId: number,
     roomId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
@@ -631,21 +640,21 @@ export function useHostelControllerGetSingleRoom<TData = Awaited<ReturnType<type
           TError,
           Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useHostelControllerGetSingleRoom<TData = Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>, TError = AxiosError<ErrorResponseDto>>(
+export function useHostelControllerGetSingleRoom<TData = Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>, TError = ErrorResponseDto>(
  hostelId: number,
-    roomId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>, TError, TData>>, axios?: AxiosRequestConfig}
+    roomId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get single room details
  */
 
-export function useHostelControllerGetSingleRoom<TData = Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>, TError = AxiosError<ErrorResponseDto>>(
+export function useHostelControllerGetSingleRoom<TData = Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>, TError = ErrorResponseDto>(
  hostelId: number,
-    roomId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>, TError, TData>>, axios?: AxiosRequestConfig}
+    roomId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetSingleRoom>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -666,28 +675,30 @@ export function useHostelControllerGetSingleRoom<TData = Awaited<ReturnType<type
 export const hostelControllerUpdateRoom = (
     hostelId: number,
     roomId: number,
-    updateRoomDto: UpdateRoomDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<MessageResponseDto>> => {
-    
-    
-    return axios.default.patch(
-      `/api/v1/hostels/${hostelId}/rooms/${roomId}`,
-      updateRoomDto,options
-    );
-  }
+    updateRoomDto: UpdateRoomDto,
+ ) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/hostels/${hostelId}/rooms/${roomId}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateRoomDto
+    },
+      );
+    }
+  
 
 
-
-export const getHostelControllerUpdateRoomMutationOptions = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerUpdateRoom>>, TError,{hostelId: number;roomId: number;data: UpdateRoomDto}, TContext>, axios?: AxiosRequestConfig}
+export const getHostelControllerUpdateRoomMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerUpdateRoom>>, TError,{hostelId: number;roomId: number;data: UpdateRoomDto}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof hostelControllerUpdateRoom>>, TError,{hostelId: number;roomId: number;data: UpdateRoomDto}, TContext> => {
 
 const mutationKey = ['hostelControllerUpdateRoom'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }};
 
       
 
@@ -695,7 +706,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof hostelControllerUpdateRoom>>, {hostelId: number;roomId: number;data: UpdateRoomDto}> = (props) => {
           const {hostelId,roomId,data} = props ?? {};
 
-          return  hostelControllerUpdateRoom(hostelId,roomId,data,axiosOptions)
+          return  hostelControllerUpdateRoom(hostelId,roomId,data,)
         }
 
         
@@ -705,13 +716,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type HostelControllerUpdateRoomMutationResult = NonNullable<Awaited<ReturnType<typeof hostelControllerUpdateRoom>>>
     export type HostelControllerUpdateRoomMutationBody = UpdateRoomDto
-    export type HostelControllerUpdateRoomMutationError = AxiosError<ErrorResponseDto>
+    export type HostelControllerUpdateRoomMutationError = ErrorResponseDto
 
     /**
  * @summary Update room details
  */
-export const useHostelControllerUpdateRoom = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerUpdateRoom>>, TError,{hostelId: number;roomId: number;data: UpdateRoomDto}, TContext>, axios?: AxiosRequestConfig}
+export const useHostelControllerUpdateRoom = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerUpdateRoom>>, TError,{hostelId: number;roomId: number;data: UpdateRoomDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof hostelControllerUpdateRoom>>,
         TError,
@@ -728,27 +739,28 @@ export const useHostelControllerUpdateRoom = <TError = AxiosError<ErrorResponseD
  */
 export const hostelControllerDeleteRoom = (
     hostelId: number,
-    roomId: number, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    
-    
-    return axios.default.delete(
-      `/api/v1/hostels/${hostelId}/rooms/${roomId}`,options
-    );
-  }
+    roomId: number,
+ ) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/hostels/${hostelId}/rooms/${roomId}`, method: 'DELETE'
+    },
+      );
+    }
+  
 
 
-
-export const getHostelControllerDeleteRoomMutationOptions = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerDeleteRoom>>, TError,{hostelId: number;roomId: number}, TContext>, axios?: AxiosRequestConfig}
+export const getHostelControllerDeleteRoomMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerDeleteRoom>>, TError,{hostelId: number;roomId: number}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof hostelControllerDeleteRoom>>, TError,{hostelId: number;roomId: number}, TContext> => {
 
 const mutationKey = ['hostelControllerDeleteRoom'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }};
 
       
 
@@ -756,7 +768,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof hostelControllerDeleteRoom>>, {hostelId: number;roomId: number}> = (props) => {
           const {hostelId,roomId} = props ?? {};
 
-          return  hostelControllerDeleteRoom(hostelId,roomId,axiosOptions)
+          return  hostelControllerDeleteRoom(hostelId,roomId,)
         }
 
         
@@ -766,13 +778,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type HostelControllerDeleteRoomMutationResult = NonNullable<Awaited<ReturnType<typeof hostelControllerDeleteRoom>>>
     
-    export type HostelControllerDeleteRoomMutationError = AxiosError<ErrorResponseDto>
+    export type HostelControllerDeleteRoomMutationError = ErrorResponseDto
 
     /**
  * @summary Delete a room
  */
-export const useHostelControllerDeleteRoom = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerDeleteRoom>>, TError,{hostelId: number;roomId: number}, TContext>, axios?: AxiosRequestConfig}
+export const useHostelControllerDeleteRoom = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerDeleteRoom>>, TError,{hostelId: number;roomId: number}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof hostelControllerDeleteRoom>>,
         TError,
@@ -788,17 +800,18 @@ export const useHostelControllerDeleteRoom = <TError = AxiosError<ErrorResponseD
  * @summary Get all bookings for all hostels owned by the user
  */
 export const hostelControllerGetOwnerBookings = (
-    params?: HostelControllerGetOwnerBookingsParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<MessageResponseDto>> => {
-    
-    
-    return axios.default.get(
-      `/api/v1/hostels/bookings`,{
-    ...options,
-        params: {...params, ...options?.params},}
-    );
-  }
-
+    params?: HostelControllerGetOwnerBookingsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/hostels/bookings`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
 
 
 
@@ -809,16 +822,16 @@ export const getHostelControllerGetOwnerBookingsQueryKey = (params?: HostelContr
     }
 
     
-export const getHostelControllerGetOwnerBookingsQueryOptions = <TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = AxiosError<ErrorResponseDto>>(params?: HostelControllerGetOwnerBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getHostelControllerGetOwnerBookingsQueryOptions = <TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = ErrorResponseDto>(params?: HostelControllerGetOwnerBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData>>, }
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getHostelControllerGetOwnerBookingsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>> = ({ signal }) => hostelControllerGetOwnerBookings(params, { signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>> = ({ signal }) => hostelControllerGetOwnerBookings(params, signal);
 
       
 
@@ -828,39 +841,39 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type HostelControllerGetOwnerBookingsQueryResult = NonNullable<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>>
-export type HostelControllerGetOwnerBookingsQueryError = AxiosError<ErrorResponseDto>
+export type HostelControllerGetOwnerBookingsQueryError = ErrorResponseDto
 
 
-export function useHostelControllerGetOwnerBookings<TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = AxiosError<ErrorResponseDto>>(
+export function useHostelControllerGetOwnerBookings<TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = ErrorResponseDto>(
  params: undefined |  HostelControllerGetOwnerBookingsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>,
           TError,
           Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useHostelControllerGetOwnerBookings<TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = AxiosError<ErrorResponseDto>>(
+export function useHostelControllerGetOwnerBookings<TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = ErrorResponseDto>(
  params?: HostelControllerGetOwnerBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>,
           TError,
           Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useHostelControllerGetOwnerBookings<TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = AxiosError<ErrorResponseDto>>(
- params?: HostelControllerGetOwnerBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useHostelControllerGetOwnerBookings<TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = ErrorResponseDto>(
+ params?: HostelControllerGetOwnerBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get all bookings for all hostels owned by the user
  */
 
-export function useHostelControllerGetOwnerBookings<TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = AxiosError<ErrorResponseDto>>(
- params?: HostelControllerGetOwnerBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useHostelControllerGetOwnerBookings<TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = ErrorResponseDto>(
+ params?: HostelControllerGetOwnerBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 

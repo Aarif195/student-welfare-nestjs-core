@@ -15,19 +15,13 @@ import type {
   UseMutationResult
 } from '@tanstack/react-query';
 
-import * as axios from 'axios';
-import type {
-  AxiosError,
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
 import type {
   AdminLoginDto,
   AdminResponseDto,
   ErrorResponseDto
 } from '../../model';
 
+import { customInstance } from '../../axios-instance';
 
 
 
@@ -36,28 +30,31 @@ import type {
  * @summary Admin login
  */
 export const adminControllerLogin = (
-    adminLoginDto: AdminLoginDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<AdminResponseDto>> => {
-    
-    
-    return axios.default.post(
-      `/api/v1/admin/login`,
-      adminLoginDto,options
-    );
-  }
+    adminLoginDto: AdminLoginDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<AdminResponseDto>(
+      {url: `/api/v1/admin/login`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: adminLoginDto, signal
+    },
+      );
+    }
+  
 
 
-
-export const getAdminControllerLoginMutationOptions = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerLogin>>, TError,{data: AdminLoginDto}, TContext>, axios?: AxiosRequestConfig}
+export const getAdminControllerLoginMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerLogin>>, TError,{data: AdminLoginDto}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof adminControllerLogin>>, TError,{data: AdminLoginDto}, TContext> => {
 
 const mutationKey = ['adminControllerLogin'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }};
 
       
 
@@ -65,7 +62,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof adminControllerLogin>>, {data: AdminLoginDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  adminControllerLogin(data,axiosOptions)
+          return  adminControllerLogin(data,)
         }
 
         
@@ -75,13 +72,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type AdminControllerLoginMutationResult = NonNullable<Awaited<ReturnType<typeof adminControllerLogin>>>
     export type AdminControllerLoginMutationBody = AdminLoginDto
-    export type AdminControllerLoginMutationError = AxiosError<ErrorResponseDto>
+    export type AdminControllerLoginMutationError = ErrorResponseDto
 
     /**
  * @summary Admin login
  */
-export const useAdminControllerLogin = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerLogin>>, TError,{data: AdminLoginDto}, TContext>, axios?: AxiosRequestConfig}
+export const useAdminControllerLogin = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerLogin>>, TError,{data: AdminLoginDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof adminControllerLogin>>,
         TError,

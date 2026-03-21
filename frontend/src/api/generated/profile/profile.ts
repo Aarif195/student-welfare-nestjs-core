@@ -24,19 +24,13 @@ import type {
   UseQueryResult
 } from '@tanstack/react-query';
 
-import * as axios from 'axios';
-import type {
-  AxiosError,
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
 import type {
   ErrorResponseDto,
   UpdateProfileDto,
   UserProfileResponseDto
 } from '../../model';
 
+import { customInstance } from '../../axios-instance';
 
 
 
@@ -45,15 +39,17 @@ import type {
  * @summary Get current user profile
  */
 export const profileControllerGetProfile = (
-     options?: AxiosRequestConfig
- ): Promise<AxiosResponse<UserProfileResponseDto>> => {
     
-    
-    return axios.default.get(
-      `/api/v1/profile/me`,options
-    );
-  }
-
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<UserProfileResponseDto>(
+      {url: `/api/v1/profile/me`, method: 'GET', signal
+    },
+      );
+    }
+  
 
 
 
@@ -64,16 +60,16 @@ export const getProfileControllerGetProfileQueryKey = () => {
     }
 
     
-export const getProfileControllerGetProfileQueryOptions = <TData = Awaited<ReturnType<typeof profileControllerGetProfile>>, TError = AxiosError<ErrorResponseDto | ErrorResponseDto>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerGetProfile>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getProfileControllerGetProfileQueryOptions = <TData = Awaited<ReturnType<typeof profileControllerGetProfile>>, TError = ErrorResponseDto | ErrorResponseDto>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerGetProfile>>, TError, TData>>, }
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getProfileControllerGetProfileQueryKey();
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerGetProfile>>> = ({ signal }) => profileControllerGetProfile({ signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof profileControllerGetProfile>>> = ({ signal }) => profileControllerGetProfile(signal);
 
       
 
@@ -83,39 +79,39 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type ProfileControllerGetProfileQueryResult = NonNullable<Awaited<ReturnType<typeof profileControllerGetProfile>>>
-export type ProfileControllerGetProfileQueryError = AxiosError<ErrorResponseDto | ErrorResponseDto>
+export type ProfileControllerGetProfileQueryError = ErrorResponseDto | ErrorResponseDto
 
 
-export function useProfileControllerGetProfile<TData = Awaited<ReturnType<typeof profileControllerGetProfile>>, TError = AxiosError<ErrorResponseDto | ErrorResponseDto>>(
+export function useProfileControllerGetProfile<TData = Awaited<ReturnType<typeof profileControllerGetProfile>>, TError = ErrorResponseDto | ErrorResponseDto>(
   options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerGetProfile>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof profileControllerGetProfile>>,
           TError,
           Awaited<ReturnType<typeof profileControllerGetProfile>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useProfileControllerGetProfile<TData = Awaited<ReturnType<typeof profileControllerGetProfile>>, TError = AxiosError<ErrorResponseDto | ErrorResponseDto>>(
+export function useProfileControllerGetProfile<TData = Awaited<ReturnType<typeof profileControllerGetProfile>>, TError = ErrorResponseDto | ErrorResponseDto>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerGetProfile>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof profileControllerGetProfile>>,
           TError,
           Awaited<ReturnType<typeof profileControllerGetProfile>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useProfileControllerGetProfile<TData = Awaited<ReturnType<typeof profileControllerGetProfile>>, TError = AxiosError<ErrorResponseDto | ErrorResponseDto>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerGetProfile>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useProfileControllerGetProfile<TData = Awaited<ReturnType<typeof profileControllerGetProfile>>, TError = ErrorResponseDto | ErrorResponseDto>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerGetProfile>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get current user profile
  */
 
-export function useProfileControllerGetProfile<TData = Awaited<ReturnType<typeof profileControllerGetProfile>>, TError = AxiosError<ErrorResponseDto | ErrorResponseDto>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerGetProfile>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useProfileControllerGetProfile<TData = Awaited<ReturnType<typeof profileControllerGetProfile>>, TError = ErrorResponseDto | ErrorResponseDto>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof profileControllerGetProfile>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -134,28 +130,30 @@ export function useProfileControllerGetProfile<TData = Awaited<ReturnType<typeof
  * @summary Update user profile
  */
 export const profileControllerUpdateProfile = (
-    updateProfileDto: UpdateProfileDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<UserProfileResponseDto>> => {
-    
-    
-    return axios.default.patch(
-      `/api/v1/profile/update`,
-      updateProfileDto,options
-    );
-  }
+    updateProfileDto: UpdateProfileDto,
+ ) => {
+      
+      
+      return customInstance<UserProfileResponseDto>(
+      {url: `/api/v1/profile/update`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateProfileDto
+    },
+      );
+    }
+  
 
 
-
-export const getProfileControllerUpdateProfileMutationOptions = <TError = AxiosError<ErrorResponseDto | ErrorResponseDto | ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof profileControllerUpdateProfile>>, TError,{data: UpdateProfileDto}, TContext>, axios?: AxiosRequestConfig}
+export const getProfileControllerUpdateProfileMutationOptions = <TError = ErrorResponseDto | ErrorResponseDto | ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof profileControllerUpdateProfile>>, TError,{data: UpdateProfileDto}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof profileControllerUpdateProfile>>, TError,{data: UpdateProfileDto}, TContext> => {
 
 const mutationKey = ['profileControllerUpdateProfile'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }};
 
       
 
@@ -163,7 +161,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof profileControllerUpdateProfile>>, {data: UpdateProfileDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  profileControllerUpdateProfile(data,axiosOptions)
+          return  profileControllerUpdateProfile(data,)
         }
 
         
@@ -173,13 +171,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type ProfileControllerUpdateProfileMutationResult = NonNullable<Awaited<ReturnType<typeof profileControllerUpdateProfile>>>
     export type ProfileControllerUpdateProfileMutationBody = UpdateProfileDto
-    export type ProfileControllerUpdateProfileMutationError = AxiosError<ErrorResponseDto | ErrorResponseDto | ErrorResponseDto>
+    export type ProfileControllerUpdateProfileMutationError = ErrorResponseDto | ErrorResponseDto | ErrorResponseDto
 
     /**
  * @summary Update user profile
  */
-export const useProfileControllerUpdateProfile = <TError = AxiosError<ErrorResponseDto | ErrorResponseDto | ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof profileControllerUpdateProfile>>, TError,{data: UpdateProfileDto}, TContext>, axios?: AxiosRequestConfig}
+export const useProfileControllerUpdateProfile = <TError = ErrorResponseDto | ErrorResponseDto | ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof profileControllerUpdateProfile>>, TError,{data: UpdateProfileDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof profileControllerUpdateProfile>>,
         TError,

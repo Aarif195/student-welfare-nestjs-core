@@ -20,19 +20,13 @@ import type {
   UseQueryResult
 } from '@tanstack/react-query';
 
-import * as axios from 'axios';
-import type {
-  AxiosError,
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
 import type {
   CloudinaryControllerGetSignatureParams,
   CloudinarySignatureResponseDto,
   ErrorResponseDto
 } from '../../model';
 
+import { customInstance } from '../../axios-instance';
 
 
 
@@ -41,17 +35,18 @@ import type {
  * @summary Generate Cloudinary upload signature
  */
 export const cloudinaryControllerGetSignature = (
-    params?: CloudinaryControllerGetSignatureParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<CloudinarySignatureResponseDto>> => {
-    
-    
-    return axios.default.get(
-      `/api/v1/cloudinary/signature`,{
-    ...options,
-        params: {...params, ...options?.params},}
-    );
-  }
-
+    params?: CloudinaryControllerGetSignatureParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<CloudinarySignatureResponseDto>(
+      {url: `/api/v1/cloudinary/signature`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
 
 
 
@@ -62,16 +57,16 @@ export const getCloudinaryControllerGetSignatureQueryKey = (params?: CloudinaryC
     }
 
     
-export const getCloudinaryControllerGetSignatureQueryOptions = <TData = Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>, TError = AxiosError<ErrorResponseDto>>(params?: CloudinaryControllerGetSignatureParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getCloudinaryControllerGetSignatureQueryOptions = <TData = Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>, TError = ErrorResponseDto>(params?: CloudinaryControllerGetSignatureParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>, TError, TData>>, }
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getCloudinaryControllerGetSignatureQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>> = ({ signal }) => cloudinaryControllerGetSignature(params, { signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>> = ({ signal }) => cloudinaryControllerGetSignature(params, signal);
 
       
 
@@ -81,39 +76,39 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type CloudinaryControllerGetSignatureQueryResult = NonNullable<Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>>
-export type CloudinaryControllerGetSignatureQueryError = AxiosError<ErrorResponseDto>
+export type CloudinaryControllerGetSignatureQueryError = ErrorResponseDto
 
 
-export function useCloudinaryControllerGetSignature<TData = Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>, TError = AxiosError<ErrorResponseDto>>(
+export function useCloudinaryControllerGetSignature<TData = Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>, TError = ErrorResponseDto>(
  params: undefined |  CloudinaryControllerGetSignatureParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>,
           TError,
           Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useCloudinaryControllerGetSignature<TData = Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>, TError = AxiosError<ErrorResponseDto>>(
+export function useCloudinaryControllerGetSignature<TData = Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>, TError = ErrorResponseDto>(
  params?: CloudinaryControllerGetSignatureParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>,
           TError,
           Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useCloudinaryControllerGetSignature<TData = Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>, TError = AxiosError<ErrorResponseDto>>(
- params?: CloudinaryControllerGetSignatureParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useCloudinaryControllerGetSignature<TData = Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>, TError = ErrorResponseDto>(
+ params?: CloudinaryControllerGetSignatureParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Generate Cloudinary upload signature
  */
 
-export function useCloudinaryControllerGetSignature<TData = Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>, TError = AxiosError<ErrorResponseDto>>(
- params?: CloudinaryControllerGetSignatureParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useCloudinaryControllerGetSignature<TData = Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>, TError = ErrorResponseDto>(
+ params?: CloudinaryControllerGetSignatureParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof cloudinaryControllerGetSignature>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 

@@ -24,13 +24,6 @@ import type {
   UseQueryResult
 } from '@tanstack/react-query';
 
-import * as axios from 'axios';
-import type {
-  AxiosError,
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
 import type {
   CreateBookingDto,
   ErrorResponseDto,
@@ -40,6 +33,7 @@ import type {
   StudentControllerGetMyBookingsParams
 } from '../../model';
 
+import { customInstance } from '../../axios-instance';
 
 
 
@@ -48,28 +42,31 @@ import type {
  * @summary Book a room
  */
 export const studentControllerBookRoom = (
-    createBookingDto: CreateBookingDto, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<MessageResponseDto>> => {
-    
-    
-    return axios.default.post(
-      `/api/v1/student/bookings`,
-      createBookingDto,options
-    );
-  }
+    createBookingDto: CreateBookingDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/student/bookings`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createBookingDto, signal
+    },
+      );
+    }
+  
 
 
-
-export const getStudentControllerBookRoomMutationOptions = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof studentControllerBookRoom>>, TError,{data: CreateBookingDto}, TContext>, axios?: AxiosRequestConfig}
+export const getStudentControllerBookRoomMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof studentControllerBookRoom>>, TError,{data: CreateBookingDto}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof studentControllerBookRoom>>, TError,{data: CreateBookingDto}, TContext> => {
 
 const mutationKey = ['studentControllerBookRoom'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }};
 
       
 
@@ -77,7 +74,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof studentControllerBookRoom>>, {data: CreateBookingDto}> = (props) => {
           const {data} = props ?? {};
 
-          return  studentControllerBookRoom(data,axiosOptions)
+          return  studentControllerBookRoom(data,)
         }
 
         
@@ -87,13 +84,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type StudentControllerBookRoomMutationResult = NonNullable<Awaited<ReturnType<typeof studentControllerBookRoom>>>
     export type StudentControllerBookRoomMutationBody = CreateBookingDto
-    export type StudentControllerBookRoomMutationError = AxiosError<ErrorResponseDto>
+    export type StudentControllerBookRoomMutationError = ErrorResponseDto
 
     /**
  * @summary Book a room
  */
-export const useStudentControllerBookRoom = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof studentControllerBookRoom>>, TError,{data: CreateBookingDto}, TContext>, axios?: AxiosRequestConfig}
+export const useStudentControllerBookRoom = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof studentControllerBookRoom>>, TError,{data: CreateBookingDto}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof studentControllerBookRoom>>,
         TError,
@@ -109,17 +106,18 @@ export const useStudentControllerBookRoom = <TError = AxiosError<ErrorResponseDt
  * @summary Get my bookings
  */
 export const studentControllerGetMyBookings = (
-    params?: StudentControllerGetMyBookingsParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    
-    
-    return axios.default.get(
-      `/api/v1/student/bookings`,{
-    ...options,
-        params: {...params, ...options?.params},}
-    );
-  }
-
+    params?: StudentControllerGetMyBookingsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/student/bookings`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
 
 
 
@@ -130,16 +128,16 @@ export const getStudentControllerGetMyBookingsQueryKey = (params?: StudentContro
     }
 
     
-export const getStudentControllerGetMyBookingsQueryOptions = <TData = Awaited<ReturnType<typeof studentControllerGetMyBookings>>, TError = AxiosError<ErrorResponseDto>>(params?: StudentControllerGetMyBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyBookings>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getStudentControllerGetMyBookingsQueryOptions = <TData = Awaited<ReturnType<typeof studentControllerGetMyBookings>>, TError = ErrorResponseDto>(params?: StudentControllerGetMyBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyBookings>>, TError, TData>>, }
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getStudentControllerGetMyBookingsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof studentControllerGetMyBookings>>> = ({ signal }) => studentControllerGetMyBookings(params, { signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof studentControllerGetMyBookings>>> = ({ signal }) => studentControllerGetMyBookings(params, signal);
 
       
 
@@ -149,39 +147,39 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type StudentControllerGetMyBookingsQueryResult = NonNullable<Awaited<ReturnType<typeof studentControllerGetMyBookings>>>
-export type StudentControllerGetMyBookingsQueryError = AxiosError<ErrorResponseDto>
+export type StudentControllerGetMyBookingsQueryError = ErrorResponseDto
 
 
-export function useStudentControllerGetMyBookings<TData = Awaited<ReturnType<typeof studentControllerGetMyBookings>>, TError = AxiosError<ErrorResponseDto>>(
+export function useStudentControllerGetMyBookings<TData = Awaited<ReturnType<typeof studentControllerGetMyBookings>>, TError = ErrorResponseDto>(
  params: undefined |  StudentControllerGetMyBookingsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyBookings>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof studentControllerGetMyBookings>>,
           TError,
           Awaited<ReturnType<typeof studentControllerGetMyBookings>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useStudentControllerGetMyBookings<TData = Awaited<ReturnType<typeof studentControllerGetMyBookings>>, TError = AxiosError<ErrorResponseDto>>(
+export function useStudentControllerGetMyBookings<TData = Awaited<ReturnType<typeof studentControllerGetMyBookings>>, TError = ErrorResponseDto>(
  params?: StudentControllerGetMyBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyBookings>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof studentControllerGetMyBookings>>,
           TError,
           Awaited<ReturnType<typeof studentControllerGetMyBookings>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useStudentControllerGetMyBookings<TData = Awaited<ReturnType<typeof studentControllerGetMyBookings>>, TError = AxiosError<ErrorResponseDto>>(
- params?: StudentControllerGetMyBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyBookings>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useStudentControllerGetMyBookings<TData = Awaited<ReturnType<typeof studentControllerGetMyBookings>>, TError = ErrorResponseDto>(
+ params?: StudentControllerGetMyBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyBookings>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get my bookings
  */
 
-export function useStudentControllerGetMyBookings<TData = Awaited<ReturnType<typeof studentControllerGetMyBookings>>, TError = AxiosError<ErrorResponseDto>>(
- params?: StudentControllerGetMyBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyBookings>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useStudentControllerGetMyBookings<TData = Awaited<ReturnType<typeof studentControllerGetMyBookings>>, TError = ErrorResponseDto>(
+ params?: StudentControllerGetMyBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyBookings>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -200,27 +198,28 @@ export function useStudentControllerGetMyBookings<TData = Awaited<ReturnType<typ
  * @summary Cancel a pending booking
  */
 export const studentControllerCancelBooking = (
-    bookingId: number, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<MessageResponseDto>> => {
-    
-    
-    return axios.default.patch(
-      `/api/v1/student/bookings/${bookingId}/cancel`,undefined,options
-    );
-  }
+    bookingId: number,
+ ) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/student/bookings/${bookingId}/cancel`, method: 'PATCH'
+    },
+      );
+    }
+  
 
 
-
-export const getStudentControllerCancelBookingMutationOptions = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof studentControllerCancelBooking>>, TError,{bookingId: number}, TContext>, axios?: AxiosRequestConfig}
+export const getStudentControllerCancelBookingMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof studentControllerCancelBooking>>, TError,{bookingId: number}, TContext>, }
 ): UseMutationOptions<Awaited<ReturnType<typeof studentControllerCancelBooking>>, TError,{bookingId: number}, TContext> => {
 
 const mutationKey = ['studentControllerCancelBooking'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
+const {mutation: mutationOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
       : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
+      : {mutation: { mutationKey, }};
 
       
 
@@ -228,7 +227,7 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof studentControllerCancelBooking>>, {bookingId: number}> = (props) => {
           const {bookingId} = props ?? {};
 
-          return  studentControllerCancelBooking(bookingId,axiosOptions)
+          return  studentControllerCancelBooking(bookingId,)
         }
 
         
@@ -238,13 +237,13 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
 
     export type StudentControllerCancelBookingMutationResult = NonNullable<Awaited<ReturnType<typeof studentControllerCancelBooking>>>
     
-    export type StudentControllerCancelBookingMutationError = AxiosError<ErrorResponseDto>
+    export type StudentControllerCancelBookingMutationError = ErrorResponseDto
 
     /**
  * @summary Cancel a pending booking
  */
-export const useStudentControllerCancelBooking = <TError = AxiosError<ErrorResponseDto>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof studentControllerCancelBooking>>, TError,{bookingId: number}, TContext>, axios?: AxiosRequestConfig}
+export const useStudentControllerCancelBooking = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof studentControllerCancelBooking>>, TError,{bookingId: number}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof studentControllerCancelBooking>>,
         TError,
@@ -260,17 +259,18 @@ export const useStudentControllerCancelBooking = <TError = AxiosError<ErrorRespo
  * @summary Get all available hostels
  */
 export const studentControllerGetAvailableHostels = (
-    params?: StudentControllerGetAvailableHostelsParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    
-    
-    return axios.default.get(
-      `/api/v1/student/hostels`,{
-    ...options,
-        params: {...params, ...options?.params},}
-    );
-  }
-
+    params?: StudentControllerGetAvailableHostelsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/student/hostels`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
 
 
 
@@ -281,16 +281,16 @@ export const getStudentControllerGetAvailableHostelsQueryKey = (params?: Student
     }
 
     
-export const getStudentControllerGetAvailableHostelsQueryOptions = <TData = Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError = AxiosError<ErrorResponseDto>>(params?: StudentControllerGetAvailableHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getStudentControllerGetAvailableHostelsQueryOptions = <TData = Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError = ErrorResponseDto>(params?: StudentControllerGetAvailableHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError, TData>>, }
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getStudentControllerGetAvailableHostelsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>> = ({ signal }) => studentControllerGetAvailableHostels(params, { signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>> = ({ signal }) => studentControllerGetAvailableHostels(params, signal);
 
       
 
@@ -300,39 +300,39 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type StudentControllerGetAvailableHostelsQueryResult = NonNullable<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>>
-export type StudentControllerGetAvailableHostelsQueryError = AxiosError<ErrorResponseDto>
+export type StudentControllerGetAvailableHostelsQueryError = ErrorResponseDto
 
 
-export function useStudentControllerGetAvailableHostels<TData = Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError = AxiosError<ErrorResponseDto>>(
+export function useStudentControllerGetAvailableHostels<TData = Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError = ErrorResponseDto>(
  params: undefined |  StudentControllerGetAvailableHostelsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>,
           TError,
           Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useStudentControllerGetAvailableHostels<TData = Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError = AxiosError<ErrorResponseDto>>(
+export function useStudentControllerGetAvailableHostels<TData = Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError = ErrorResponseDto>(
  params?: StudentControllerGetAvailableHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>,
           TError,
           Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useStudentControllerGetAvailableHostels<TData = Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError = AxiosError<ErrorResponseDto>>(
- params?: StudentControllerGetAvailableHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useStudentControllerGetAvailableHostels<TData = Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError = ErrorResponseDto>(
+ params?: StudentControllerGetAvailableHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get all available hostels
  */
 
-export function useStudentControllerGetAvailableHostels<TData = Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError = AxiosError<ErrorResponseDto>>(
- params?: StudentControllerGetAvailableHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useStudentControllerGetAvailableHostels<TData = Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError = ErrorResponseDto>(
+ params?: StudentControllerGetAvailableHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -351,17 +351,18 @@ export function useStudentControllerGetAvailableHostels<TData = Awaited<ReturnTy
  * @summary Get available rooms with filters
  */
 export const studentControllerGetAvailableRooms = (
-    params?: StudentControllerGetAvailableRoomsParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    
-    
-    return axios.default.get(
-      `/api/v1/student/rooms`,{
-    ...options,
-        params: {...params, ...options?.params},}
-    );
-  }
-
+    params?: StudentControllerGetAvailableRoomsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/student/rooms`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
 
 
 
@@ -372,16 +373,16 @@ export const getStudentControllerGetAvailableRoomsQueryKey = (params?: StudentCo
     }
 
     
-export const getStudentControllerGetAvailableRoomsQueryOptions = <TData = Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>, TError = AxiosError<ErrorResponseDto>>(params?: StudentControllerGetAvailableRoomsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>, TError, TData>>, axios?: AxiosRequestConfig}
+export const getStudentControllerGetAvailableRoomsQueryOptions = <TData = Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>, TError = ErrorResponseDto>(params?: StudentControllerGetAvailableRoomsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>, TError, TData>>, }
 ) => {
 
-const {query: queryOptions, axios: axiosOptions} = options ?? {};
+const {query: queryOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getStudentControllerGetAvailableRoomsQueryKey(params);
 
   
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>> = ({ signal }) => studentControllerGetAvailableRooms(params, { signal, ...axiosOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>> = ({ signal }) => studentControllerGetAvailableRooms(params, signal);
 
       
 
@@ -391,39 +392,39 @@ const {query: queryOptions, axios: axiosOptions} = options ?? {};
 }
 
 export type StudentControllerGetAvailableRoomsQueryResult = NonNullable<Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>>
-export type StudentControllerGetAvailableRoomsQueryError = AxiosError<ErrorResponseDto>
+export type StudentControllerGetAvailableRoomsQueryError = ErrorResponseDto
 
 
-export function useStudentControllerGetAvailableRooms<TData = Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>, TError = AxiosError<ErrorResponseDto>>(
+export function useStudentControllerGetAvailableRooms<TData = Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>, TError = ErrorResponseDto>(
  params: undefined |  StudentControllerGetAvailableRoomsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>,
           TError,
           Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useStudentControllerGetAvailableRooms<TData = Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>, TError = AxiosError<ErrorResponseDto>>(
+export function useStudentControllerGetAvailableRooms<TData = Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>, TError = ErrorResponseDto>(
  params?: StudentControllerGetAvailableRoomsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>,
           TError,
           Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>
         > , 'initialData'
-      >, axios?: AxiosRequestConfig}
+      >, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useStudentControllerGetAvailableRooms<TData = Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>, TError = AxiosError<ErrorResponseDto>>(
- params?: StudentControllerGetAvailableRoomsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useStudentControllerGetAvailableRooms<TData = Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>, TError = ErrorResponseDto>(
+ params?: StudentControllerGetAvailableRoomsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
  * @summary Get available rooms with filters
  */
 
-export function useStudentControllerGetAvailableRooms<TData = Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>, TError = AxiosError<ErrorResponseDto>>(
- params?: StudentControllerGetAvailableRoomsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>, TError, TData>>, axios?: AxiosRequestConfig}
+export function useStudentControllerGetAvailableRooms<TData = Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>, TError = ErrorResponseDto>(
+ params?: StudentControllerGetAvailableRoomsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableRooms>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
