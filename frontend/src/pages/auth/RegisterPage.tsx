@@ -30,7 +30,7 @@ export const RegisterPage = () => {
         }, {
             onSuccess: () => {
                 alert("Registration Successful!");
-                navigate('/login');
+                navigate('/verify-otp', { state: { email } });
             }
         });
     };
