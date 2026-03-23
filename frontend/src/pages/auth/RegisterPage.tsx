@@ -174,6 +174,9 @@ export const RegisterPage = () => {
                         {image && <p className="text-xs text-green-600">Image uploaded successfully!</p>}
                     </div>
 
+                    {isUploading && <p className="text-xs text-brand animate-pulse">Uploading to Cloudinary...</p>}
+                    {image && <p className="text-xs text-green-600 font-bold">✓ Image Ready</p>}
+
                     <button
                         type="submit"
                         disabled={registerMutation.isPending}
