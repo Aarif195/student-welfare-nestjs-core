@@ -23,6 +23,7 @@ export const RegisterPage = () => {
     const handleRegister = (e: React.FormEvent) => {
         e.preventDefault();
         if (isUploading) return alert("Please wait for image to upload");
+        if (!image) return alert("Please upload a profile image first.");
 
         registerMutation.mutate({
             data: { email, password, role, firstName, lastName, phone, image: image as unknown as Blob }
@@ -34,37 +35,38 @@ export const RegisterPage = () => {
         });
     };
 
-
-    const signatureQuery = useCloudinaryControllerGetSignature(undefined, {
-        query: { enabled: false }
-    });
+    const signatureQuery = useCloudinaryControllerGetSignature(
+        { folder: 'avatars' },
+        { query: { enabled: false } }
+    );
 
     const handleFileUpload = async (file: File) => {
         setIsUploading(true);
         try {
-            // 1. Get signature and timestamp from your NestJS backend
-            const { data: signData } = await signatureQuery.refetch();
+            //  Get signature and timestamp from your NestJS backend
+            const result = await signatureQuery.refetch();
+            const signData = (result.data as any)?.data || result.data;
 
             if (!signData) return;
 
-            // 2. Prepare Form Data for Cloudinary
+            //  Prepare Form Data for Cloudinary
             const formData = new FormData();
             formData.append('file', file);
             formData.append('api_key', signData.apiKey);
-            formData.append('timestamp', signData.timestamp.toString());
+            formData.append('timestamp', String(signData.timestamp));
             formData.append('signature', signData.signature);
+            formData.append('folder', signData.folder);
 
-            formData.append('folder', 'avatars');
-
-            // if (signData.folder) formData.append('folder', signData.folder);
-
-            // 3. Upload directly to Cloudinary
+            //  Upload directly to Cloudinary
             const res = await axios.post(
                 `https://api.cloudinary.com/v1_1/${signData.cloudName}/auto/upload`,
                 formData
-            );
+            ).catch(err => {
+                console.error("Cloudinary Response Error:", err.response?.data);
+                throw err;
+            });
 
-            // 4. Save the secure_url to our state for the Register DTO
+            //  Save the secure_url to our state for the Register DTO
             setImage(res.data.secure_url);
         } catch (error) {
             console.error("Upload failed", error);
