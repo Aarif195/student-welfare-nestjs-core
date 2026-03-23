@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { useAuthControllerRegister } from '../../api/generated/authentication/authentication';
 
+import { useCloudinaryControllerGetSignature } from
+    '../../api/generated/cloudinary/cloudinary';
+import axios from 'axios';
+
+import { useNavigate } from 'react-router-dom';
+
 export const RegisterPage = () => {
     const [role, setRole] = useState<'student' | 'hostelOwner'>('student');
     const [firstName, setFirstName] = useState('');
@@ -10,31 +16,64 @@ export const RegisterPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isUploading, setIsUploading] = useState(false);
+    const navigate = useNavigate();
 
     const registerMutation = useAuthControllerRegister();
 
     const handleRegister = (e: React.FormEvent) => {
         e.preventDefault();
-        // Sending data exactly as your NestJS backend expects it
+        if (isUploading) return alert("Please wait for image to upload");
+
         registerMutation.mutate({
             data: { email, password, role, firstName, lastName, phone, image: image as unknown as Blob }
+        }, {
+            onSuccess: () => {
+                alert("Registration Successful!");
+                navigate('/login');
+            }
         });
     };
 
 
+    const signatureQuery = useCloudinaryControllerGetSignature(undefined, {
+        query: { enabled: false }
+    });
+
     const handleFileUpload = async (file: File) => {
         setIsUploading(true);
         try {
-            // 1. Get signature from your backend (Update with your actual hook name)
-            // const signatureData = await getSignatureMutation.mutateAsync(); 
+            // 1. Get signature and timestamp from your NestJS backend
+            const { data: signData } = await signatureQuery.refetch();
 
-            // 2. Upload to Cloudinary logic goes here...
-            // const url = "https://cloudinary.com/..." 
-            // setImage(url);
+            if (!signData) return;
+
+            // 2. Prepare Form Data for Cloudinary
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('api_key', signData.apiKey);
+            formData.append('timestamp', signData.timestamp.toString());
+            formData.append('signature', signData.signature);
+
+            formData.append('folder', 'avatars');
+
+            // if (signData.folder) formData.append('folder', signData.folder);
+
+            // 3. Upload directly to Cloudinary
+            const res = await axios.post(
+                `https://api.cloudinary.com/v1_1/${signData.cloudName}/auto/upload`,
+                formData
+            );
+
+            // 4. Save the secure_url to our state for the Register DTO
+            setImage(res.data.secure_url);
+        } catch (error) {
+            console.error("Upload failed", error);
+            alert("Image upload failed. Please try again.");
         } finally {
             setIsUploading(false);
         }
     };
+
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-primary-100 p-6">
@@ -48,7 +87,7 @@ export const RegisterPage = () => {
                         <button
                             type="button"
                             onClick={() => setRole('student')}
-                            className={`flex-1 py-2 rounded-lg border font-medium transition-all ${role === 'student' ? 'bg-brand text-white border-brand' : 'bg-white text-primary-600 border-primary-200'
+                            className={`flex-1 py-2 rounded-lg border font-medium transition-all ${role === 'student' ? 'bg-brand text-white border-brand' : 'bg-white text-primary-600 border-primary-200 cursor-pointer'
                                 }`}
                         >
                             Student
@@ -56,7 +95,7 @@ export const RegisterPage = () => {
                         <button
                             type="button"
                             onClick={() => setRole('hostelOwner')}
-                            className={`flex-1 py-2 rounded-lg border font-medium transition-all ${role === 'hostelOwner' ? 'bg-brand text-white border-brand' : 'bg-white text-primary-600 border-primary-200'
+                            className={`flex-1 py-2 rounded-lg border font-medium transition-all ${role === 'hostelOwner' ? 'bg-brand text-white border-brand' : 'bg-white text-primary-600 border-primary-200 cursor-pointer'
                                 }`}
                         >
                             Hostel Owner
@@ -138,7 +177,7 @@ export const RegisterPage = () => {
                     <button
                         type="submit"
                         disabled={registerMutation.isPending}
-                        className="w-full bg-brand hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg disabled:opacity-50"
+                        className="w-full bg-brand hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg disabled:opacity-50 cursor-pointer"
                     >
                         {registerMutation.isPending ? 'Creating Account...' : 'Register'}
                     </button>
