@@ -48,6 +48,8 @@ export const cloudinaryControllerGetSignature = (
     }
   
 
+
+
 export const getCloudinaryControllerGetSignatureQueryKey = (params?: CloudinaryControllerGetSignatureParams,) => {
     return [
     `/api/v1/cloudinary/signature`, ...(params ? [params]: [])

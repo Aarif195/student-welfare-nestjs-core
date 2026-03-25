@@ -163,11 +163,11 @@ export const RegisterPage = () => {
                             type="file"
                             accept="image/*"
                             className="w-full text-sm text-primary-500
-      file:mr-4 file:py-2 file:px-4
-      file:rounded-lg file:border-0
-      file:text-sm file:font-semibold
-      file:bg-primary-100 file:text-primary-700
-      hover:file:bg-primary-200 cursor-pointer"
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-lg file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-primary-100 file:text-primary-700
+                        hover:file:bg-primary-200 cursor-pointer"
                             onChange={(e) => {
                                 const file = e.target.files?.[0];
                                 if (file) handleFileUpload(file);

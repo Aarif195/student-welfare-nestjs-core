@@ -1,6 +1,6 @@
 module.exports = {
   studentWelfare: {
-    input: '../swagger.json',
+    input: 'http://localhost:4000/api/docs-json',
     output: {
       mode: 'tags-split',
       target: './src/api/generated',
