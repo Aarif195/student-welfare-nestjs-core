@@ -11,6 +11,7 @@ import { ErrorResponseDto } from '@/common/dto/error-response.dto';
 import { MessageResponseDto } from '@/common/dto/message-response.dto';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiBearerAuth()
 @Controller('student')
@@ -18,6 +19,7 @@ export class StudentController {
     constructor(private studentService: StudentService) { }
 
     // bookRoom
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Post('bookings')
     @Roles(Role.student)
     @ApiOperation({ summary: 'Book a room' })
@@ -33,9 +35,9 @@ export class StudentController {
     }
 
     // getMyBookings
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Get('bookings')
     @Roles(Role.student)
-    @ApiBearerAuth()
     @ApiOperation({ summary: 'Get my bookings' })
     @ApiOkResponse({ description: 'Bookings retrieved successfully' })
     @ApiBadRequestResponse({ type: ErrorResponseDto })
@@ -51,9 +53,9 @@ export class StudentController {
     }
 
     // cancelBooking
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Patch('bookings/:bookingId/cancel')
     @Roles(Role.student)
-    @ApiBearerAuth()
     @ApiOperation({ summary: 'Cancel a pending booking' })
     @ApiOkResponse({ description: 'Booking cancelled successfully', type: MessageResponseDto })
     @ApiBadRequestResponse({ type: ErrorResponseDto })
@@ -70,9 +72,9 @@ export class StudentController {
     }
 
     // getAvailableHostels
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Get('hostels')
     @Roles(Role.student)
-    @ApiBearerAuth()
     @ApiOperation({ summary: 'Get all available hostels' })
     @ApiOkResponse({ description: 'Hostels retrieved successfully' })
     @ApiBadRequestResponse({ type: ErrorResponseDto })
@@ -90,10 +92,10 @@ export class StudentController {
         };
     }
 
-// getAvailableRooms
+    // getAvailableRooms
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Get('rooms')
     @Roles(Role.student)
-    @ApiBearerAuth()
     @ApiOperation({ summary: 'Get available rooms with filters' })
     @ApiOkResponse({ description: 'Rooms retrieved successfully' })
     @ApiBadRequestResponse({ type: ErrorResponseDto })

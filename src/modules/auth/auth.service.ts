@@ -270,6 +270,14 @@ export class AuthService {
       token: this.jwtService.sign(payload),
     };
   }
+  
+// logout
+async logout() {
+  return {
+    success: true,
+    message: 'User logged out successfully',
+  };
+}
 
   // googleLogin
   async googleLogin(dto: GoogleLoginDto) {

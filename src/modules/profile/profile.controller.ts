@@ -30,6 +30,7 @@ export class ProfileController {
     return this.profileService.getProfile(user.id, user.role);
   }
 
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Patch('update')
   @Roles(Role.student, Role.hostelOwner, Role.superadmin)
   @ApiOperation({ summary: 'Update user profile' })

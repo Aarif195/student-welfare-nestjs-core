@@ -42,5 +42,13 @@ export class AdminService {
   }
 
 
+  // logout
+ async logout() {
+    return {
+      success: true,
+      message: 'Admin logged out successfully',
+    };
+  }
+
 
 }

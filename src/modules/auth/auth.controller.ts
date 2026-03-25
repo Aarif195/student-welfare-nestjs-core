@@ -154,6 +154,22 @@ export class AuthController {
         return this.authService.googleLogin(googleLoginDto);
     }
 
+    // logout
+    @Post('logout')
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'User logout' })
+    @ApiOkResponse({
+        description: 'User logged out successfully',
+        type: MessageResponseDto,
+    })
+    @ApiUnauthorizedResponse({
+        description: 'Unauthorized',
+        type: ErrorResponseDto,
+    })
+    async logout() {
+        return this.authService.logout();
+    }
+
     // Guards work
     @Get('profile')
     @ApiBearerAuth()
