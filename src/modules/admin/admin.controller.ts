@@ -41,6 +41,7 @@ export class AdminController {
   }
 
   // logout
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Post('logout')
   @Roles(Role.superadmin)
   @ApiBearerAuth()
@@ -59,6 +60,7 @@ export class AdminController {
 
 
   // getAllHostels
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Get('hostels')
   @Roles(Role.superadmin)
   @ApiBearerAuth()
@@ -84,6 +86,7 @@ export class AdminController {
   }
 
   // approveHostel
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Patch('approve/:hostelId')
   @Roles(Role.superadmin)
   @ApiBearerAuth()
@@ -103,6 +106,7 @@ export class AdminController {
   }
 
   // rejectHostel
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Patch('reject/:hostelId')
   @Roles(Role.superadmin)
   @ApiBearerAuth()
@@ -123,7 +127,10 @@ export class AdminController {
     }
   }
 
+
+
   // getAllBookings
+  // @Throttle({ default: { limit: 3, ttl: 60000 } })
   // @Get('bookings')
   // @Roles(Role.superadmin)
   // @ApiBearerAuth()
@@ -147,5 +154,20 @@ export class AdminController {
   //     bookings: data.bookings,
   //   };
   // }
+
+  @Patch('booking/approve/:bookingId')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Approve a student booking' })
+  @ApiParam({ name: 'bookingId', type: Number })
+  @ApiOkResponse({ description: 'Booking approved and email sent' })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  async approveBooking(@Param('bookingId', ParseIntPipe) bookingId: number) {
+    await this.adminService.approveBooking(bookingId);
+    return {
+      success: true,
+      message: 'Booking approved and email sent to student',
+    };
+  }
 
 }

@@ -47,3 +47,21 @@ export const hostelRejectedEmailTemplate = (hostelName: string, reason: string) 
     <p>Please address these issues and re-submit your application.</p>
   </div>
 `;
+
+export const bookingApprovedEmailTemplate = (bookingId: number) => `
+  <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
+    <h1 style="color: #2c3e50;">Congratulations!</h1>
+    <p>Your booking for <strong>Booking ID: ${bookingId}</strong> has been approved.</p>
+    <p>You can now proceed with the necessary arrangements.</p>
+    <p style="margin-top: 20px; font-size: 12px; color: #777;">Student Welfare Platform Team</p>
+  </div>
+`;
+
+export const bookingRejectedEmailTemplate = (bookingId: number, reason: string) => `
+  <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
+    <h1 style="color: #e74c3c;">Booking Update</h1>
+    <p>Your booking for <strong>Booking ID: ${bookingId}</strong> has been rejected.</p>
+    <p><strong>Reason:</strong> ${reason}</p>
+    <p style="margin-top: 20px; font-size: 12px; color: #777;">Student Welfare Platform Team</p>
+  </div>
+`;

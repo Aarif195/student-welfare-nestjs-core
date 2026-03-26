@@ -6,7 +6,7 @@ import { AdminLoginDto } from './dto/admin-login.dto';
 import { DatabaseService } from '@/database/database.service';
 import { RejectHostelDto } from './dto/admin-rejectHostel.dto';
 
-import { hostelApprovedEmailTemplate, hostelRejectedEmailTemplate } from '@/common/templates/auth-emails.template';
+import { bookingApprovedEmailTemplate, hostelApprovedEmailTemplate, hostelRejectedEmailTemplate } from '@/common/templates/auth-emails.template';
 
 import { MailService } from '@/providers/mail/mail.service';
 
@@ -141,5 +141,36 @@ export class AdminService {
 
     return rejectedHostel;
   }
+
+// approveBooking
+async approveBooking(bookingId: number) {
+  const result = await this.prisma.$transaction(async (tx) => {
+    // Update Booking status
+    const booking = await tx.booking.update({
+      where: { id: bookingId },
+      data: { booking_status: 'approved' },
+      include: { student: { select: { email: true } } },
+    });
+
+    // Flip Room Availability to false
+    await tx.room.update({
+      where: { id: booking.room_id },
+      data: { availability: false },
+    });
+
+    return booking;
+  });
+
+  // Send Email (outside transaction)
+  try {
+    const emailBody = bookingApprovedEmailTemplate(bookingId);
+    await this.mailService.sendMail(result.student.email, 'Booking Approved!', emailBody);
+  } catch (error) {
+    console.error('Booking Approval Email failed:', error.message);
+  }
+
+  return result;
+}
+
 
 }
