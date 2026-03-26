@@ -28,3 +28,22 @@ export const googleWelcomeEmailTemplate = (firstName: string) => `
   <p>Your account has been successfully created via Google.</p>
  
 `;
+
+export const hostelApprovedEmailTemplate = (hostelName: string) => `
+  <div style="font-family: sans-serif; color: #333; line-height: 1.6;">
+    <p style="font-size: 16px; font-weight: bold;">Hello,</p>
+    <p>Great news! Your hostel <strong>${hostelName}</strong> has been <strong>approved</strong> and is now visible to students on the platform.</p>
+    <p style="margin-top: 20px; font-size: 12px; color: #777;">Student Welfare Platform Team</p>
+  </div>
+`;
+
+export const hostelRejectedEmailTemplate = (hostelName: string, reason: string) => `
+  <div style="font-family: sans-serif; color: #333; line-height: 1.6;">
+    <p style="font-size: 16px; font-weight: bold;">Hello,</p>
+    <p>We regret to inform you that your hostel application for <strong>${hostelName}</strong> has been <strong>rejected</strong>.</p>
+    <p style="background: #f8f8f8; padding: 10px; border-left: 4px solid #e74c3c;">
+      <strong>Reason:</strong> ${reason}
+    </p>
+    <p>Please address these issues and re-submit your application.</p>
+  </div>
+`;

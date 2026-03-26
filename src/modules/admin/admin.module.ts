@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+
 import { AdminService } from './admin.service';
 import { AdminController } from './admin.controller';
 import { DatabaseModule } from '../../database/database.module';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MailModule } from '@/providers/mail/mail.module';
 
 @Module({
   imports: [
@@ -18,6 +20,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         }
       }),
     }),
+    MailModule,
   ],
   providers: [AdminService],
   controllers: [AdminController],

@@ -1,15 +1,21 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+
 import { AdminLoginDto } from './dto/admin-login.dto';
 import { DatabaseService } from '@/database/database.service';
 import { RejectHostelDto } from './dto/admin-rejectHostel.dto';
+
+import { hostelApprovedEmailTemplate, hostelRejectedEmailTemplate } from '@/common/templates/auth-emails.template';
+
+import { MailService } from '@/providers/mail/mail.service';
 
 @Injectable()
 export class AdminService {
   constructor(
     private prisma: DatabaseService,
     private jwt: JwtService,
+    private mailService: MailService,
   ) { }
 
   // login
@@ -43,7 +49,7 @@ export class AdminService {
   }
 
   // logout
- async logout() {
+  async logout() {
     return {
       success: true,
       message: 'Admin logged out successfully',
@@ -52,69 +58,88 @@ export class AdminService {
 
   // getAllHostels
   async getAllHostels(page: number, limit: number) {
-  const skip = (page - 1) * limit;
+    const skip = (page - 1) * limit;
 
-  const [total, hostels] = await this.prisma.$transaction([
-    this.prisma.hostel.count(),
-    this.prisma.hostel.findMany({
-      skip,
-      take: limit,
-      orderBy: { created_at: 'desc' },
-      include: {
-        owner: {
-          select: {
-            firstName: true,
-            lastName: true,
-            email: true,
+    const [total, hostels] = await this.prisma.$transaction([
+      this.prisma.hostel.count(),
+      this.prisma.hostel.findMany({
+        skip,
+        take: limit,
+        orderBy: { created_at: 'desc' },
+        include: {
+          owner: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
           },
         },
+      }),
+    ]);
+
+    return { total, hostels };
+  }
+
+  // approveHostel
+  async approveHostel(hostelId: number) {
+    const hostel = await this.prisma.hostel.findUnique({
+      where: { id: hostelId },
+    });
+
+    if (!hostel) {
+      throw new NotFoundException('Hostel not found');
+    }
+
+    const updatedHostel = await this.prisma.hostel.update({
+      where: { id: hostelId },
+      data: {
+        status: 'APPROVED',
+        updated_at: new Date()
+      }, include: { owner: true }
+    });
+
+    //  Send Email
+    try {
+      const emailBody = hostelApprovedEmailTemplate(updatedHostel.name);
+      await this.mailService.sendMail(updatedHostel.owner.email, 'Hostel Approved', emailBody);
+    } catch (error) {
+      console.error('Approval Email failed:', error.message);
+    }
+
+    return updatedHostel;
+  }
+
+  // rejectHostel
+  async rejectHostel(hostelId: number, dto: RejectHostelDto) {
+    const hostel = await this.prisma.hostel.findUnique({
+      where: { id: hostelId },
+      include: { owner: true }
+    });
+
+    if (!hostel) {
+      throw new NotFoundException('Hostel not found');
+    }
+
+    const rejectedHostel = await this.prisma.hostel.update({
+      where: { id: hostelId },
+      data: {
+        status: 'REJECTED',
+        rejection_reason: dto.reason || 'No reason provided',
+        updated_at: new Date(),
       },
-    }),
-  ]);
+      include: { owner: true },
+    });
 
-  return { total, hostels };
-}
+    // Send Email
+    try {
+      const emailBody = hostelRejectedEmailTemplate(rejectedHostel.name, dto.reason || 'No reason provided');
+      await this.mailService.sendMail(rejectedHostel.owner.email, 'Hostel Application Update', emailBody);
+    } catch (error) {
+      console.error('Rejection Email failed:', error.message);
+    }
 
-// approveHostel
-async approveHostel(hostelId: number) {
-  const hostel = await this.prisma.hostel.findUnique({
-    where: { id: hostelId },
-  });
-
-  if (!hostel) {
-    throw new NotFoundException('Hostel not found');
+    return rejectedHostel;
   }
-
-  const updatedHostel = await this.prisma.hostel.update({
-    where: { id: hostelId },
-    data: { 
-      status: 'APPROVED',
-      updated_at: new Date()
-    },
-  });
-
-  return updatedHostel;
-}
-
-
-// rejectHostel
-async rejectHostel(hostelId: number, dto: RejectHostelDto) {
-  const hostel = await this.prisma.hostel.findUnique({
-    where: { id: hostelId },
-  });
-
-  if (!hostel) {
-    throw new NotFoundException('Hostel not found');
-  }
-
-  return this.prisma.hostel.update({
-    where: { id: hostelId },
-    data: {
-      status: 'REJECTED',
-      rejection_reason: dto.reason || 'No reason provided',
-      updated_at: new Date(),
-    },
-  });
-}
 
 }

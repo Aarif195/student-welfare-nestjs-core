@@ -41,6 +41,7 @@ model Hostel {
   location    String
   description String?
   status      VerificationStatus @default(PENDING)
+  rejection_reason String?
   rooms       Room[]
   created_at  DateTime           @default(now())
   updated_at  DateTime           @updatedAt

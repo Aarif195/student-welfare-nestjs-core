@@ -102,7 +102,6 @@ export class AdminController {
     }
   }
 
-
   // rejectHostel
   @Patch('reject/:hostelId')
   @Roles(Role.superadmin)
@@ -123,4 +122,30 @@ export class AdminController {
       throw new BadRequestException(error.message);
     }
   }
+
+  // getAllBookings
+  // @Get('bookings')
+  // @Roles(Role.superadmin)
+  // @ApiBearerAuth()
+  // @ApiOperation({ summary: 'Get all bookings (Admin)' })
+  // @ApiOkResponse({ description: 'Bookings retrieved successfully' })
+  // @ApiBadRequestResponse({ type: ErrorResponseDto })
+  // @ApiQuery({ name: 'page', required: false, type: Number })
+  // @ApiQuery({ name: 'limit', required: false, type: Number })
+  // async getAllBookings(@Query() paginationDto: PaginationDto) {
+  //   const { page, limit } = paginationDto;
+  //   const data = await this.adminService.getAllBookings(
+  //     Number(page) || 1,
+  //     Number(limit) || 10,
+  //   );
+
+  //   return {
+  //     success: true,
+  //     page: Number(page) || 1,
+  //     limit: Number(limit) || 10,
+  //     total: data.total,
+  //     bookings: data.bookings,
+  //   };
+  // }
+
 }
