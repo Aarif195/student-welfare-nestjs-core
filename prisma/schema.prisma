@@ -137,7 +137,7 @@ model Booking {
 
 model Payment {
   id             Int       @id @default(autoincrement())
-  booking_id     Int
+  booking_id     Int          @unique
   booking        Booking   @relation(fields: [booking_id], references: [id], onDelete: Cascade)
   student_id     Int
   student        User      @relation(fields: [student_id], references: [id], onDelete: Cascade)

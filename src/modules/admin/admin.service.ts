@@ -6,7 +6,7 @@ import { AdminLoginDto } from './dto/admin-login.dto';
 import { DatabaseService } from '@/database/database.service';
 import { RejectHostelDto } from './dto/admin-rejectHostel.dto';
 
-import { bookingApprovedEmailTemplate, hostelApprovedEmailTemplate, hostelRejectedEmailTemplate } from '@/common/templates/auth-emails.template';
+import { bookingApprovedEmailTemplate, bookingRejectedEmailTemplate, hostelApprovedEmailTemplate, hostelRejectedEmailTemplate } from '@/common/templates/auth-emails.template';
 
 import { MailService } from '@/providers/mail/mail.service';
 
@@ -216,5 +216,44 @@ async approveBooking(bookingId: number) {
   return result;
 }
 
+// rejectBooking
+async rejectBooking(bookingId: number, dto: RejectHostelDto) { 
+  const result = await this.prisma.$transaction(async (tx) => {
+    // Update Booking status
+    const booking = await tx.booking.update({
+      where: { id: bookingId },
+      data: { 
+        booking_status: 'rejected',
+        rejection_reason: dto.reason 
+      },
+      include: { 
+        student: { select: { firstName: true, email: true } },
+        room: { select: { room_number: true } }
+      },
+    });
+
+    // Update Payment status to completed refund
+    await tx.payment.update({
+      where: { booking_id: bookingId },
+      data: { refund_status: 'completed' },
+    });
+
+    return booking;
+  });
+
+  // Send Email
+  try {
+    const emailBody = bookingRejectedEmailTemplate(
+      result.student.firstName, 
+      result.room.room_number, 
+      dto.reason
+    );
+    await this.mailService.sendMail(result.student.email, 'Booking Update: Application Rejected', emailBody);
+  } catch (error) {
+    console.error('Booking Rejection Email failed:', error.message);
+  }
+
+  return result;
+}
 
 }

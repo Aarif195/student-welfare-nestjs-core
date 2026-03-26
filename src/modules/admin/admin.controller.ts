@@ -171,4 +171,27 @@ export class AdminController {
     };
   }
 
+  // rejectBooking
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Patch('booking/reject/:bookingId')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Reject a student booking' })
+  @ApiParam({ name: 'bookingId', type: Number })
+  @ApiBody({ type: RejectHostelDto })
+  @ApiOkResponse({ description: 'Booking rejected and email sent' })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  async rejectBooking(
+    @Param('bookingId', ParseIntPipe) bookingId: number,
+    @Body() dto: RejectHostelDto
+  ) {
+    if (!dto.reason) throw new BadRequestException('Rejection reason is required');
+    
+    await this.adminService.rejectBooking(bookingId, dto);
+    return {
+      success: true,
+      message: 'Booking rejected and notification sent',
+    };
+  }
+
 }

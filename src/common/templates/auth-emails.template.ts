@@ -57,11 +57,15 @@ export const bookingApprovedEmailTemplate = (bookingId: number) => `
   </div>
 `;
 
-export const bookingRejectedEmailTemplate = (bookingId: number, reason: string) => `
-  <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #f9f9f9;">
-    <h1 style="color: #e74c3c;">Booking Update</h1>
-    <p>Your booking for <strong>Booking ID: ${bookingId}</strong> has been rejected.</p>
-    <p><strong>Reason:</strong> ${reason}</p>
+export const bookingRejectedEmailTemplate = (firstName: string, roomNumber: string, reason: string) => `
+  <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px; background-color: #fdf2f2;">
+    <h1 style="color: #c53030;">Booking Update</h1>
+    <p>Hello ${firstName},</p>
+    <p>We regret to inform you that your booking for room <strong>${roomNumber}</strong> has been <strong>rejected</strong>.</p>
+    <p style="background: #fff; padding: 10px; border-left: 4px solid #c53030;">
+      <strong>Reason:</strong> ${reason}
+    </p>
+    <p><strong>Refund Info:</strong> Your payment has been successfully refunded to your account.</p>
     <p style="margin-top: 20px; font-size: 12px; color: #777;">Student Welfare Platform Team</p>
   </div>
 `;

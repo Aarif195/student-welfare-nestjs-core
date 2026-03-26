@@ -5,5 +5,5 @@ export class RejectHostelDto {
     @ApiProperty({ example: 'Incomplete documentation' })
     @IsString()
     @IsOptional()
-    reason?: string;
+    reason: string;
 }
