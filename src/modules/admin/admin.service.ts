@@ -41,7 +41,6 @@ export class AdminService {
     };
   }
 
-
   // logout
  async logout() {
     return {
@@ -50,5 +49,29 @@ export class AdminService {
     };
   }
 
+  // getAllHostels
+  async getAllHostels(page: number, limit: number) {
+  const skip = (page - 1) * limit;
+
+  const [total, hostels] = await this.prisma.$transaction([
+    this.prisma.hostel.count(),
+    this.prisma.hostel.findMany({
+      skip,
+      take: limit,
+      orderBy: { created_at: 'desc' },
+      include: {
+        owner: {
+          select: {
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+        },
+      },
+    }),
+  ]);
+
+  return { total, hostels };
+}
 
 }

@@ -81,7 +81,7 @@ export const RegisterPage = () => {
         <div className="min-h-screen flex items-center justify-center bg-primary-100 p-6">
             <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-sm border border-primary-200">
                 <h2 className="text-2xl font-bold text-primary-700">Create Account</h2>
-                <p className="text-primary-500 mb-6">Join the Student Welfare Platform</p>
+                <p className="text-primary-500 mb-6 mt-2">Join the Student Welfare Platform</p>
 
                 <form onSubmit={handleRegister} className="space-y-4">
                     {/* Role Selection */}

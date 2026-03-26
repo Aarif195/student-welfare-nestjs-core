@@ -1,14 +1,17 @@
-import { Body, Controller, Post, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags, ApiBody, ApiOkResponse, ApiUnauthorizedResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { Body, Controller, Post, HttpCode, HttpStatus, Query, Get } from '@nestjs/common';
+import { ApiOperation, ApiTags, ApiBody, ApiOkResponse, ApiUnauthorizedResponse, ApiBearerAuth, ApiBadRequestResponse, ApiQuery } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 
 import { AdminLoginDto } from './dto/admin-login.dto';
 import { AdminResponseDto } from './dto/admin-response.dto';
 import { ErrorResponseDto } from '@/common/dto/error-response.dto';
+import { MessageResponseDto } from '@/common/dto/message-response.dto';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+
 
 import { Public } from '@/common/decorators/public.decorator';
 import { Throttle } from '@nestjs/throttler';
-import { MessageResponseDto } from '@/common/dto/message-response.dto';
+
 import { Roles } from '@/common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 
@@ -51,6 +54,32 @@ export class AdminController {
   })
   async logout() {
     return this.adminService.logout();
+  }
+
+
+  // getAllHostels
+  @Get('hostels')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all hostels (Admin)' })
+  @ApiOkResponse({ description: 'Hostels retrieved successfully' })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async getAllHostels(@Query() paginationDto: PaginationDto) {
+    const { page, limit } = paginationDto;
+    const data = await this.adminService.getAllHostels(
+      Number(page) || 1,
+      Number(limit) || 10,
+    );
+
+    return {
+      success: true,
+      page: Number(page) || 1,
+      limit: Number(limit) || 10,
+      total: data.total,
+      Hostels: data.hostels,
+    };
   }
 
 }
