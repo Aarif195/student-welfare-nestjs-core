@@ -58,7 +58,6 @@ export class AdminController {
     return this.adminService.logout();
   }
 
-
   // getAllHostels
   @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Get('hostels')
@@ -186,11 +185,35 @@ export class AdminController {
     @Body() dto: RejectHostelDto
   ) {
     if (!dto.reason) throw new BadRequestException('Rejection reason is required');
-    
+
     await this.adminService.rejectBooking(bookingId, dto);
     return {
       success: true,
       message: 'Booking rejected and notification sent',
+    };
+  }
+
+  // getAllOwners
+  @Get('owners')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all hostel owners' })
+  @ApiOkResponse({ description: 'Owners retrieved successfully' })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async getAllOwners(@Query() paginationDto: PaginationDto) {
+    const page = Number(paginationDto.page) || 1;
+    const limit = Number(paginationDto.limit) || 10;
+
+    const data = await this.adminService.getAllOwners(page, limit);
+
+    return {
+      success: true,
+      page,
+      limit,
+      total: data.total,
+      HostelOwners: data.owners,
     };
   }
 

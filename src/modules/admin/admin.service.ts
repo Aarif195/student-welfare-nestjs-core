@@ -9,6 +9,7 @@ import { RejectHostelDto } from './dto/admin-rejectHostel.dto';
 import { bookingApprovedEmailTemplate, bookingRejectedEmailTemplate, hostelApprovedEmailTemplate, hostelRejectedEmailTemplate } from '@/common/templates/auth-emails.template';
 
 import { MailService } from '@/providers/mail/mail.service';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class AdminService {
@@ -254,6 +255,32 @@ async rejectBooking(bookingId: number, dto: RejectHostelDto) {
   }
 
   return result;
+}
+
+  // getAllOwners
+async getAllOwners(page: number, limit: number) {
+  const skip = (page - 1) * limit;
+
+  const [total, owners] = await this.prisma.$transaction([
+    this.prisma.user.count({
+      where: { role: Role.hostelOwner },
+    }),
+    this.prisma.user.findMany({
+      where: { role: Role.hostelOwner },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        createdAt: true,
+      },
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    }),
+  ]);
+
+  return { total, owners };
 }
 
 }
