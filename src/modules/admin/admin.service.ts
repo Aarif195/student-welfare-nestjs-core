@@ -283,4 +283,30 @@ async getAllOwners(page: number, limit: number) {
   return { total, owners };
 }
 
+// getAllStudents
+async getAllStudents(page: number, limit: number) {
+  const skip = (page - 1) * limit;
+
+  const [total, students] = await this.prisma.$transaction([
+    this.prisma.user.count({
+      where: { role: 'student' },
+    }),
+    this.prisma.user.findMany({
+      where: { role: 'student' },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        createdAt: true,
+      },
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    }),
+  ]);
+
+  return { total, students };
+}
+
 }

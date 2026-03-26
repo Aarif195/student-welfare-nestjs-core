@@ -194,6 +194,7 @@ export class AdminController {
   }
 
   // getAllOwners
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Get('owners')
   @Roles(Role.superadmin)
   @ApiBearerAuth()
@@ -214,6 +215,31 @@ export class AdminController {
       limit,
       total: data.total,
       HostelOwners: data.owners,
+    };
+  }
+
+  // getAllStudents
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Get('students')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all students' })
+  @ApiOkResponse({ description: 'Students retrieved successfully' })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async getAllStudents(@Query() paginationDto: PaginationDto) {
+    const page = Number(paginationDto.page) || 1;
+    const limit = Number(paginationDto.limit) || 10;
+
+    const data = await this.adminService.getAllStudents(page, limit);
+
+    return {
+      success: true,
+      page,
+      limit,
+      total: data.total,
+      students: data.students,
     };
   }
 
