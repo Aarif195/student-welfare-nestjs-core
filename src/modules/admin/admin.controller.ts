@@ -1,5 +1,5 @@
-import { Body, Controller, Post, HttpCode, HttpStatus, Query, Get } from '@nestjs/common';
-import { ApiOperation, ApiTags, ApiBody, ApiOkResponse, ApiUnauthorizedResponse, ApiBearerAuth, ApiBadRequestResponse, ApiQuery } from '@nestjs/swagger';
+import { Body, Controller, Post, HttpCode, HttpStatus, Query, Get, ParseIntPipe, Param, BadRequestException, Patch } from '@nestjs/common';
+import { ApiOperation, ApiTags, ApiBody, ApiOkResponse, ApiUnauthorizedResponse, ApiBearerAuth, ApiBadRequestResponse, ApiQuery, ApiParam } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 
 import { AdminLoginDto } from './dto/admin-login.dto';
@@ -80,6 +80,25 @@ export class AdminController {
       total: data.total,
       Hostels: data.hostels,
     };
+  }
+
+  // approveHostel
+  @Patch('approve/:hostelId')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Approve a hostel' })
+  @ApiParam({ name: 'hostelId', type: Number })
+  @ApiOkResponse({ description: 'Hostel approved successfully', type: MessageResponseDto })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  async approveHostel(
+    @Param('hostelId', ParseIntPipe) hostelId: number,
+  ) {
+    try {
+      const data = await this.adminService.approveHostel(hostelId);
+      return { success: true, message: 'Hostel approved successfully', data };
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
 }
