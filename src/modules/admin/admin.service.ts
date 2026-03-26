@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { AdminLoginDto } from './dto/admin-login.dto';
 import { DatabaseService } from '@/database/database.service';
+import { RejectHostelDto } from './dto/admin-rejectHostel.dto';
 
 @Injectable()
 export class AdminService {
@@ -95,20 +96,25 @@ async approveHostel(hostelId: number) {
   return updatedHostel;
 }
 
+
+// rejectHostel
+async rejectHostel(hostelId: number, dto: RejectHostelDto) {
+  const hostel = await this.prisma.hostel.findUnique({
+    where: { id: hostelId },
+  });
+
+  if (!hostel) {
+    throw new NotFoundException('Hostel not found');
+  }
+
+  return this.prisma.hostel.update({
+    where: { id: hostelId },
+    data: {
+      status: 'REJECTED',
+      rejection_reason: dto.reason || 'No reason provided',
+      updated_at: new Date(),
+    },
+  });
 }
 
-// @Patch('approve/:hostelId')
-//   @Roles(Role.superadmin)
-//   @ApiBearerAuth()
-//   @ApiOperation({ summary: 'Approve a hostel' })
-//   @ApiParam({ name: 'hostelId', type: Number })
-//   @ApiOkResponse({ description: 'Hostel approved successfully' })
-//   @ApiNotFoundResponse({ type: ErrorResponseDto })
-//   async approveHostel(@Param('hostelId', ParseIntPipe) hostelId: number) {
-//     const data = await this.adminService.approveHostel(hostelId);
-//     return {
-//       success: true,
-//       message: 'Hostel approved successfully',
-//       data,
-//     };
-//   }
+}

@@ -14,6 +14,7 @@ import { Throttle } from '@nestjs/throttler';
 
 import { Roles } from '@/common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
+import { RejectHostelDto } from './dto/admin-rejectHostel.dto';
 
 @ApiTags('Admin Dashboard')
 @Controller('admin')
@@ -101,4 +102,25 @@ export class AdminController {
     }
   }
 
+
+  // rejectHostel
+  @Patch('reject/:hostelId')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Reject a hostel' })
+  @ApiParam({ name: 'hostelId', type: Number })
+  @ApiBody({ type: RejectHostelDto })
+  @ApiOkResponse({ description: 'Hostel rejected successfully', type: MessageResponseDto })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  async rejectHostel(
+    @Param('hostelId', ParseIntPipe) hostelId: number,
+    @Body() dto: RejectHostelDto,
+  ) {
+    try {
+      const data = await this.adminService.rejectHostel(hostelId, dto);
+      return { success: true, message: 'Hostel rejected successfully', data };
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
 }
