@@ -142,6 +142,50 @@ export class AdminService {
     return rejectedHostel;
   }
 
+// getPendingBookings
+async getPendingBookings(page: number, limit: number) {
+  const skip = (page - 1) * limit;
+
+  const [total, bookings] = await this.prisma.$transaction([
+    this.prisma.booking.count({ where: { booking_status: 'pending' } }),
+    this.prisma.booking.findMany({
+      where: { booking_status: 'pending' },
+      skip,
+      take: limit,
+      orderBy: { booked_at: 'desc' },
+      include: {
+        student: { select: { firstName: true, lastName: true, email: true } },
+        room: {
+          select: {
+            room_number: true,
+            type: true,
+            hostel: { select: { id: true, name: true, location: true } },
+          },
+        },
+        payments: { select: { reference: true, amount: true, paid_at: true } },
+      },
+    }),
+  ]);
+
+  return {
+  total,
+  bookings: bookings.map(b => ({
+    booking_id: b.id,
+    student_id: b.student_id,
+    room_id: b.room_id,
+    booking_status: b.booking_status,
+    booked_at: b.booked_at,
+    start_date: b.start_date,
+    end_date: b.end_date,
+    price: b.price,
+    rejection_reason: b.rejection_reason,
+    student: b.student,
+    room: b.room,
+    payments: b.payments,
+  })),
+};
+}
+
 // approveBooking
 async approveBooking(bookingId: number) {
   const result = await this.prisma.$transaction(async (tx) => {

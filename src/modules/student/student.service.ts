@@ -12,7 +12,9 @@ export class StudentService {
   async bookRoom(studentId: number, data: CreateBookingDto) {
 
     //  Check room availability
-    const room = await this.prisma.room.findUnique({ where: { id: data.room_id } });
+    const roomId = Number(data.room_id);
+    const room = await this.prisma.room.findUnique({ where: { id: roomId } });
+
     if (!room || !room.availability) {
       throw new BadRequestException('Room unavailable');
     }
@@ -60,20 +62,30 @@ export class StudentService {
   async getMyBookings(studentId: number, page: number, limit: number) {
     const skip = (page - 1) * limit;
 
-    return await this.prisma.booking.findMany({
+    const bookings = await this.prisma.booking.findMany({
       where: { student_id: studentId },
       orderBy: { booked_at: 'desc' },
       skip,
       take: limit,
       include: {
-        room: {
-          include: {
-            hostel: true,
-          },
-        },
+        room: { include: { hostel: true } },
         payments: true,
       },
     });
+
+    return bookings.map(b => ({
+      booking_id: b.id,
+      student_id: b.student_id,
+      room_id: b.room_id,
+      booking_status: b.booking_status,
+      booked_at: b.booked_at,
+      start_date: b.start_date,
+      end_date: b.end_date,
+      price: b.price,
+      rejection_reason: b.rejection_reason,
+      room: b.room,
+      payments: b.payments,
+    }));
   }
 
   // cancelBooking

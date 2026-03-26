@@ -2,7 +2,7 @@ import { IsString, IsNotEmpty, IsInt } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateBookingDto {
-  @ApiProperty({ example: 101 })
+  @ApiProperty({ example: 1 })
   @IsInt()
   @IsNotEmpty()
   readonly room_id: number;

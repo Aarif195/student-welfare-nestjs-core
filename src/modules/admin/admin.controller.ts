@@ -128,33 +128,34 @@ export class AdminController {
   }
 
 
+  // getPendingBookings
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Get('bookings')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all pending bookings (Admin)' })
+  @ApiOkResponse({ description: 'Bookings retrieved successfully' })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async getPendingBookings(@Query() paginationDto: PaginationDto) {
+    const { page, limit } = paginationDto;
+    const data = await this.adminService.getPendingBookings(
+      Number(page) || 1,
+      Number(limit) || 10,
+    );
 
-  // getAllBookings
-  // @Throttle({ default: { limit: 3, ttl: 60000 } })
-  // @Get('bookings')
-  // @Roles(Role.superadmin)
-  // @ApiBearerAuth()
-  // @ApiOperation({ summary: 'Get all bookings (Admin)' })
-  // @ApiOkResponse({ description: 'Bookings retrieved successfully' })
-  // @ApiBadRequestResponse({ type: ErrorResponseDto })
-  // @ApiQuery({ name: 'page', required: false, type: Number })
-  // @ApiQuery({ name: 'limit', required: false, type: Number })
-  // async getAllBookings(@Query() paginationDto: PaginationDto) {
-  //   const { page, limit } = paginationDto;
-  //   const data = await this.adminService.getAllBookings(
-  //     Number(page) || 1,
-  //     Number(limit) || 10,
-  //   );
+    return {
+      success: true,
+      page: Number(page) || 1,
+      limit: Number(limit) || 10,
+      total: data.total,
+      bookings: data.bookings,
+    };
+  }
 
-  //   return {
-  //     success: true,
-  //     page: Number(page) || 1,
-  //     limit: Number(limit) || 10,
-  //     total: data.total,
-  //     bookings: data.bookings,
-  //   };
-  // }
-
+  // approveBooking
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Patch('booking/approve/:bookingId')
   @Roles(Role.superadmin)
   @ApiBearerAuth()
