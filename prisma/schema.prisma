@@ -34,6 +34,7 @@ model User {
 
   // Notifications
   createdNotifications Notification[]
+  readNotifications NotificationRead[]
 }
 
 model Hostel {
@@ -171,4 +172,19 @@ model Notification {
   
   creator_role Role     // This uses your existing Role enum
   createdAt    DateTime @default(now())
+
+  // Relation 
+  readBy      NotificationRead[]
+}
+
+model NotificationRead {
+  id              Int          @id @default(autoincrement())
+  notification_id Int
+  student_id      Int
+  read_at         DateTime     @default(now())
+
+  notification    Notification @relation(fields: [notification_id], references: [id], onDelete: Cascade)
+  student         User         @relation(fields: [student_id], references: [id], onDelete: Cascade)
+
+  @@unique([notification_id, student_id]) 
 }

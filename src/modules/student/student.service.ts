@@ -211,7 +211,10 @@ export class StudentService {
         where,
         include: {
           hostel: { select: { name: true } },
-          author: { select: { firstName: true, lastName: true } }
+          author: { select: { firstName: true, lastName: true } }, readBy: {
+            where: { student_id: studentId },
+            select: { id: true }
+          }
         },
         orderBy: { createdAt: 'desc' },
         skip,
@@ -223,4 +226,22 @@ export class StudentService {
     return { notifications, total };
 
   }
+
+  // markAsRead
+  async markAsRead(studentId: number, notificationId: number) {
+    return this.prisma.notificationRead.upsert({
+      where: {
+        notification_id_student_id: {
+          notification_id: notificationId,
+          student_id: studentId,
+        },
+      },
+      update: {},
+      create: {
+        notification_id: notificationId,
+        student_id: studentId,
+      },
+    });
+  }
+
 }

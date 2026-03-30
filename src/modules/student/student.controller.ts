@@ -136,12 +136,30 @@ export class StudentController {
         const limit = Number(pagination.limit) || 10;
         const { total, notifications } =
             await this.studentService.getMyNotifications(user.id, page, limit);
-        console.log(user, user.id);
        return {
     success: true,
     meta: { page, limit, total },
     notifications,
   };
+    }
+
+    // markAsRead
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Patch('notifications/:notificationId/read')
+    @Roles(Role.student)
+    @ApiOperation({ summary: 'Mark a notification as read' })
+    @ApiOkResponse({ description: 'Notification marked as read successfully', type: MessageResponseDto })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    async markAsRead(
+        @GetUser() user: { id: number },
+        @Param('notificationId', ParseIntPipe) notificationId: number,
+    ) {
+        try {
+            const data = await this.studentService.markAsRead(user.id, notificationId);
+            return { success: true, message: 'Notification marked as read successfully', data };
+        } catch (error) {
+            throw new BadRequestException(error.message);
+        }
     }
 
 }
