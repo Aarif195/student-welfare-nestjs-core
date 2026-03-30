@@ -356,7 +356,7 @@ export class AdminService {
     return notification;
   }
 
-  // getNotifications
+  // getAllNotifications
   async getAllNotifications(page: number, limit: number) {
     const skip = (page - 1) * limit;
 

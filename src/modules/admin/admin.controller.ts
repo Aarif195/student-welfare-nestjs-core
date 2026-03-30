@@ -265,7 +265,7 @@ export class AdminController {
     };
   }
 
-  // getNotifications
+  // getAllNotifications
   @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Get('notifications')
   @Roles(Role.superadmin)

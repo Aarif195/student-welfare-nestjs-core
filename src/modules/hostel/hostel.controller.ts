@@ -218,6 +218,24 @@ export class HostelController {
         };
     }
 
+    // getHostelNotifications
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Get(':hostelId/notifications')
+    @Roles(Role.hostelOwner)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Get all notifications for a specific owned hostel' })
+    @ApiOkResponse({ description: 'Hostel notifications retrieved successfully' })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    @ApiParam({ name: 'hostelId', type: Number })
+    async getHostelNotifications(@Request() req: any, @Param('hostelId', ParseIntPipe) hostelId: number) {
+        const ownerId = req.user.id;
+        const notifications = await this.hostelService.getHostelNotifications(ownerId, hostelId);
+        return {
+            success: true,
+            data: notifications,
+        };
+    }
+
     // deleteNotification
     @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Delete('notifications/:notificationId')

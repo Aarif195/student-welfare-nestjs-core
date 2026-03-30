@@ -314,6 +314,36 @@ export class HostelService {
     return notification;
   }
 
+  // getHostelNotifications
+  async getHostelNotifications(ownerId: number, hostelId: number) {
+    //  Verify ownership
+    const hostel = await this.prisma.hostel.findFirst({
+      where: { id: hostelId, owner_id: ownerId },
+    });
+
+    if (!hostel) {
+      throw new ForbiddenException('You can only view notifications for hostels you own.');
+    }
+
+    //  Fetch notifications
+    const notifications = await this.prisma.notification.findMany({
+      where: {
+        hostel_id: hostelId,
+        type: 'hostel',
+      },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        title: true,
+        message: true,
+        createdAt: true,
+        type: true,
+      },
+    });
+
+    return notifications;
+  }
+
   // deleteNotification
 async deleteHostelNotification(ownerId: number, notificationId: number) {
   const notification = await this.prisma.notification.findFirst({
