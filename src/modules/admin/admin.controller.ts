@@ -265,12 +265,37 @@ export class AdminController {
     };
   }
 
+  // getNotifications
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Get('notifications')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all notifications' })
+  @ApiOkResponse({ description: 'Notifications retrieved successfully' })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async getAllNotifications(@Query() paginationDto: PaginationDto) {
+    const page = Number(paginationDto.page) || 1;
+    const limit = Number(paginationDto.limit) || 10;
+
+    const data = await this.adminService.getAllNotifications(page, limit);
+
+    return {
+      success: true,
+      page,
+      limit,
+      total: data.total,
+      notifications: data.notifications,
+    };
+  }
+
   // deleteNotification
   @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Delete('notifications/:notificationId')
   @Roles(Role.superadmin)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Delete a notification' })
+  @ApiOperation({ summary: 'Delete any notification' })
   @ApiParam({ name: 'notificationId', type: Number })
   @ApiOkResponse({ description: 'Notification deleted successfully' })
   @ApiBadRequestResponse({ type: ErrorResponseDto })

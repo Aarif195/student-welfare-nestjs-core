@@ -314,4 +314,22 @@ export class HostelService {
     return notification;
   }
 
+  // deleteNotification
+async deleteHostelNotification(ownerId: number, notificationId: number) {
+  const notification = await this.prisma.notification.findFirst({
+    where: {
+      id: notificationId,
+      created_by: ownerId,
+    },
+  });
+
+  if (!notification) {
+    throw new ForbiddenException('You can only delete notifications you created.');
+  }
+
+  return this.prisma.notification.delete({
+    where: { id: notificationId },
+  });
+}
+
 }

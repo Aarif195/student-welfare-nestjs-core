@@ -218,4 +218,22 @@ export class HostelController {
         };
     }
 
+    // deleteNotification
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Delete('notifications/:notificationId')
+    @Roles(Role.hostelOwner)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Delete a notification' })
+    @ApiParam({ name: 'notificationId', type: Number })
+    @ApiOkResponse({ description: 'Notification deleted successfully' })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    async deleteNotification(@Request() req: any, @Param('notificationId', ParseIntPipe) notificationId: number) {
+        const ownerId = req.user.id;
+        await this.hostelService.deleteHostelNotification(ownerId, notificationId);
+        return {
+            success: true,  
+            message: 'Notification deleted successfully',
+        };
+    }
+
 }

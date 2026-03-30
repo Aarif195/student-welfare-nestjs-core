@@ -144,223 +144,257 @@ export class AdminService {
     return rejectedHostel;
   }
 
-// getPendingBookings
-async getPendingBookings(page: number, limit: number) {
-  const skip = (page - 1) * limit;
+  // getPendingBookings
+  async getPendingBookings(page: number, limit: number) {
+    const skip = (page - 1) * limit;
 
-  const [total, bookings] = await this.prisma.$transaction([
-    this.prisma.booking.count({ where: { booking_status: 'pending' } }),
-    this.prisma.booking.findMany({
-      where: { booking_status: 'pending' },
-      skip,
-      take: limit,
-      orderBy: { booked_at: 'desc' },
-      include: {
-        student: { select: { firstName: true, lastName: true, email: true } },
-        room: {
-          select: {
-            room_number: true,
-            type: true,
-            hostel: { select: { id: true, name: true, location: true } },
+    const [total, bookings] = await this.prisma.$transaction([
+      this.prisma.booking.count({ where: { booking_status: 'pending' } }),
+      this.prisma.booking.findMany({
+        where: { booking_status: 'pending' },
+        skip,
+        take: limit,
+        orderBy: { booked_at: 'desc' },
+        include: {
+          student: { select: { firstName: true, lastName: true, email: true } },
+          room: {
+            select: {
+              room_number: true,
+              type: true,
+              hostel: { select: { id: true, name: true, location: true } },
+            },
           },
+          payments: { select: { reference: true, amount: true, paid_at: true } },
         },
-        payments: { select: { reference: true, amount: true, paid_at: true } },
-      },
-    }),
-  ]);
+      }),
+    ]);
 
-  return {
-  total,
-  bookings: bookings.map(b => ({
-    booking_id: b.id,
-    student_id: b.student_id,
-    room_id: b.room_id,
-    booking_status: b.booking_status,
-    booked_at: b.booked_at,
-    start_date: b.start_date,
-    end_date: b.end_date,
-    price: b.price,
-    rejection_reason: b.rejection_reason,
-    student: b.student,
-    room: b.room,
-    payments: b.payments,
-  })),
-};
-}
-
-// approveBooking
-async approveBooking(bookingId: number) {
-  const result = await this.prisma.$transaction(async (tx) => {
-    // Update Booking status
-    const booking = await tx.booking.update({
-      where: { id: bookingId },
-      data: { booking_status: 'approved' },
-      include: { student: { select: { email: true } } },
-    });
-
-    // Flip Room Availability to false
-    await tx.room.update({
-      where: { id: booking.room_id },
-      data: { availability: false },
-    });
-
-    return booking;
-  });
-
-  // Send Email (outside transaction)
-  try {
-    const emailBody = bookingApprovedEmailTemplate(bookingId);
-    await this.mailService.sendMail(result.student.email, 'Booking Approved!', emailBody);
-  } catch (error) {
-    console.error('Booking Approval Email failed:', error.message);
+    return {
+      total,
+      bookings: bookings.map(b => ({
+        booking_id: b.id,
+        student_id: b.student_id,
+        room_id: b.room_id,
+        booking_status: b.booking_status,
+        booked_at: b.booked_at,
+        start_date: b.start_date,
+        end_date: b.end_date,
+        price: b.price,
+        rejection_reason: b.rejection_reason,
+        student: b.student,
+        room: b.room,
+        payments: b.payments,
+      })),
+    };
   }
 
-  return result;
-}
+  // approveBooking
+  async approveBooking(bookingId: number) {
+    const result = await this.prisma.$transaction(async (tx) => {
+      // Update Booking status
+      const booking = await tx.booking.update({
+        where: { id: bookingId },
+        data: { booking_status: 'approved' },
+        include: { student: { select: { email: true } } },
+      });
 
-// rejectBooking
-async rejectBooking(bookingId: number, dto: RejectHostelDto) { 
-  const result = await this.prisma.$transaction(async (tx) => {
-    // Update Booking status
-    const booking = await tx.booking.update({
-      where: { id: bookingId },
-      data: { 
-        booking_status: 'rejected',
-        rejection_reason: dto.reason 
-      },
-      include: { 
-        student: { select: { firstName: true, email: true } },
-        room: { select: { room_number: true } }
-      },
+      // Flip Room Availability to false
+      await tx.room.update({
+        where: { id: booking.room_id },
+        data: { availability: false },
+      });
+
+      return booking;
     });
 
-    // Update Payment status to completed refund
-    await tx.payment.update({
-      where: { booking_id: bookingId },
-      data: { refund_status: 'completed' },
-    });
+    // Send Email (outside transaction)
+    try {
+      const emailBody = bookingApprovedEmailTemplate(bookingId);
+      await this.mailService.sendMail(result.student.email, 'Booking Approved!', emailBody);
+    } catch (error) {
+      console.error('Booking Approval Email failed:', error.message);
+    }
 
-    return booking;
-  });
-
-  // Send Email
-  try {
-    const emailBody = bookingRejectedEmailTemplate(
-      result.student.firstName, 
-      result.room.room_number, 
-      dto.reason
-    );
-    await this.mailService.sendMail(result.student.email, 'Booking Update: Application Rejected', emailBody);
-  } catch (error) {
-    console.error('Booking Rejection Email failed:', error.message);
+    return result;
   }
 
-  return result;
-}
+  // rejectBooking
+  async rejectBooking(bookingId: number, dto: RejectHostelDto) {
+    const result = await this.prisma.$transaction(async (tx) => {
+      // Update Booking status
+      const booking = await tx.booking.update({
+        where: { id: bookingId },
+        data: {
+          booking_status: 'rejected',
+          rejection_reason: dto.reason
+        },
+        include: {
+          student: { select: { firstName: true, email: true } },
+          room: { select: { room_number: true } }
+        },
+      });
+
+      // Update Payment status to completed refund
+      await tx.payment.update({
+        where: { booking_id: bookingId },
+        data: { refund_status: 'completed' },
+      });
+
+      return booking;
+    });
+
+    // Send Email
+    try {
+      const emailBody = bookingRejectedEmailTemplate(
+        result.student.firstName,
+        result.room.room_number,
+        dto.reason
+      );
+      await this.mailService.sendMail(result.student.email, 'Booking Update: Application Rejected', emailBody);
+    } catch (error) {
+      console.error('Booking Rejection Email failed:', error.message);
+    }
+
+    return result;
+  }
 
   // getAllOwners
-async getAllOwners(page: number, limit: number) {
-  const skip = (page - 1) * limit;
+  async getAllOwners(page: number, limit: number) {
+    const skip = (page - 1) * limit;
 
-  const [total, owners] = await this.prisma.$transaction([
-    this.prisma.user.count({
-      where: { role: Role.hostelOwner },
-    }),
-    this.prisma.user.findMany({
-      where: { role: Role.hostelOwner },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        createdAt: true,
-      },
-      skip,
-      take: limit,
-      orderBy: { createdAt: 'desc' },
-    }),
-  ]);
+    const [total, owners] = await this.prisma.$transaction([
+      this.prisma.user.count({
+        where: { role: Role.hostelOwner },
+      }),
+      this.prisma.user.findMany({
+        where: { role: Role.hostelOwner },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          createdAt: true,
+        },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+    ]);
 
-  return { total, owners };
-}
-
-// getAllStudents
-async getAllStudents(page: number, limit: number) {
-  const skip = (page - 1) * limit;
-
-  const [total, students] = await this.prisma.$transaction([
-    this.prisma.user.count({
-      where: { role: 'student' },
-    }),
-    this.prisma.user.findMany({
-      where: { role: 'student' },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        createdAt: true,
-      },
-      skip,
-      take: limit,
-      orderBy: { createdAt: 'desc' },
-    }),
-  ]);
-
-  return { total, students };
-}
-
-// createNotification
-async createNotification(adminId: number, dto: AdminNotificationDto) {
-  const { title, message, type, hostelId } = dto;
-
-  //  Create the Database Record
-  const notification = await this.prisma.notification.create({
-    data: {
-      title,
-      message,
-      type,
-      hostel_id: type === 'hostel' ? hostelId : null,
-      created_by: adminId,
-      creator_role: 'superadmin',
-    },
-  });
-
-  //  Fetch Recipient Emails
-  let recipientEmails: string[] = [];
-  if (type === 'global') {
-    const students = await this.prisma.user.findMany({
-      where: { role: 'student' },
-      select: { email: true },
-    });
-    recipientEmails = students.map((s) => s.email);
-  } else if (type === 'hostel' && hostelId) {
-    const students = await this.prisma.booking.findMany({
-      where: { 
-        room: { hostel_id: hostelId },
-        booking_status: 'approved' 
-      },
-      select: { student: { select: { email: true } } },
-    });
-    recipientEmails = students.map((b) => b.student.email);
+    return { total, owners };
   }
 
-  //  Send Emails
-  const emailBody = notificationEmailTemplate(title, message, 'Campus Administration');
-  recipientEmails.forEach((email) => {
-    this.mailService.sendMail(email, title, emailBody).catch((err) => 
-      console.error(`Failed to send notification to ${email}:`, err.message)
-    );
-  });
+  // getAllStudents
+  async getAllStudents(page: number, limit: number) {
+    const skip = (page - 1) * limit;
 
-  return notification;
-}
+    const [total, students] = await this.prisma.$transaction([
+      this.prisma.user.count({
+        where: { role: 'student' },
+      }),
+      this.prisma.user.findMany({
+        where: { role: 'student' },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          createdAt: true,
+        },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+    ]);
 
-// deleteNotification
-async deleteNotification(notificationId: number) {
-  return this.prisma.notification.delete({
-    where: { id: notificationId },
-  });
-}
+    return { total, students };
+  }
+
+  // createNotification
+  async createNotification(adminId: number, dto: AdminNotificationDto) {
+    const { title, message, type, hostelId } = dto;
+
+    //  Create the Database Record
+    const notification = await this.prisma.notification.create({
+      data: {
+        title,
+        message,
+        type,
+        hostel_id: type === 'hostel' ? hostelId : null,
+        created_by: adminId,
+        creator_role: 'superadmin',
+      },
+    });
+
+    //  Fetch Recipient Emails
+    let recipientEmails: string[] = [];
+    if (type === 'global') {
+      const students = await this.prisma.user.findMany({
+        where: { role: 'student' },
+        select: { email: true },
+      });
+      recipientEmails = students.map((s) => s.email);
+    } else if (type === 'hostel' && hostelId) {
+      const students = await this.prisma.booking.findMany({
+        where: {
+          room: { hostel_id: hostelId },
+          booking_status: 'approved'
+        },
+        select: { student: { select: { email: true } } },
+      });
+      recipientEmails = students.map((b) => b.student.email);
+    }
+
+    //  Send Emails
+    const emailBody = notificationEmailTemplate(title, message, 'Campus Administration');
+    recipientEmails.forEach((email) => {
+      this.mailService.sendMail(email, title, emailBody).catch((err) =>
+        console.error(`Failed to send notification to ${email}:`, err.message)
+      );
+    });
+
+    return notification;
+  }
+
+  // getNotifications
+  async getAllNotifications(page: number, limit: number) {
+    const skip = (page - 1) * limit;
+
+    const [total, notifications] = await this.prisma.$transaction([
+      this.prisma.notification.count(),
+      this.prisma.notification.findMany({
+        include: {
+          author: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+          hostel: {
+            select: {
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        skip,
+        take: limit,
+      }),
+    ]);
+
+    return { total, notifications };
+  }
+
+  // deleteNotification
+  async deleteNotification(notificationId: number) {
+    return this.prisma.notification.delete({
+      where: { id: notificationId },
+    });
+  }
+
+
 
 }
