@@ -31,6 +31,9 @@ model User {
   hostels  Hostel[] // This links to the owner_id in the Hostel model
   bookings Booking[]
   payments Payment[]
+
+  // Notifications
+  createdNotifications Notification[]
 }
 
 model Hostel {
@@ -49,6 +52,9 @@ model Hostel {
   // Relation to the resource model
   resources HostelResource[]
 
+  // Notifications
+  notifications Notification[]
+
   @@map("hostels")
 }
 
@@ -56,7 +62,7 @@ model HostelResource {
   id         Int          @id @default(autoincrement())
   hostel_id  Int
   file_url   String // The URL of the file (Image, Video, or PDF)
-  file_type  ResourceType // Enum to distinguish between IMAGE, VIDEO, PDF
+  file_type  ResourceType // Enum to distinguish between IMAGE, VIDEO
   created_at DateTime     @default(now())
 
   hostel Hostel @relation(fields: [hostel_id], references: [id], onDelete: Cascade)
@@ -67,7 +73,6 @@ model HostelResource {
 enum ResourceType {
   IMAGE
   VIDEO
-  PDF
 }
 
 enum VerificationStatus {
@@ -149,4 +154,21 @@ model Payment {
   refund_status  String?   @default("none")
 
   @@map("payments")
+}
+
+
+model Notification {
+  id           Int      @id @default(autoincrement())
+  title        String
+  message      String
+  type         String   // "global" or "hostel"
+  
+  hostel_id    Int?
+  hostel       Hostel?  @relation(fields: [hostel_id], references: [id])
+  
+  created_by   Int
+  author       User     @relation(fields: [created_by], references: [id])
+  
+  creator_role Role     // This uses your existing Role enum
+  createdAt    DateTime @default(now())
 }
