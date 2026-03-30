@@ -69,3 +69,13 @@ export const bookingRejectedEmailTemplate = (firstName: string, roomNumber: stri
     <p style="margin-top: 20px; font-size: 12px; color: #777;">Student Welfare Platform Team</p>
   </div>
 `;
+
+export const notificationEmailTemplate = (title: string, message: string, senderName: string) => `
+  <div style="font-family: sans-serif; padding: 20px; border: 1px solid #ddd; border-radius: 8px; max-width: 600px;">
+    <h2 style="color: #2c3e50; margin-top: 0;">${title}</h2>
+    <p style="font-size: 16px; line-height: 1.6; color: #333;">${message}</p>
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+    <p style="font-size: 12px; color: #888;">Sent by: <strong>${senderName}</strong></p>
+    <p style="font-size: 10px; color: #aaa;">Student Welfare Platform Notification</p>
+  </div>
+`;

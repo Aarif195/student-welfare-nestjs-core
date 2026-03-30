@@ -6,10 +6,11 @@ import { AdminLoginDto } from './dto/admin-login.dto';
 import { DatabaseService } from '@/database/database.service';
 import { RejectHostelDto } from './dto/admin-rejectHostel.dto';
 
-import { bookingApprovedEmailTemplate, bookingRejectedEmailTemplate, hostelApprovedEmailTemplate, hostelRejectedEmailTemplate } from '@/common/templates/auth-emails.template';
+import { bookingApprovedEmailTemplate, bookingRejectedEmailTemplate, hostelApprovedEmailTemplate, hostelRejectedEmailTemplate, notificationEmailTemplate } from '@/common/templates/auth-emails.template';
 
 import { MailService } from '@/providers/mail/mail.service';
 import { Role } from '@prisma/client';
+import { AdminNotificationDto } from './dto/create-notification.dto';
 
 @Injectable()
 export class AdminService {
@@ -307,6 +308,51 @@ async getAllStudents(page: number, limit: number) {
   ]);
 
   return { total, students };
+}
+
+async createNotification(adminId: number, dto: AdminNotificationDto) {
+  const { title, message, type, hostelId } = dto;
+
+  //  Create the Database Record
+  const notification = await this.prisma.notification.create({
+    data: {
+      title,
+      message,
+      type,
+      hostel_id: type === 'hostel' ? hostelId : null,
+      created_by: adminId,
+      creator_role: 'superadmin',
+    },
+  });
+
+  //  Fetch Recipient Emails
+  let recipientEmails: string[] = [];
+  if (type === 'global') {
+    const students = await this.prisma.user.findMany({
+      where: { role: 'student' },
+      select: { email: true },
+    });
+    recipientEmails = students.map((s) => s.email);
+  } else if (type === 'hostel' && hostelId) {
+    const students = await this.prisma.booking.findMany({
+      where: { 
+        room: { hostel_id: hostelId },
+        booking_status: 'approved' 
+      },
+      select: { student: { select: { email: true } } },
+    });
+    recipientEmails = students.map((b) => b.student.email);
+  }
+
+  //  Send Emails
+  const emailBody = notificationEmailTemplate(title, message, 'Campus Administration');
+  recipientEmails.forEach((email) => {
+    this.mailService.sendMail(email, title, emailBody).catch((err) => 
+      console.error(`Failed to send notification to ${email}:`, err.message)
+    );
+  });
+
+  return notification;
 }
 
 }
