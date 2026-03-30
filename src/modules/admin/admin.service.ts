@@ -356,4 +356,11 @@ async createNotification(adminId: number, dto: AdminNotificationDto) {
   return notification;
 }
 
+// deleteNotification
+async deleteNotification(notificationId: number) {
+  return this.prisma.notification.delete({
+    where: { id: notificationId },
+  });
+}
+
 }

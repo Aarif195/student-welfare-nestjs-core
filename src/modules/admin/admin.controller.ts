@@ -1,4 +1,4 @@
-import { Body, Controller, Post, HttpCode, HttpStatus, Query, Get, ParseIntPipe, Param, BadRequestException, Patch , Request} from '@nestjs/common';
+import { Body, Controller, Post, HttpCode, HttpStatus, Query, Get, ParseIntPipe, Param, BadRequestException, Patch , Request, Delete} from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiBody, ApiOkResponse, ApiUnauthorizedResponse, ApiBearerAuth, ApiBadRequestResponse, ApiQuery, ApiParam } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 
@@ -265,5 +265,20 @@ export class AdminController {
     };
   }
 
-
+  // deleteNotification
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Delete('notifications/:notificationId')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete a notification' })
+  @ApiParam({ name: 'notificationId', type: Number })
+  @ApiOkResponse({ description: 'Notification deleted successfully' })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  async deleteNotification(@Param('notificationId', ParseIntPipe) notificationId: number) {
+    await this.adminService.deleteNotification(notificationId);
+    return {
+      success: true,
+      message: 'Notification deleted successfully',
+    };
+  }
 }
