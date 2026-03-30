@@ -173,4 +173,54 @@ export class StudentService {
     return { total, rooms };
   }
 
+  // getMyNotifications
+  async getMyNotifications(studentId: number, page: number, limit: number) {
+
+    // Find the student's approved booking to get their hostel_id
+    const approvedBooking = await this.prisma.booking.findFirst({
+      where: {
+        student_id: studentId,
+        booking_status: 'approved',
+      },
+      select: {
+        room: {
+          select: { hostel_id: true }
+        }
+      }
+    });
+
+    const studentHostelId = approvedBooking?.room?.hostel_id || null;
+
+    //  Fetch notifications that are GLOBAL or for THEIR HOSTEL
+    const skip = (page - 1) * limit;
+
+    const where = {
+      OR: [
+        { type: 'global' },
+        {
+          AND: [
+            { type: 'hostel' },
+            { hostel_id: studentHostelId }
+          ]
+        }
+      ]
+    };
+
+    const [notifications, total] = await Promise.all([
+      this.prisma.notification.findMany({
+        where,
+        include: {
+          hostel: { select: { name: true } },
+          author: { select: { firstName: true, lastName: true } }
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit
+      }),
+      this.prisma.notification.count({ where })
+    ]);
+
+    return { notifications, total };
+
+  }
 }

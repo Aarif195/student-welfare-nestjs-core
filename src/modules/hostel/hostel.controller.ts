@@ -1,5 +1,5 @@
-import { Controller, Post, Body, Patch, Param, ParseIntPipe, Get, Query, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiCreatedResponse, ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiQuery, ApiNoContentResponse } from '@nestjs/swagger';
+import { Controller, Post, Body, Patch, Param, ParseIntPipe, Get, Query, Delete, Request } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiCreatedResponse, ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiQuery, ApiNoContentResponse, ApiParam } from '@nestjs/swagger';
 
 import { Role } from '@prisma/client';
 import { GetUser } from '@/common/decorators/get-user.decorator';
@@ -14,6 +14,8 @@ import { CreateHostelDto } from './dto/create-hostel.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
+import { OwnerNotificationDto } from './dto/create-notification.dto';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('hostels')
 @ApiTags('Hostels')
@@ -22,6 +24,7 @@ export class HostelController {
     constructor(private readonly hostelService: HostelService) { }
 
     @Post()
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Roles(Role.hostelOwner)
     @ApiOperation({ summary: 'Create a new hostel' })
     @ApiCreatedResponse({ type: MessageResponseDto })
@@ -34,6 +37,7 @@ export class HostelController {
     }
 
     // updateHostel
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Patch(':id')
     @Roles(Role.hostelOwner)
     @ApiOperation({ summary: 'Update hostel details' })
@@ -47,6 +51,7 @@ export class HostelController {
     }
 
     // getMyHostels
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Get('my-hostels')
     @Roles(Role.hostelOwner)
     @ApiOkResponse({ type: MessageResponseDto })
@@ -63,6 +68,7 @@ export class HostelController {
     }
 
     // getSingleHostel
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Get(':id')
     @Roles(Role.hostelOwner)
     @ApiOperation({ summary: 'Get a single hostel by ID' })
@@ -74,111 +80,142 @@ export class HostelController {
         return this.hostelService.getOne(id, user.id);
     }
 
-// deleteHostel
-@Delete(':id')
-@Roles(Role.hostelOwner)
-@ApiOperation({ summary: 'Delete a hostel' })
-@ApiNoContentResponse({ description: 'Hostel deleted successfully' })
-@ApiBadRequestResponse({ type: ErrorResponseDto })
-deleteHostel(
-  @Param('id', ParseIntPipe) id: number,
-  @GetUser() user: { id: number },
-) {
-  return this.hostelService.deleteHostel(id, user.id);
-}
+    // deleteHostel
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Delete(':id')
+    @Roles(Role.hostelOwner)
+    @ApiOperation({ summary: 'Delete a hostel' })
+    @ApiNoContentResponse({ description: 'Hostel deleted successfully' })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    deleteHostel(
+        @Param('id', ParseIntPipe) id: number,
+        @GetUser() user: { id: number },
+    ) {
+        return this.hostelService.deleteHostel(id, user.id);
+    }
 
 
-// createRoom
-@Post(':hostelId/rooms')
-@Roles(Role.hostelOwner)
-@ApiOperation({ summary: 'Create a new room' })
-@ApiCreatedResponse({ type: MessageResponseDto })
-@ApiBadRequestResponse({ type: ErrorResponseDto })
-createRoom(
-    @Param('hostelId', ParseIntPipe) hostelId: number,
-    @Body() createRoomDto: CreateRoomDto,
-    @GetUser() user: { id: number }
-) {
-    return this.hostelService.createRoom(hostelId, user.id, createRoomDto);
-}
+    // createRoom
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Post(':hostelId/rooms')
+    @Roles(Role.hostelOwner)
+    @ApiOperation({ summary: 'Create a new room' })
+    @ApiCreatedResponse({ type: MessageResponseDto })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    createRoom(
+        @Param('hostelId', ParseIntPipe) hostelId: number,
+        @Body() createRoomDto: CreateRoomDto,
+        @GetUser() user: { id: number }
+    ) {
+        return this.hostelService.createRoom(hostelId, user.id, createRoomDto);
+    }
 
-// getRoomsByHostel
-@Get(':hostelId/rooms')
-@Roles(Role.hostelOwner)
-@ApiOperation({ summary: 'Get all rooms in a hostel' })
-@ApiOkResponse({ type: MessageResponseDto })
-@ApiBadRequestResponse({ type: ErrorResponseDto })
-@ApiQuery({ name: 'page', required: false, type: Number })
-@ApiQuery({ name: 'limit', required: false, type: Number })
-getRoomsByHostel(
-    @Param('hostelId', ParseIntPipe) hostelId: number,
-    @GetUser() user: { id: number },
-    @Query() pagination: PaginationDto,
-) {
-    const page = pagination.page || 1;
-    const limit = pagination.limit || 10;
-    return this.hostelService.getRoomsByHostel(hostelId, user.id, page, limit);
-}
+    // getRoomsByHostel
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Get(':hostelId/rooms')
+    @Roles(Role.hostelOwner)
+    @ApiOperation({ summary: 'Get all rooms in a hostel' })
+    @ApiOkResponse({ type: MessageResponseDto })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
+    getRoomsByHostel(
+        @Param('hostelId', ParseIntPipe) hostelId: number,
+        @GetUser() user: { id: number },
+        @Query() pagination: PaginationDto,
+    ) {
+        const page = pagination.page || 1;
+        const limit = pagination.limit || 10;
+        return this.hostelService.getRoomsByHostel(hostelId, user.id, page, limit);
+    }
 
-// getSingleRoom
-@Get(':hostelId/rooms/:roomId')
-@Roles(Role.hostelOwner)
-@ApiOperation({ summary: 'Get single room details' })
-@ApiOkResponse({ type: MessageResponseDto })
-@ApiBadRequestResponse({ type: ErrorResponseDto })
-getSingleRoom(
-    @Param('hostelId', ParseIntPipe) hostelId: number,
-    @Param('roomId', ParseIntPipe) roomId: number,
-    @GetUser() user: { id: number },
-) {
-    return this.hostelService.getSingleRoom(hostelId, roomId, user.id);
-}
+    // getSingleRoom
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Get(':hostelId/rooms/:roomId')
+    @Roles(Role.hostelOwner)
+    @ApiOperation({ summary: 'Get single room details' })
+    @ApiOkResponse({ type: MessageResponseDto })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    getSingleRoom(
+        @Param('hostelId', ParseIntPipe) hostelId: number,
+        @Param('roomId', ParseIntPipe) roomId: number,
+        @GetUser() user: { id: number },
+    ) {
+        return this.hostelService.getSingleRoom(hostelId, roomId, user.id);
+    }
 
-// updateRoom
-@Patch(':hostelId/rooms/:roomId')
-@Roles(Role.hostelOwner)
-@ApiOperation({ summary: 'Update room details' })
-@ApiOkResponse({ type: MessageResponseDto })
-@ApiBadRequestResponse({ type: ErrorResponseDto })
-updateRoom(
-    @Param('hostelId', ParseIntPipe) hostelId: number,
-    @Param('roomId', ParseIntPipe) roomId: number,
-    @GetUser() user: { id: number },
-    @Body() updateRoomDto: UpdateRoomDto,
-) {
-    return this.hostelService.updateRoom(hostelId, roomId, user.id, updateRoomDto);
-}
+    // updateRoom
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Patch(':hostelId/rooms/:roomId')
+    @Roles(Role.hostelOwner)
+    @ApiOperation({ summary: 'Update room details' })
+    @ApiOkResponse({ type: MessageResponseDto })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    updateRoom(
+        @Param('hostelId', ParseIntPipe) hostelId: number,
+        @Param('roomId', ParseIntPipe) roomId: number,
+        @GetUser() user: { id: number },
+        @Body() updateRoomDto: UpdateRoomDto,
+    ) {
+        return this.hostelService.updateRoom(hostelId, roomId, user.id, updateRoomDto);
+    }
 
-// deleteRoom
-@Delete(':hostelId/rooms/:roomId')
-@Roles(Role.hostelOwner)
-@ApiOperation({ summary: 'Delete a room' })
-@ApiNoContentResponse({ description: 'Room deleted' })
-@ApiBadRequestResponse({ type: ErrorResponseDto })
-deleteRoom(
-    @Param('hostelId', ParseIntPipe) hostelId: number,
-    @Param('roomId', ParseIntPipe) roomId: number,
-    @GetUser() user: { id: number },
-) {
-    return this.hostelService.deleteRoom(hostelId, roomId, user.id);
-}
+    // deleteRoom
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Delete(':hostelId/rooms/:roomId')
+    @Roles(Role.hostelOwner)
+    @ApiOperation({ summary: 'Delete a room' })
+    @ApiNoContentResponse({ description: 'Room deleted' })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    deleteRoom(
+        @Param('hostelId', ParseIntPipe) hostelId: number,
+        @Param('roomId', ParseIntPipe) roomId: number,
+        @GetUser() user: { id: number },
+    ) {
+        return this.hostelService.deleteRoom(hostelId, roomId, user.id);
+    }
 
 
-// getOwnerBookings
-@Get('bookings')
-@Roles(Role.hostelOwner)
-@ApiOperation({ summary: 'Get all bookings for all hostels owned by the user' })
-@ApiOkResponse({ type: MessageResponseDto })
-@ApiBadRequestResponse({ type: ErrorResponseDto })
-@ApiQuery({ name: 'page', required: false, type: Number })
-@ApiQuery({ name: 'limit', required: false, type: Number })
-getOwnerBookings(
-    @GetUser() user: { id: number },
-    @Query() pagination: PaginationDto,
-) {
-    const page = pagination.page || 1;
-    const limit = pagination.limit || 10;
-    return this.hostelService.getOwnerBookings(user.id, page, limit);
-}
+    // getOwnerBookings
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Get('bookings')
+    @Roles(Role.hostelOwner)
+    @ApiOperation({ summary: 'Get all bookings for all hostels owned by the user' })
+    @ApiOkResponse({ type: MessageResponseDto })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
+    getOwnerBookings(
+        @GetUser() user: { id: number },
+        @Query() pagination: PaginationDto,
+    ) {
+        const page = pagination.page || 1;
+        const limit = pagination.limit || 10;
+        return this.hostelService.getOwnerBookings(user.id, page, limit);
+    }
+
+    // createHostelNotification
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Post(':hostelId/notifications')
+    @Roles(Role.hostelOwner)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Create notification for a specific owned hostel' })
+    @ApiOkResponse({ description: 'Hostel notification created and sent' })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    @ApiParam({ name: 'hostelId', type: Number })
+    async createNotification(
+        @Request() req: any,
+        @Param('hostelId', ParseIntPipe) hostelId: number,
+        @Body() dto: OwnerNotificationDto,
+    ) {
+        const ownerId = req.user.id;
+        const data = await this.hostelService.createHostelNotification(ownerId, hostelId, dto);
+
+        return {
+            success: true,
+            message: 'Notification successfully published to your hostel residents',
+            data,
+        };
+    }
 
 }

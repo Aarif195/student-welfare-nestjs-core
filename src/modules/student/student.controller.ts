@@ -121,4 +121,27 @@ export class StudentController {
         };
     }
 
+    // getMyNotifications
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Get('notifications')
+    @Roles(Role.student)
+    @ApiOperation({ summary: 'Get my notifications' })
+    @ApiOkResponse({ description: 'Notifications retrieved successfully' })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
+    async getMyNotifications(@GetUser() user: { id: number }, @Query() pagination: PaginationDto,
+    ) {
+        const page = Number(pagination.page) || 1;
+        const limit = Number(pagination.limit) || 10;
+        const { total, notifications } =
+            await this.studentService.getMyNotifications(user.id, page, limit);
+        console.log(user, user.id);
+       return {
+    success: true,
+    meta: { page, limit, total },
+    notifications,
+  };
+    }
+
 }
