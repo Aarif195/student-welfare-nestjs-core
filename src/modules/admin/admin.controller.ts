@@ -1,4 +1,4 @@
-import { Body, Controller, Post, HttpCode, HttpStatus, Query, Get, ParseIntPipe, Param, BadRequestException, Patch } from '@nestjs/common';
+import { Body, Controller, Post, HttpCode, HttpStatus, Query, Get, ParseIntPipe, Param, BadRequestException, Patch , Request} from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiBody, ApiOkResponse, ApiUnauthorizedResponse, ApiBearerAuth, ApiBadRequestResponse, ApiQuery, ApiParam } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 
@@ -14,6 +14,7 @@ import { Throttle } from '@nestjs/throttler';
 import { Roles } from '@/common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 import { RejectHostelDto } from './dto/admin-rejectHostel.dto';
+import { AdminNotificationDto } from './dto/create-notification.dto';
 
 @ApiTags('Admin Dashboard')
 @Controller('admin')
@@ -241,5 +242,28 @@ export class AdminController {
       students: data.students,
     };
   }
+
+  // createNotification
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Post('notifications')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create global or hostel-specific notification' })
+  @ApiOkResponse({ description: 'Notification created and sent' })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+  async createNotification(
+    @Request() req: any,
+    @Body() dto: AdminNotificationDto,
+  ) {
+    const adminId = req.user.id;
+    const data = await this.adminService.createNotification(adminId, dto);
+    
+    return {
+      success: true,
+      message: 'Notification successfully published and sent to students',
+      data,
+    };
+  }
+
 
 }

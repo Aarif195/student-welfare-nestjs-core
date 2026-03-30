@@ -310,6 +310,7 @@ async getAllStudents(page: number, limit: number) {
   return { total, students };
 }
 
+// createNotification
 async createNotification(adminId: number, dto: AdminNotificationDto) {
   const { title, message, type, hostelId } = dto;
 
