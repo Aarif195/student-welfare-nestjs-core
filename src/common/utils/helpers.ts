@@ -16,7 +16,7 @@ export const generateToken = (jwtService: JwtService, id: number): string => {
 };
 
 export const verifyPayment = async (reference: string): Promise<boolean> => {
-  // Logic for external API call (Paystack/Flutterwave)
+  // Logic for external API call
   return true; 
 };
 
