@@ -27,6 +27,8 @@ export class PaymentController {
     @GetUser() user: { id: number },
     @Body() body: CreatePaymentIntentDto,
   ) {
+    console.log("user", user)
+    console.log("body", body)
     try {
       const data = await this.paymentService.createPaymentIntent(body.amount, {
         roomId: body.roomId,
