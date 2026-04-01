@@ -1,6 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { JwtService } from '@nestjs/jwt';
+import Stripe from 'stripe';
 
 export const hashPassword = async (password: string): Promise<string> => {
   const salt = await bcrypt.genSalt(10);
@@ -15,11 +16,26 @@ export const generateToken = (jwtService: JwtService, id: number): string => {
   return jwtService.sign({ id });
 };
 
-export const verifyPayment = async (reference: string): Promise<boolean> => {
-  // Logic for external API call
-  return true; 
+// export const verifyPayment = async (reference: string): Promise<boolean> => {
+//   // Logic for external API call
+//   return true; 
+// };
+
+
+export const verifyPayment = async (reference: string, stripe?: Stripe): Promise<boolean> => {
+  if (!stripe) {
+    return reference.startsWith('REF-');
+  }
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.retrieve(reference);
+    return paymentIntent.status === 'succeeded';
+  } catch (error) {
+    return false;
+  }
 };
 
 export const generateOTP = (): string => {
   return crypto.randomInt(100000, 999999).toString();
 };
+

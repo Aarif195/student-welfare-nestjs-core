@@ -7,8 +7,9 @@ import { HttpExceptionFilter } from './filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const configService = app.get(ConfigService);
+const app = await NestFactory.create(AppModule, {
+  rawBody: true,
+});  const configService = app.get(ConfigService);
 
   app.enableCors({
     origin: 'http://localhost:5173',
