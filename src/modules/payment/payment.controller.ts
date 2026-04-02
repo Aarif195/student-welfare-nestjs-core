@@ -46,6 +46,7 @@ export class PaymentController {
   @Post('webhook')
   @ApiOperation({ summary: 'Stripe Webhook Listener' })
   async handleWebhook(@Req() req: Request & { rawBody: Buffer }, @Res() res: Response) {
+
     const signature = req.headers['stripe-signature'] as string;
     const rawBody = req.rawBody;
 
@@ -61,6 +62,8 @@ export class PaymentController {
       return res.status(HttpStatus.BAD_REQUEST).send(`Webhook Error: ${err.message}`);
     }
   }
+
+
 }
 
 

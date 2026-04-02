@@ -59,7 +59,7 @@ async createPaymentIntent(amount: number, metadata: { roomId: string, studentId:
   }
 }
 
-
+// payment process logic
 async handlePaymentIntentSucceeded(paymentIntent: any) {
   const { roomId, studentId } = paymentIntent.metadata;
   const reference = paymentIntent.id;

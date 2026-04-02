@@ -45,8 +45,8 @@ export class StudentService {
             student_id: studentId,
             amount: room.price,
             reference: data.reference,
-            payment_status: 'success',
-            paid_at: new Date(),
+            payment_status: 'pending',
+            paid_at: null,
           },
         });
 
