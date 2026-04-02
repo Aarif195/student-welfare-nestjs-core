@@ -1,4 +1,4 @@
-import { Body, Controller, Post, HttpCode, HttpStatus, Query, Get, ParseIntPipe, Param, BadRequestException, Patch , Request, Delete} from '@nestjs/common';
+import { Body, Controller, Post, HttpCode, HttpStatus, Query, Get, ParseIntPipe, Param, BadRequestException, Patch, Request, Delete } from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiBody, ApiOkResponse, ApiUnauthorizedResponse, ApiBearerAuth, ApiBadRequestResponse, ApiQuery, ApiParam } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 
@@ -250,14 +250,14 @@ export class AdminController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create global or hostel-specific notification' })
   @ApiOkResponse({ description: 'Notification created and sent' })
-    @ApiBadRequestResponse({ type: ErrorResponseDto })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
   async createNotification(
     @Request() req: any,
     @Body() dto: AdminNotificationDto,
   ) {
     const adminId = req.user.id;
     const data = await this.adminService.createNotification(adminId, dto);
-    
+
     return {
       success: true,
       message: 'Notification successfully published and sent to students',

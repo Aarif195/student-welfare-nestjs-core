@@ -1,7 +1,7 @@
 import { Controller, Post, Body, Req, Res, HttpStatus, BadRequestException } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { PaymentService } from './payment.service';
-import { ApiBadRequestResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { CreatePaymentIntentDto, PaymentIntentResponseDto } from './dto/payment.dto';
 import { ErrorResponseDto } from '@/common/dto/error-response.dto';
@@ -20,6 +20,7 @@ export class PaymentController {
   // Route for Frontend to start the payment
   @Post('create-intent')
   @Roles(Role.student)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a Stripe Payment Intent' })
   @ApiOkResponse({ description: 'Intent created successfully', type: PaymentIntentResponseDto })
   @ApiBadRequestResponse({ type: ErrorResponseDto })
