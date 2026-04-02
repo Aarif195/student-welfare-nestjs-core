@@ -24,7 +24,7 @@ export const generateToken = (jwtService: JwtService, id: number): string => {
 
 export const verifyPayment = async (reference: string, stripe?: Stripe): Promise<boolean> => {
   if (!stripe) {
-    return reference.startsWith('REF-');
+    return reference.startsWith('pi_');
   }
 
   try {

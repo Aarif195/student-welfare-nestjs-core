@@ -7,7 +7,7 @@ export class CreateBookingDto {
   @IsNotEmpty()
   readonly room_id: number;
 
-  @ApiProperty({ example: 'REF-12345' })
+  @ApiProperty({ example: 'pi_3OQ15e2eQy5093....' })
   @IsString()
   @IsNotEmpty()
   readonly reference: string;
