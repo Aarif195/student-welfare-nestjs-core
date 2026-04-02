@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
@@ -190,6 +190,15 @@ export class AdminService {
 
   // approveBooking
   async approveBooking(bookingId: number) {
+
+    const payment = await this.prisma.payment.findUnique({
+      where: { booking_id: bookingId },
+    });
+
+    if (!payment || payment.payment_status !== 'success') {
+      throw new BadRequestException('Cannot approve booking: Payment not verified or successful.');
+    }
+
     const result = await this.prisma.$transaction(async (tx) => {
       // Update Booking status
       const booking = await tx.booking.update({
