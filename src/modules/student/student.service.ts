@@ -1,8 +1,9 @@
 import { Prisma } from '@prisma/client';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { verifyPayment } from '@/common/utils/helpers';
 import { DatabaseService } from '@/database/database.service';
+import { CreateMaintenanceDto } from './dto/create-maintenance.dto';
 
 @Injectable()
 export class StudentService {
@@ -243,5 +244,41 @@ export class StudentService {
       },
     });
   }
+
+  //  MAINTENANCE 
+  // Create Maintenance Request
+
+  async createRequest(studentId: number, dto: CreateMaintenanceDto) {
+    // Verify student has an APPROVED booking
+    const activeBooking = await this.prisma.booking.findFirst({
+      where: {
+        student_id: studentId,
+        booking_status: 'approved',
+      },
+      select: {
+        room_id: true,
+        room: { select: { hostel_id: true } }
+      }
+    });
+
+    if (!activeBooking) {
+      throw new ForbiddenException('You must have an approved booking to request maintenance.');
+    }
+
+    //  Create the request
+    return this.prisma.maintenanceRequest.create({
+      data: {
+        student_id: studentId,
+        hostel_id: activeBooking.room.hostel_id,
+        room_id: activeBooking.room_id,
+        title: dto.title,
+        description: dto.description,
+        image_url: dto.image_url,
+      },
+    });
+  }
+
+
+
 
 }

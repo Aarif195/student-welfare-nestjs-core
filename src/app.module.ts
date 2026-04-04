@@ -21,7 +21,6 @@ import { CustomThrottlerGuard } from './common/guards/throttler-proxy.guard';
 import { HostelModule } from './modules/hostel/hostel.module';
 import { StudentModule } from './modules/student/student.module';
 import { PaymentModule } from './modules/payment/payment.module';
-import { MaintenanceModule } from './modules/maintenance/maintenance.module';
 
 
 @Module({
@@ -43,7 +42,6 @@ import { MaintenanceModule } from './modules/maintenance/maintenance.module';
     HostelModule,
     StudentModule,
     PaymentModule,
-    MaintenanceModule,
   ],
   controllers: [AppController],
   providers: [

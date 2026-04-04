@@ -12,6 +12,7 @@ import { MessageResponseDto } from '@/common/dto/message-response.dto';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { Throttle } from '@nestjs/throttler';
+import { CreateMaintenanceDto } from './dto/create-maintenance.dto';
 
 @ApiBearerAuth()
 @Controller('student')
@@ -135,11 +136,11 @@ export class StudentController {
         const limit = Number(pagination.limit) || 10;
         const { total, notifications } =
             await this.studentService.getMyNotifications(user.id, page, limit);
-       return {
-    success: true,
-    meta: { page, limit, total },
-    notifications,
-  };
+        return {
+            success: true,
+            meta: { page, limit, total },
+            notifications,
+        };
     }
 
     // markAsRead
@@ -160,5 +161,22 @@ export class StudentController {
             throw new BadRequestException(error.message);
         }
     }
+
+
+    @Throttle({ default: { limit: 5, ttl: 60000 } })
+    @Post('request')
+    @Roles(Role.student)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Student creates a maintenance request' })
+    @ApiCreatedResponse({ type: MessageResponseDto })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    async createRequest(
+        @GetUser() user: { id: number },
+        @Body() dto: CreateMaintenanceDto,
+    ) {
+        await this.studentService.createRequest(user.id, dto);
+        return { success: true, message: 'Maintenance request submitted successfully' };
+    }
+
 
 }
