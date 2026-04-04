@@ -77,6 +77,8 @@ export class StudentController {
     @Roles(Role.student)
     @ApiOperation({ summary: 'Get all available hostels' })
     @ApiOkResponse({ description: 'Hostels retrieved successfully' })
+        @ApiCreatedResponse({ type: MessageResponseDto })
+
     @ApiBadRequestResponse({ type: ErrorResponseDto })
     @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
@@ -126,7 +128,7 @@ export class StudentController {
     @Get('notifications')
     @Roles(Role.student)
     @ApiOperation({ summary: 'Get my notifications' })
-    @ApiOkResponse({ description: 'Notifications retrieved successfully' })
+    @ApiOkResponse({ description: 'Notifications retrieved successfully', type: MessageResponseDto })
     @ApiBadRequestResponse({ type: ErrorResponseDto })
     @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
@@ -185,7 +187,7 @@ export class StudentController {
     @Get('maintenance')
     @Roles(Role.student)
     @ApiOperation({ summary: 'Get my maintenance request history' })
-    @ApiOkResponse({ description: 'Maintenance history retrieved successfully' })
+    @ApiOkResponse({ description: 'Maintenance history retrieved successfully', type: MessageResponseDto })
     @ApiBadRequestResponse({ type: ErrorResponseDto })
     @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
@@ -205,5 +207,6 @@ export class StudentController {
         };
     }
 
+    
 
 }

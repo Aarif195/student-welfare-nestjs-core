@@ -249,9 +249,38 @@ export class HostelController {
         const ownerId = req.user.id;
         await this.hostelService.deleteHostelNotification(ownerId, notificationId);
         return {
-            success: true,  
+            success: true,
             message: 'Notification deleted successfully',
         };
     }
+
+    // getHostelMaintenance
+    @Throttle({ default: { limit: 5, ttl: 60000 } })
+    @Get('maintenance/:hostelId')
+    @Roles(Role.hostelOwner)
+    @ApiOperation({ summary: 'Owner views maintenance requests for a specific hostel' })
+    @ApiOkResponse({ description: 'Hostel maintenance requests retrieved successfully', type: MessageResponseDto })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
+    async getHostelMaintenance(
+        @GetUser() user: { id: number },
+        @Param('hostelId', ParseIntPipe) hostelId: number,
+        @Query() pagination: PaginationDto
+    ) {
+        const page = Number(pagination.page) || 1;
+        const limit = Number(pagination.limit) || 10;
+
+        const { total, requests } = await this.hostelService.getHostelMaintenance(user.id, hostelId, page, limit);
+
+        return {
+            success: true,
+            meta: { page, limit, total },
+            MaintenanceRequests: requests,
+        };
+    }
+
+
+    
 
 }

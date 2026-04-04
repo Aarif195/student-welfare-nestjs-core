@@ -362,4 +362,39 @@ async deleteHostelNotification(ownerId: number, notificationId: number) {
   });
 }
 
+// getHostelMaintenance
+async getHostelMaintenance(ownerId: number, hostelId: number, page: number, limit: number) {
+    // Security: Verify the hostel belongs to this owner
+    const hostel = await this.prisma.hostel.findFirst({
+        where: { id: hostelId, owner_id: ownerId },
+    });
+
+    if (!hostel) {
+        throw new ForbiddenException('You do not have permission to view maintenance for this hostel.');
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [requests, total] = await Promise.all([
+        this.prisma.maintenanceRequest.findMany({
+            where: { hostel_id: hostelId },
+            skip,
+            take: limit,
+            include: {
+                student: { select: { firstName: true, lastName: true, email: true } },
+                room: { select: { room_number: true } }
+            },
+            orderBy: { created_at: 'desc' }
+        }),
+        this.prisma.maintenanceRequest.count({
+            where: { hostel_id: hostelId }
+        })
+    ]);
+
+    return { total, requests };
+}
+
+
+
+
 }
