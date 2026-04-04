@@ -398,7 +398,7 @@ async getHostelMaintenance(ownerId: number, hostelId: number, page: number, limi
     return { total, requests };
 }
 
-
+// updateMaintenanceStatus
 async updateMaintenanceStatus(ownerId: number, requestId: number, status: MaintenanceStatus) {
     //  Find request and verify ownership of the hostel it belongs to
     const request = await this.prisma.maintenanceRequest.findUnique({

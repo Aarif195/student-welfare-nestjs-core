@@ -281,7 +281,7 @@ export class HostelController {
         };
     }
 
-
+// updateMaintenanceStatus
     @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Patch('maintenance/:id/status')
     @Roles(Role.hostelOwner)

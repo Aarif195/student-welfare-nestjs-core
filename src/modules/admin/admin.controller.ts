@@ -15,6 +15,7 @@ import { Roles } from '@/common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 import { RejectHostelDto } from './dto/admin-rejectHostel.dto';
 import { AdminNotificationDto } from './dto/create-notification.dto';
+import { UpdateMaintenanceStatusDto } from '../hostel/dto/update-maintenance-status.dto';
 
 @ApiTags('Admin Dashboard')
 @Controller('admin')
@@ -314,6 +315,7 @@ export class AdminController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Superadmin views all maintenance requests' })
   @ApiOkResponse({ description: 'All maintenance requests retrieved successfully' })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
   @ApiQuery({ name: 'hostelId', required: false, type: Number })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
@@ -331,6 +333,22 @@ export class AdminController {
       meta: { page, limit, total },
       MaintenanceRequests: requests,
     };
+  }
+
+  // updateMaintenanceStatus
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Patch('maintenance/:id/status')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Superadmin to updates any maintenance request status' })
+  @ApiOkResponse({ type: MessageResponseDto })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  async updateMaintenanceStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateMaintenanceStatusDto,
+  ) {
+    await this.adminService.updateMaintenanceStatus(id, dto.status);
+    return { success: true, message: `Maintenance status updated to ${dto.status} by admin` };
   }
 
 

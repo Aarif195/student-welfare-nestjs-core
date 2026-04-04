@@ -9,7 +9,7 @@ import { RejectHostelDto } from './dto/admin-rejectHostel.dto';
 import { bookingApprovedEmailTemplate, bookingRejectedEmailTemplate, hostelApprovedEmailTemplate, hostelRejectedEmailTemplate, notificationEmailTemplate } from '@/common/templates/auth-emails.template';
 
 import { MailService } from '@/providers/mail/mail.service';
-import { Role } from '@prisma/client';
+import { MaintenanceStatus, Role } from '@prisma/client';
 import { AdminNotificationDto } from './dto/create-notification.dto';
 
 @Injectable()
@@ -435,5 +435,20 @@ async getAllMaintenance(page: number, limit: number, hostelId?: number) {
 }
 
 
+// updateMaintenanceStatus
+async updateMaintenanceStatus(requestId: number, status: MaintenanceStatus) {
+    const request = await this.prisma.maintenanceRequest.findUnique({
+        where: { id: requestId }
+    });
+
+    if (!request) {
+        throw new NotFoundException('Maintenance request not found');
+    }
+
+    return this.prisma.maintenanceRequest.update({
+        where: { id: requestId },
+        data: { status }
+    });
+}
 
 }
