@@ -1,5 +1,6 @@
 import { Controller, Post, Body, Patch, Param, ParseIntPipe, Get, Query, Delete, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiCreatedResponse, ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiQuery, ApiNoContentResponse, ApiParam } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 
 import { Role } from '@prisma/client';
 import { GetUser } from '@/common/decorators/get-user.decorator';
@@ -15,7 +16,7 @@ import { PaginationDto } from '@/common/dto/pagination.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { OwnerNotificationDto } from './dto/create-notification.dto';
-import { Throttle } from '@nestjs/throttler';
+import { UpdateMaintenanceStatusDto } from './dto/update-maintenance-status.dto';
 
 @Controller('hostels')
 @ApiTags('Hostels')
@@ -281,6 +282,20 @@ export class HostelController {
     }
 
 
-    
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Patch('maintenance/:id/status')
+    @Roles(Role.hostelOwner)
+    @ApiOperation({ summary: 'Owner updates maintenance request status' })
+    @ApiOkResponse({ type: MessageResponseDto })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    async updateMaintenanceStatus(
+        @GetUser() user: { id: number },
+        @Param('id', ParseIntPipe) id: number,
+        @Body() dto: UpdateMaintenanceStatusDto,
+    ) {
+        await this.hostelService.updateMaintenanceStatus(user.id, id, dto.status);
+        return { success: true, message: `Maintenance status updated to ${dto.status}` };
+    }
+
 
 }

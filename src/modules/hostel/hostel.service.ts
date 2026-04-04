@@ -1,5 +1,7 @@
 import { DatabaseService } from '@/database/database.service';
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+
+
 import { CreateHostelDto } from './dto/create-hostel.dto';
 import { UpdateHostelDto } from './dto/update-hostel.dto';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -7,6 +9,8 @@ import { UpdateRoomDto } from './dto/update-room.dto';
 import { notificationEmailTemplate } from '@/common/templates/auth-emails.template';
 import { MailService } from '@/providers/mail/mail.service';
 import { OwnerNotificationDto } from './dto/create-notification.dto';
+
+import { MaintenanceStatus } from '@prisma/client';
 
 @Injectable()
 export class HostelService {
@@ -395,6 +399,26 @@ async getHostelMaintenance(ownerId: number, hostelId: number, page: number, limi
 }
 
 
+async updateMaintenanceStatus(ownerId: number, requestId: number, status: MaintenanceStatus) {
+    //  Find request and verify ownership of the hostel it belongs to
+    const request = await this.prisma.maintenanceRequest.findUnique({
+        where: { id: requestId },
+        include: { hostel: { select: { owner_id: true } } }
+    });
 
+    if (!request) {
+        throw new NotFoundException('Maintenance request not found');
+    }
+
+    if (request.hostel.owner_id !== ownerId) {
+        throw new ForbiddenException('You do not have permission to update this request');
+    }
+
+    //  Update status
+    return this.prisma.maintenanceRequest.update({
+        where: { id: requestId },
+        data: { status }
+    });
+}
 
 }
