@@ -306,4 +306,32 @@ export class AdminController {
       message: 'Notification deleted successfully',
     };
   }
+
+
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Get('maintenance')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Superadmin views all maintenance requests' })
+  @ApiOkResponse({ description: 'All maintenance requests retrieved successfully' })
+  @ApiQuery({ name: 'hostelId', required: false, type: Number })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async getAllMaintenance(
+    @Query() pagination: PaginationDto,
+    @Query('hostelId') hostelId?: number,
+  ) {
+    const page = Number(pagination.page) || 1;
+    const limit = Number(pagination.limit) || 10;
+
+    const { total, requests } = await this.adminService.getAllMaintenance(page, limit, hostelId);
+
+    return {
+      success: true,
+      meta: { page, limit, total },
+      MaintenanceRequests: requests,
+    };
+  }
+
+
 }

@@ -409,5 +409,31 @@ export class AdminService {
   }
 
 
+  
+async getAllMaintenance(page: number, limit: number, hostelId?: number) {
+    const skip = (page - 1) * limit;
+    
+    // Build filter based on whether hostelId is provided
+    const filter = hostelId ? { hostel_id: Number(hostelId) } : {};
+
+    const [requests, total] = await Promise.all([
+        this.prisma.maintenanceRequest.findMany({
+            where: filter,
+            skip,
+            take: limit,
+            include: {
+                student: { select: { firstName: true, lastName: true } },
+                hostel: { select: { name: true } },
+                room: { select: { room_number: true } }
+            },
+            orderBy: { created_at: 'desc' }
+        }),
+        this.prisma.maintenanceRequest.count({ where: filter })
+    ]);
+
+    return { total, requests };
+}
+
+
 
 }

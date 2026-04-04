@@ -203,7 +203,6 @@ model MaintenanceRequest {
   status       MaintenanceStatus @default(pending)
   
   image_url    String?
-  image_id     String? 
 
   created_at   DateTime          @default(now())
   updated_at   DateTime          @updatedAt
