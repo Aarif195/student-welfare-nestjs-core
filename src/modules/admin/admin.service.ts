@@ -195,8 +195,12 @@ export class AdminService {
       where: { booking_id: bookingId },
     });
 
-    if (!payment || payment.payment_status !== 'success') {
-      throw new BadRequestException('Cannot approve booking: Payment not verified or successful.');
+    if (!payment) {
+      throw new BadRequestException('Payment not found for this booking.');
+    }
+
+    if (payment.payment_status !== 'success') {
+      throw new BadRequestException('Payment not successful.');
     }
 
     const result = await this.prisma.$transaction(async (tx) => {

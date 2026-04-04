@@ -35,6 +35,7 @@ model User {
   // Notifications
   createdNotifications Notification[]
   readNotifications NotificationRead[]
+  maintenanceRequests MaintenanceRequest[] @relation("StudentRequests")
 }
 
 model Hostel {
@@ -52,6 +53,7 @@ model Hostel {
 
   // Relation to the resource model
   resources HostelResource[]
+  maintenanceRequests MaintenanceRequest[]
 
   // Notifications
   notifications Notification[]
@@ -112,6 +114,7 @@ model Room {
   updated_at   DateTime       @updatedAt
 
   bookings Booking[]
+  maintenanceRequests MaintenanceRequest[]
 
   @@unique([hostel_id, room_number])
 }
@@ -187,4 +190,33 @@ model NotificationRead {
   student         User         @relation(fields: [student_id], references: [id], onDelete: Cascade)
 
   @@unique([notification_id, student_id]) 
+}
+
+
+model MaintenanceRequest {
+  id           Int               @id @default(autoincrement())
+  student_id   Int
+  hostel_id    Int
+  room_id      Int
+  title        String
+  description  String
+  status       MaintenanceStatus @default(pending)
+  
+  image_url    String?
+  image_id     String? 
+
+  created_at   DateTime          @default(now())
+  updated_at   DateTime          @updatedAt
+
+  // Relations
+  student      User              @relation("StudentRequests", fields: [student_id], references: [id])
+  hostel       Hostel            @relation(fields: [hostel_id], references: [id])
+  room         Room              @relation(fields: [room_id], references: [id])
+}
+
+enum MaintenanceStatus {
+  pending
+  in_progress
+  resolved
+  rejected
 }
