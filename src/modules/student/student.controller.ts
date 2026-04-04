@@ -30,7 +30,6 @@ export class StudentController {
         @Body() createBookingDto: CreateBookingDto,
 
     ) {
-        console.log(user)
         return this.studentService.bookRoom(user.id, createBookingDto);
     }
 
