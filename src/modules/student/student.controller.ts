@@ -163,8 +163,9 @@ export class StudentController {
     }
 
 
-    @Throttle({ default: { limit: 5, ttl: 60000 } })
-    @Post('request')
+    // createMaintenanceRequest
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Post('maintenance/request')
     @Roles(Role.student)
     @ApiBearerAuth()
     @ApiOperation({ summary: 'Student creates a maintenance request' })
@@ -176,6 +177,32 @@ export class StudentController {
     ) {
         await this.studentService.createRequest(user.id, dto);
         return { success: true, message: 'Maintenance request submitted successfully' };
+    }
+
+
+    // getMyMaintenance
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Get('maintenance')
+    @Roles(Role.student)
+    @ApiOperation({ summary: 'Get my maintenance request history' })
+    @ApiOkResponse({ description: 'Maintenance history retrieved successfully' })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
+    async getMyMaintenance(
+        @GetUser() user: { id: number },
+        @Query() pagination: PaginationDto
+    ) {
+        const page = Number(pagination.page) || 1;
+        const limit = Number(pagination.limit) || 10;
+
+        const { requests, total } = await this.studentService.getMyMaintenance(user.id, page, limit);
+
+        return {
+            success: true,
+            meta: { page, limit, total },
+            MaintenanceRequests: requests,
+        };
     }
 
 

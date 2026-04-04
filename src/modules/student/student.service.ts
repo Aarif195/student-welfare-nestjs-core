@@ -278,6 +278,28 @@ export class StudentService {
     });
   }
 
+  // Get Maintenance Request
+ async getMyMaintenance(studentId: number, page: number, limit: number) {
+    const skip = (page - 1) * limit;
+
+    const [requests, total] = await Promise.all([
+        this.prisma.maintenanceRequest.findMany({
+            where: { student_id: studentId },
+            skip,
+            take: limit,
+            include: {
+                hostel: { select: { name: true } },
+                room: { select: { room_number: true } }
+            },
+            orderBy: { created_at: 'desc' }
+        }),
+        this.prisma.maintenanceRequest.count({
+            where: { student_id: studentId }
+        })
+    ]);
+
+    return { requests, total };
+}
 
 
 
