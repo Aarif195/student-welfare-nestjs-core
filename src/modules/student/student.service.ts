@@ -1,12 +1,13 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, StudySpaceStatus } from '@prisma/client';
 import { BadRequestException, ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
+
 import { verifyPayment } from '@/common/utils/helpers';
 import { DatabaseService } from '@/database/database.service';
+import { ConfigService } from '@nestjs/config';
+import Stripe from 'stripe';
 
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { CreateMaintenanceDto } from './dto/create-maintenance.dto';
-import { ConfigService } from '@nestjs/config';
-import Stripe from 'stripe';
 import { CreateReviewDto } from './dto/create-review.dto';
 
 @Injectable()
@@ -391,6 +392,26 @@ async getMyReviews(studentId: number, page: number, limit: number) {
     this.prisma.review.count({ where: { student_id: studentId } }),
   ]);
   return { reviews, total };
+}
+
+// getAllStudySpaces
+async getAllStudySpaces(page: number, limit: number, status?: StudySpaceStatus) {
+  const skip = (page - 1) * limit;
+  
+  // Optional filter for 'open' spaces
+  const filter = status ? { status } : {};
+
+  const [spaces, total] = await Promise.all([
+    this.prisma.studySpace.findMany({
+      where: filter,
+      skip,
+      take: limit,
+      orderBy: { name: 'asc' },
+    }),
+    this.prisma.studySpace.count({ where: filter }),
+  ]);
+
+  return { total, spaces };
 }
 
 }

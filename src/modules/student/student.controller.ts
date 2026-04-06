@@ -3,7 +3,7 @@ import { BadRequestException, Body, Controller, Get, Param, ParseIntPipe, Patch,
 import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiQuery } from '@nestjs/swagger';
 
 import { Roles } from '@/common/decorators/roles.decorator';
-import { Role } from '@prisma/client';
+import { Role, StudySpaceStatus } from '@prisma/client';
 import { GetUser } from '@/common/decorators/get-user.decorator';
 import { StudentService } from './student.service';
 
@@ -250,5 +250,34 @@ async getMyReviews(
         reviews,
     };
 }
+
+
+// getAvailableStudySpaces
+@Throttle({ default: { limit: 3, ttl: 60000 } })
+@Get('study-spaces')
+@Roles(Role.student)
+@ApiOperation({ summary: 'Get all available study spaces' })
+@ApiOkResponse({ description: 'Study spaces retrieved successfully', type: MessageResponseDto })
+@ApiBadRequestResponse({ type: ErrorResponseDto })
+@ApiQuery({ name: 'page', required: false, type: Number })
+@ApiQuery({ name: 'limit', required: false, type: Number })
+@ApiQuery({ name: 'status', required: false, enum: ['open', 'closed'] })
+async getAvailableStudySpaces(
+    @Query() pagination: PaginationDto,
+    @Query('status') status?: StudySpaceStatus
+) {
+    const page = Number(pagination.page) || 1;
+    const limit = Number(pagination.limit) || 10;
+
+    const { spaces, total } = await this.studentService.getAllStudySpaces(page, limit, status);
+
+    return {
+        success: true,
+        meta: { page, limit, total },
+        studySpaces: spaces,
+    };
+}
+
+
 
 }
