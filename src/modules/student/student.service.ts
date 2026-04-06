@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
 import { verifyPayment } from '@/common/utils/helpers';
 import { DatabaseService } from '@/database/database.service';
 
@@ -7,6 +7,7 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 import { CreateMaintenanceDto } from './dto/create-maintenance.dto';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
+import { CreateReviewDto } from './dto/create-review.dto';
 
 @Injectable()
 export class StudentService {
@@ -336,6 +337,45 @@ export class StudentService {
     return request;
   }
 
+// createReview
+async createReview(studentId: number, dto: CreateReviewDto) {
+  //   Check for an approved booking for this specific hostel
+  const hasStayed = await this.prisma.booking.findFirst({
+    where: {
+      student_id: studentId,
+      room: { hostel_id: dto.hostel_id },
+      booking_status: 'approved',
+    },
+  });
+
+  if (!hasStayed) {
+    throw new ForbiddenException('You can only review hostels where you have an approved booking.');
+  }
+
+  //  Check if review already exists
+  const existingReview = await this.prisma.review.findUnique({
+    where: {
+      student_id_hostel_id: {
+        student_id: studentId,
+        hostel_id: dto.hostel_id,
+      },
+    },
+  });
+
+  if (existingReview) {
+    throw new ConflictException('You have already reviewed this hostel.');
+  }
+
+  // Create Review
+  return this.prisma.review.create({
+    data: {
+      student_id: studentId,
+      hostel_id: dto.hostel_id,
+      rating: dto.rating,
+      comment: dto.comment,
+    },
+  });
+}
 
 
 }

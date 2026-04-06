@@ -13,6 +13,7 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { Throttle } from '@nestjs/throttler';
 import { CreateMaintenanceDto } from './dto/create-maintenance.dto';
+import { CreateReviewDto } from './dto/create-review.dto';
 
 @ApiBearerAuth()
 @Controller('student')
@@ -207,6 +208,21 @@ export class StudentController {
         };
     }
 
+    // createReview
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Post('review')
+    @Roles(Role.student)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Student creates a review for a hostel' })
+    @ApiCreatedResponse({ type: MessageResponseDto })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    async createReview(
+        @GetUser() user: { id: number },
+        @Body() dto: CreateReviewDto,
+    ) {
+        await this.studentService.createReview(user.id, dto);
+        return { success: true, message: 'Review submitted successfully' };
+    }
 
 
 }
