@@ -5,10 +5,22 @@ import { DatabaseService } from '@/database/database.service';
 
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { CreateMaintenanceDto } from './dto/create-maintenance.dto';
+import { ConfigService } from '@nestjs/config';
+import Stripe from 'stripe';
 
 @Injectable()
 export class StudentService {
-  constructor(private prisma: DatabaseService) { }
+  private stripe: Stripe;
+  constructor(private prisma: DatabaseService, private configService: ConfigService,
+  ) {
+    const secretKey = this.configService.get<string>('stripe.secretKey');
+    if (!secretKey) {
+      throw new Error('STRIPE_SECRET_KEY is missing from config');
+    }
+    this.stripe = new Stripe(secretKey, {
+      apiVersion: '2026-03-25.dahlia',
+    });
+  }
 
   // bookRoom
   async bookRoom(studentId: number, data: CreateBookingDto) {
@@ -22,7 +34,12 @@ export class StudentService {
     }
 
     //  Verify payment (Manual util check)
-    const isValid = await verifyPayment(data.reference);
+    if (!data.reference.startsWith('pi_')) {
+      throw new BadRequestException('Invalid payment reference format');
+    }
+
+    const isValid = await verifyPayment(data.reference, this.stripe);
+
     if (!isValid) {
       throw new BadRequestException('Payment verification failed');
     }
@@ -302,7 +319,6 @@ export class StudentService {
     return { requests, total };
   }
 
-
   // getMyMaintenanceRequestById
   async getMyMaintenanceRequestById(studentId: number, requestId: number) {
     const request = await this.prisma.maintenanceRequest.findUnique({
@@ -319,5 +335,7 @@ export class StudentService {
 
     return request;
   }
+
+
 
 }

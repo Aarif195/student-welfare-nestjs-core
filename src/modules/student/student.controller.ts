@@ -77,7 +77,7 @@ export class StudentController {
     @Roles(Role.student)
     @ApiOperation({ summary: 'Get all available hostels' })
     @ApiOkResponse({ description: 'Hostels retrieved successfully' })
-        @ApiCreatedResponse({ type: MessageResponseDto })
+    @ApiCreatedResponse({ type: MessageResponseDto })
 
     @ApiBadRequestResponse({ type: ErrorResponseDto })
     @ApiQuery({ name: 'page', required: false, type: Number })
@@ -207,6 +207,6 @@ export class StudentController {
         };
     }
 
-    
+
 
 }

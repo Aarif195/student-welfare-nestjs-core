@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../../database/database.service';
 import { JwtService } from '@nestjs/jwt';
-import { hashPassword, comparePassword } from '../../common/utils/helpers';
+import { hashPassword, comparePassword, generateOTP } from '../../common/utils/helpers';
 
 import { Role } from '@prisma/client';
 import { MailService } from '../../providers/mail/mail.service';
@@ -48,7 +48,8 @@ export class AuthService {
     });
 
     // Generate 6-digit OTP
-    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpLength = Number(this.configService.get('OTP_LENGTH'));
+    const otpCode = generateOTP(otpLength);
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 mins expiry
 
     // Save OTP in database
@@ -129,7 +130,8 @@ export class AuthService {
     }
 
     //  Generate new OTP
-    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpLength = Number(this.configService.get('OTP_LENGTH'));
+    const otpCode = generateOTP(otpLength);
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
     //  Clean up old OTPs and create new one
@@ -169,7 +171,8 @@ export class AuthService {
     }
 
     //  Generate new OTP
-    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpLength = Number(this.configService.get('OTP_LENGTH'));
+    const otpCode = generateOTP(otpLength);
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
     //  Clean up old OTPs and create new one
@@ -270,14 +273,14 @@ export class AuthService {
       token: this.jwtService.sign(payload),
     };
   }
-  
-// logout
-async logout() {
-  return {
-    success: true,
-    message: 'User logged out successfully',
-  };
-}
+
+  // logout
+  async logout() {
+    return {
+      success: true,
+      message: 'User logged out successfully',
+    };
+  }
 
   // googleLogin
   async googleLogin(dto: GoogleLoginDto) {

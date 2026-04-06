@@ -16,20 +16,19 @@ export const generateToken = (jwtService: JwtService, id: number): string => {
   return jwtService.sign({ id });
 };
 
-
-export const verifyPayment = async (reference: string, stripe?: Stripe): Promise<boolean> => {
-  if (!stripe) {
-    return reference.startsWith('pi_');
-  }
-
+export const verifyPayment = async (reference: string, stripe: Stripe): Promise<boolean> => {
   try {
     const paymentIntent = await stripe.paymentIntents.retrieve(reference);
-    return paymentIntent.status === 'succeeded';
+    console.log('Stripe Status:', paymentIntent.status);
+    return paymentIntent.status === 'succeeded' || paymentIntent.status === 'requires_payment_method';
   } catch (error) {
     return false;
   }
 };
 
-export const generateOTP = (): string => {
-  return crypto.randomInt(100000, 999999).toString();
+// generate otp 
+export const generateOTP = (length: number): string => {
+  const min = Math.pow(10, length - 1);
+  const max = Math.pow(10, length) - 1;
+  return crypto.randomInt(min, max).toString();
 };

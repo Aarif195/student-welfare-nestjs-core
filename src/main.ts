@@ -7,12 +7,22 @@ import { HttpExceptionFilter } from './filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 
 async function bootstrap() {
-const app = await NestFactory.create(AppModule, {
-  rawBody: true,
-});  const configService = app.get(ConfigService);
+  const app = await NestFactory.create(AppModule, {
+    rawBody: true,
+  });
+  const configService = app.get(ConfigService);
+
+  const origins = configService.get<string>('ALLOWED_ORIGINS') || '';
+  const originArray = origins.split(',');
 
   app.enableCors({
-    origin: 'http://localhost:5173',
+    origin: (origin, callback) => {
+      if (!origin || originArray.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   });
 
