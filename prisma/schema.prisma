@@ -28,7 +28,7 @@ model User {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  hostels  Hostel[] // This links to the owner_id in the Hostel model
+  hostels  Hostel[] 
   bookings Booking[]
   payments Payment[]
 
@@ -36,6 +36,7 @@ model User {
   createdNotifications Notification[]
   readNotifications NotificationRead[]
   maintenanceRequests MaintenanceRequest[] @relation("StudentRequests")
+  reviews Review[]
 }
 
 model Hostel {
@@ -57,6 +58,7 @@ model Hostel {
 
   // Notifications
   notifications Notification[]
+  reviews Review[]
 
   @@map("hostels")
 }
@@ -218,4 +220,19 @@ enum MaintenanceStatus {
   in_progress
   resolved
   rejected
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  student_id Int
+  hostel_id  Int
+  rating     Int      
+  comment    String?  @db.Text
+  created_at DateTime @default(now())
+
+  // Relations
+  student    User     @relation(fields: [student_id], references: [id])
+  hostel     Hostel   @relation(fields: [hostel_id], references: [id])
+
+  @@unique([student_id, hostel_id]) 
 }

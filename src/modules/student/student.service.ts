@@ -1,8 +1,9 @@
 import { Prisma } from '@prisma/client';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
-import { CreateBookingDto } from './dto/create-booking.dto';
 import { verifyPayment } from '@/common/utils/helpers';
 import { DatabaseService } from '@/database/database.service';
+
+import { CreateBookingDto } from './dto/create-booking.dto';
 import { CreateMaintenanceDto } from './dto/create-maintenance.dto';
 
 @Injectable()

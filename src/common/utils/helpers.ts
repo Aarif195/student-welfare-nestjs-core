@@ -16,11 +16,6 @@ export const generateToken = (jwtService: JwtService, id: number): string => {
   return jwtService.sign({ id });
 };
 
-// export const verifyPayment = async (reference: string): Promise<boolean> => {
-//   // Logic for external API call
-//   return true; 
-// };
-
 
 export const verifyPayment = async (reference: string, stripe?: Stripe): Promise<boolean> => {
   if (!stripe) {
@@ -38,4 +33,3 @@ export const verifyPayment = async (reference: string, stripe?: Stripe): Promise
 export const generateOTP = (): string => {
   return crypto.randomInt(100000, 999999).toString();
 };
-

@@ -22,24 +22,6 @@ constructor(private configService: ConfigService,
 }
 
 
-async verifyWebhook(signature: string, payload: Buffer) {
-  const webhookSecret = this.configService.get<string>('stripe.webhookSecret');
-  
-if (!webhookSecret) {
-    throw new Error('STRIPE_WEBHOOK_SECRET is missing from configuration');
-  }
-
-  try {
-    return this.stripe.webhooks.constructEvent(
-      payload,
-      signature,
-      webhookSecret,
-    );
-  } catch (err) {
-    throw new Error(`Webhook Error: ${err.message}`);
-  }
-}
-
 // To start the payment process
 async createPaymentIntent(amount: number, metadata: { roomId: string, studentId: string }) {
   try {
@@ -56,6 +38,25 @@ async createPaymentIntent(amount: number, metadata: { roomId: string, studentId:
     };
   } catch (error) {
     throw new Error(`Stripe Intent Error: ${error.message}`);
+  }
+}
+
+// verifyWebhook
+async verifyWebhook(signature: string, payload: Buffer) {
+  const webhookSecret = this.configService.get<string>('stripe.webhookSecret');
+  
+if (!webhookSecret) {
+    throw new Error('STRIPE_WEBHOOK_SECRET is missing from configuration');
+  }
+
+  try {
+    return this.stripe.webhooks.constructEvent(
+      payload,
+      signature,
+      webhookSecret,
+    );
+  } catch (err) {
+    throw new Error(`Webhook Error: ${err.message}`);
   }
 }
 
