@@ -12,6 +12,7 @@ import { MailService } from '@/providers/mail/mail.service';
 import { MaintenanceStatus, Role } from '@prisma/client';
 import { AdminNotificationDto } from './dto/create-notification.dto';
 import { ReplyReviewDto } from '../hostel/dto/reply-review.dto';
+import { CreateStudySpaceDto } from './dto/create-study-space.dto';
 
 @Injectable()
 export class AdminService {
@@ -477,6 +478,15 @@ async adminReplyToReview(reviewId: number, dto: ReplyReviewDto) {
   return this.prisma.review.update({
     where: { id: reviewId },
     data: { owner_reply: dto.reply, replied_at: new Date() }
+  });
+}
+
+async createStudySpace(adminId: number, dto: CreateStudySpaceDto) {
+  return this.prisma.studySpace.create({
+    data: {
+      ...dto,
+      created_by: adminId,
+    },
   });
 }
 

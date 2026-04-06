@@ -1,5 +1,5 @@
 import { Body, Controller, Post, HttpCode, HttpStatus, Query, Get, ParseIntPipe, Param, BadRequestException, Patch, Request, Delete } from '@nestjs/common';
-import { ApiOperation, ApiTags, ApiBody, ApiOkResponse, ApiUnauthorizedResponse, ApiBearerAuth, ApiBadRequestResponse, ApiQuery, ApiParam } from '@nestjs/swagger';
+import { ApiOperation, ApiTags, ApiBody, ApiOkResponse, ApiUnauthorizedResponse, ApiBearerAuth, ApiBadRequestResponse, ApiQuery, ApiParam, ApiCreatedResponse } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 
 import { AdminLoginDto } from './dto/admin-login.dto';
@@ -17,6 +17,7 @@ import { RejectHostelDto } from './dto/admin-rejectHostel.dto';
 import { AdminNotificationDto } from './dto/create-notification.dto';
 import { UpdateMaintenanceStatusDto } from '../hostel/dto/update-maintenance-status.dto';
 import { ReplyReviewDto } from '../hostel/dto/reply-review.dto';
+import { CreateStudySpaceDto } from './dto/create-study-space.dto';
 
 @ApiTags('Admin Dashboard')
 @Controller('admin')
@@ -401,5 +402,27 @@ export class AdminController {
   }
 
 
+  // createStudySpace
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Post('study-spaces')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create a new study space' })
+  @ApiCreatedResponse({ type: MessageResponseDto })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  async createStudySpace(
+    @Request() req: any,
+    @Body() dto: CreateStudySpaceDto,
+  ) {
+    const adminId = req.user.id;
+    const data = await this.adminService.createStudySpace(adminId, dto);
+
+    return {
+      success: true,
+      message: 'Study space created successfully',
+      data,
+    };
+  }
+  
   
 }
