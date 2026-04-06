@@ -37,6 +37,7 @@ model User {
   readNotifications NotificationRead[]
   maintenanceRequests MaintenanceRequest[] @relation("StudentRequests")
   reviews Review[]
+  study_spaces StudySpace[] @relation("AdminCreatedSpaces")
 }
 
 model Hostel {
@@ -237,4 +238,26 @@ model Review {
   hostel     Hostel   @relation(fields: [hostel_id], references: [id])
 
   @@unique([student_id, hostel_id]) 
+}
+
+model StudySpace {
+  id             Int              @id @default(autoincrement())
+  name           String
+  location       String
+  total_capacity Int
+  available_slots Int
+  status         StudySpaceStatus @default(open)
+  opening_time   String           // Format: "HH:mm"
+  closing_time   String           // Format: "HH:mm"
+  created_by     Int              // Superadmin ID
+  created_at     DateTime         @default(now())
+  updated_at     DateTime         @updatedAt
+
+  admin          User             @relation("AdminCreatedSpaces", fields: [created_by], references: [id])
+}
+
+enum StudySpaceStatus {
+  open
+  closed
+  full
 }
