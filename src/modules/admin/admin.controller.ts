@@ -16,6 +16,7 @@ import { Role } from '@prisma/client';
 import { RejectHostelDto } from './dto/admin-rejectHostel.dto';
 import { AdminNotificationDto } from './dto/create-notification.dto';
 import { UpdateMaintenanceStatusDto } from '../hostel/dto/update-maintenance-status.dto';
+import { ReplyReviewDto } from '../hostel/dto/reply-review.dto';
 
 @ApiTags('Admin Dashboard')
 @Controller('admin')
@@ -352,7 +353,6 @@ export class AdminController {
   }
 
 
-
   // getAllReviews
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Get('reviews')
@@ -379,4 +379,28 @@ export class AdminController {
       reviews,
     };
   }
+
+
+  // adminReplyToReview
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Post('reviews/:reviewId/reply')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Admin replies to a review' })
+  @ApiParam({ name: 'reviewId', type: Number })
+  @ApiBody({ type: ReplyReviewDto })
+  @ApiOkResponse({ type: MessageResponseDto })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  async adminReplyToReview(
+    @Request() req: any,
+    @Param('reviewId', ParseIntPipe) reviewId: number,
+    @Body() dto: ReplyReviewDto,
+  ) {
+    const adminId = req.user.id;
+    await this.adminService.adminReplyToReview(reviewId, dto);
+    return { success: true, message: 'Review replied to successfully' };
+  }
+
+
+  
 }

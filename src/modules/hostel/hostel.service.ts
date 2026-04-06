@@ -11,6 +11,7 @@ import { MailService } from '@/providers/mail/mail.service';
 import { OwnerNotificationDto } from './dto/create-notification.dto';
 
 import { MaintenanceStatus } from '@prisma/client';
+import { ReplyReviewDto } from './dto/reply-review.dto';
 
 @Injectable()
 export class HostelService {
@@ -440,5 +441,21 @@ async getHostelReviews(ownerId: number, hostelId: number, page: number, limit: n
   return { reviews, total };
 }
 
+// replyToReview
+async replyToReview(ownerId: number, reviewId: number, dto: ReplyReviewDto) {
+  const review = await this.prisma.review.findUnique({
+    where: { id: reviewId },
+    include: { hostel: { select: { owner_id: true } } }
+  });
+
+  if (!review || review.hostel.owner_id !== ownerId) {
+    throw new ForbiddenException('You can only reply to reviews for your own hostels.');
+  }
+
+  return this.prisma.review.update({
+    where: { id: reviewId },
+    data: { owner_reply: dto.reply, replied_at: new Date() }
+  });
+}
 
 }

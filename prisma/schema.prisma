@@ -228,7 +228,9 @@ model Review {
   hostel_id  Int
   rating     Int      
   comment    String?  @db.Text
+  owner_reply    String?  @db.Text
   created_at DateTime @default(now())
+  replied_at     DateTime?
 
   // Relations
   student    User     @relation(fields: [student_id], references: [id])

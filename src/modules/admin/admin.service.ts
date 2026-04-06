@@ -11,6 +11,7 @@ import { bookingApprovedEmailTemplate, bookingRejectedEmailTemplate, hostelAppro
 import { MailService } from '@/providers/mail/mail.service';
 import { MaintenanceStatus, Role } from '@prisma/client';
 import { AdminNotificationDto } from './dto/create-notification.dto';
+import { ReplyReviewDto } from '../hostel/dto/reply-review.dto';
 
 @Injectable()
 export class AdminService {
@@ -468,5 +469,15 @@ async getAllReviews(page: number, limit: number, hostelId?: number) {
   return { reviews, total };
 }
 
+// adminReplyToReview
+async adminReplyToReview(reviewId: number, dto: ReplyReviewDto) {
+  const review = await this.prisma.review.findUnique({ where: { id: reviewId } });
+  if (!review) throw new NotFoundException('Review not found');
+
+  return this.prisma.review.update({
+    where: { id: reviewId },
+    data: { owner_reply: dto.reply, replied_at: new Date() }
+  });
+}
 
 }

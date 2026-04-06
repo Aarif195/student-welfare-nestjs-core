@@ -1,5 +1,5 @@
 import { Controller, Post, Body, Patch, Param, ParseIntPipe, Get, Query, Delete, Request } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiCreatedResponse, ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiQuery, ApiNoContentResponse, ApiParam } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiCreatedResponse, ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiQuery, ApiNoContentResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 
 import { Role } from '@prisma/client';
@@ -17,6 +17,7 @@ import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { OwnerNotificationDto } from './dto/create-notification.dto';
 import { UpdateMaintenanceStatusDto } from './dto/update-maintenance-status.dto';
+import { ReplyReviewDto } from './dto/reply-review.dto';
 
 @Controller('hostels')
 @ApiTags('Hostels')
@@ -323,6 +324,28 @@ export class HostelController {
             reviews,
         };
     }
+
+
+    // replyToReview
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
+    @Post('reviews/:reviewId/reply')
+    @Roles(Role.hostelOwner)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Hostel owner replies to a review' })
+    @ApiParam({ name: 'reviewId', type: Number })
+    @ApiBody({ type: ReplyReviewDto })
+    @ApiOkResponse({ type: MessageResponseDto })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    async replyToReview(
+        @Request() req: any,
+        @Param('reviewId', ParseIntPipe) reviewId: number,
+        @Body() dto: ReplyReviewDto,
+    ) {
+        const ownerId = req.user.id;
+        await this.hostelService.replyToReview(ownerId, reviewId, dto);
+        return { success: true, message: 'Review replied to successfully' };
+    }
+    
 
 
 }
