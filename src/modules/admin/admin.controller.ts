@@ -448,5 +448,19 @@ export class AdminController {
     };
   }
 
+  // deleteStudySpace
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Delete('study-spaces/:id')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete a study space' })
+  @ApiParam({ name: 'id', type: Number })
+  @ApiOkResponse({ type: MessageResponseDto })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  async deleteStudySpace(@Param('id', ParseIntPipe) id: number) {
+    await this.adminService.deleteStudySpace(id);
+    return { success: true, message: 'Study space deleted successfully' };
+  }
+
   
 }

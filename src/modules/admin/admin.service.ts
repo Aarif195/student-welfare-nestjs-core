@@ -517,4 +517,19 @@ export class AdminService {
     });
   }
 
+// deleteStudySpace
+async deleteStudySpace(id: number) {
+  const space = await this.prisma.studySpace.findUnique({
+    where: { id },
+  });
+
+  if (!space) {
+    throw new NotFoundException('Study space not found');
+  }
+
+  return this.prisma.studySpace.delete({
+    where: { id },
+  });
+}
+
 }
