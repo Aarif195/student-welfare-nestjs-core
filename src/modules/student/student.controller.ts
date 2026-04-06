@@ -225,4 +225,30 @@ export class StudentController {
     }
 
 
+
+// getMyReviews
+@Throttle({ default: { limit: 3, ttl: 60000 } })
+@Get('reviews')
+@Roles(Role.student)
+@ApiOperation({ summary: 'Get my reviews' })
+@ApiOkResponse({ description: 'Reviews retrieved successfully', type: MessageResponseDto })
+@ApiBadRequestResponse({ type: ErrorResponseDto })
+@ApiQuery({ name: 'page', required: false, type: Number })
+@ApiQuery({ name: 'limit', required: false, type: Number })
+async getMyReviews(
+    @GetUser() user: { id: number },
+    @Query() pagination: PaginationDto
+) {
+    const page = Number(pagination.page) || 1;
+    const limit = Number(pagination.limit) || 10;
+
+    const { reviews, total } = await this.studentService.getMyReviews(user.id, page, limit);
+
+    return {
+        success: true,
+        meta: { page, limit, total },
+        reviews,
+    };
+}
+
 }

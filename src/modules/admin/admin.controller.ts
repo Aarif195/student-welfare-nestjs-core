@@ -352,4 +352,31 @@ export class AdminController {
   }
 
 
+
+  // getAllReviews
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Get('reviews')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Superadmin views all reviews' })
+  @ApiOkResponse({ description: 'All reviews retrieved successfully' })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  @ApiQuery({ name: 'hostelId', required: false, type: Number })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async getAllReviews(
+    @Query() pagination: PaginationDto,
+    @Query('hostelId') hostelId?: number,
+  ) {
+    const page = Number(pagination.page) || 1;
+    const limit = Number(pagination.limit) || 10;
+
+    const { reviews, total } = await this.adminService.getAllReviews(page, limit, hostelId);
+
+    return {
+      success: true,
+      meta: { page, limit, total },
+      reviews,
+    };
+  }
 }

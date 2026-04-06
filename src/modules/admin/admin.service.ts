@@ -451,4 +451,22 @@ async updateMaintenanceStatus(requestId: number, status: MaintenanceStatus) {
     });
 }
 
+// getAllReviews
+async getAllReviews(page: number, limit: number, hostelId?: number) {
+  const skip = (page - 1) * limit;
+  const filter = hostelId ? { hostel_id: Number(hostelId) } : {};
+  const [reviews, total] = await Promise.all([
+    this.prisma.review.findMany({
+      where: filter,
+      skip,
+      take: limit,
+      include: { student: { select: { firstName: true } }, hostel: { select: { name: true } } },
+      orderBy: { created_at: 'desc' },
+    }),
+    this.prisma.review.count({ where: filter }),
+  ]);
+  return { reviews, total };
+}
+
+
 }

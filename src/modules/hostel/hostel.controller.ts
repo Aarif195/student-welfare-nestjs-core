@@ -281,7 +281,7 @@ export class HostelController {
         };
     }
 
-// updateMaintenanceStatus
+    // updateMaintenanceStatus
     @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Patch('maintenance/:id/status')
     @Roles(Role.hostelOwner)
@@ -295,6 +295,33 @@ export class HostelController {
     ) {
         await this.hostelService.updateMaintenanceStatus(user.id, id, dto.status);
         return { success: true, message: `Maintenance status updated to ${dto.status}` };
+    }
+
+
+    // getHostelReviews
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Get(':hostelId/reviews')
+    @Roles(Role.hostelOwner)
+    @ApiOperation({ summary: 'Get all reviews for a specific owned hostel' })
+    @ApiOkResponse({ description: 'Hostel reviews retrieved successfully', type: MessageResponseDto })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
+    async getHostelReviews(
+        @GetUser() user: { id: number },
+        @Param('hostelId', ParseIntPipe) hostelId: number,
+        @Query() pagination: PaginationDto
+    ) {
+        const page = Number(pagination.page) || 1;
+        const limit = Number(pagination.limit) || 10;
+
+        const { reviews, total } = await this.hostelService.getHostelReviews(user.id, hostelId, page, limit);
+
+        return {
+            success: true,
+            meta: { page, limit, total },
+            reviews,
+        };
     }
 
 

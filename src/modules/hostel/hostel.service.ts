@@ -421,4 +421,24 @@ async updateMaintenanceStatus(ownerId: number, requestId: number, status: Mainte
     });
 }
 
+// getHostelReviews
+async getHostelReviews(ownerId: number, hostelId: number, page: number, limit: number) {
+  const hostel = await this.prisma.hostel.findFirst({ where: { id: hostelId, owner_id: ownerId } });
+  if (!hostel) throw new ForbiddenException('Access denied');
+
+  const skip = (page - 1) * limit;
+  const [reviews, total] = await Promise.all([
+    this.prisma.review.findMany({
+      where: { hostel_id: hostelId },
+      skip,
+      take: limit,
+      include: { student: { select: { firstName: true, lastName: true } } },
+      orderBy: { created_at: 'desc' },
+    }),
+    this.prisma.review.count({ where: { hostel_id: hostelId } }),
+  ]);
+  return { reviews, total };
+}
+
+
 }

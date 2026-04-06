@@ -377,5 +377,20 @@ async createReview(studentId: number, dto: CreateReviewDto) {
   });
 }
 
+// getMyReviews
+async getMyReviews(studentId: number, page: number, limit: number) {
+  const skip = (page - 1) * limit;
+  const [reviews, total] = await Promise.all([
+    this.prisma.review.findMany({
+      where: { student_id: studentId },
+      skip,
+      take: limit,
+      include: { hostel: { select: { name: true } } },
+      orderBy: { created_at: 'desc' },
+    }),
+    this.prisma.review.count({ where: { student_id: studentId } }),
+  ]);
+  return { reviews, total };
+}
 
 }
