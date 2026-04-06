@@ -18,6 +18,7 @@ import { AdminNotificationDto } from './dto/create-notification.dto';
 import { UpdateMaintenanceStatusDto } from '../hostel/dto/update-maintenance-status.dto';
 import { ReplyReviewDto } from '../hostel/dto/reply-review.dto';
 import { CreateStudySpaceDto } from './dto/create-study-space.dto';
+import { UpdateStudySpaceDto } from './dto/update-study-space.dto';
 
 @ApiTags('Admin Dashboard')
 @Controller('admin')
@@ -424,5 +425,28 @@ export class AdminController {
     };
   }
   
+
+  // updateStudySpace
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Patch('study-spaces/:id')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update a study space' })
+  @ApiParam({ name: 'id', type: Number })
+  @ApiBody({ type: UpdateStudySpaceDto })
+  @ApiOkResponse({ type: MessageResponseDto })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  async updateStudySpace(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateStudySpaceDto,
+  ) {
+    const data = await this.adminService.updateStudySpace(id, dto);
+    return {
+      success: true,
+      message: 'Study space updated successfully',
+      data,
+    };
+  }
+
   
 }

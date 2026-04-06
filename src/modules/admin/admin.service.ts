@@ -2,17 +2,18 @@ import { BadRequestException, Injectable, NotFoundException, UnauthorizedExcepti
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
-import { AdminLoginDto } from './dto/admin-login.dto';
-import { DatabaseService } from '@/database/database.service';
-import { RejectHostelDto } from './dto/admin-rejectHostel.dto';
-
 import { bookingApprovedEmailTemplate, bookingRejectedEmailTemplate, hostelApprovedEmailTemplate, hostelRejectedEmailTemplate, notificationEmailTemplate } from '@/common/templates/auth-emails.template';
 
 import { MailService } from '@/providers/mail/mail.service';
 import { MaintenanceStatus, Role } from '@prisma/client';
+
+import { AdminLoginDto } from './dto/admin-login.dto';
+import { DatabaseService } from '@/database/database.service';
+import { RejectHostelDto } from './dto/admin-rejectHostel.dto';
 import { AdminNotificationDto } from './dto/create-notification.dto';
 import { ReplyReviewDto } from '../hostel/dto/reply-review.dto';
 import { CreateStudySpaceDto } from './dto/create-study-space.dto';
+import { UpdateStudySpaceDto } from './dto/update-study-space.dto';
 
 @Injectable()
 export class AdminService {
@@ -412,82 +413,108 @@ export class AdminService {
 
 
   // getAllMaintenance
-async getAllMaintenance(page: number, limit: number, hostelId?: number) {
+  async getAllMaintenance(page: number, limit: number, hostelId?: number) {
     const skip = (page - 1) * limit;
-    
+
     // Build filter based on whether hostelId is provided
     const filter = hostelId ? { hostel_id: Number(hostelId) } : {};
 
     const [requests, total] = await Promise.all([
-        this.prisma.maintenanceRequest.findMany({
-            where: filter,
-            skip,
-            take: limit,
-            include: {
-                student: { select: { firstName: true, lastName: true } },
-                hostel: { select: { name: true } },
-                room: { select: { room_number: true } }
-            },
-            orderBy: { created_at: 'desc' }
-        }),
-        this.prisma.maintenanceRequest.count({ where: filter })
+      this.prisma.maintenanceRequest.findMany({
+        where: filter,
+        skip,
+        take: limit,
+        include: {
+          student: { select: { firstName: true, lastName: true } },
+          hostel: { select: { name: true } },
+          room: { select: { room_number: true } }
+        },
+        orderBy: { created_at: 'desc' }
+      }),
+      this.prisma.maintenanceRequest.count({ where: filter })
     ]);
 
     return { total, requests };
-}
+  }
 
 
-// updateMaintenanceStatus
-async updateMaintenanceStatus(requestId: number, status: MaintenanceStatus) {
+  // updateMaintenanceStatus
+  async updateMaintenanceStatus(requestId: number, status: MaintenanceStatus) {
     const request = await this.prisma.maintenanceRequest.findUnique({
-        where: { id: requestId }
+      where: { id: requestId }
     });
 
     if (!request) {
-        throw new NotFoundException('Maintenance request not found');
+      throw new NotFoundException('Maintenance request not found');
     }
 
     return this.prisma.maintenanceRequest.update({
-        where: { id: requestId },
-        data: { status }
+      where: { id: requestId },
+      data: { status }
     });
-}
+  }
 
-// getAllReviews
-async getAllReviews(page: number, limit: number, hostelId?: number) {
-  const skip = (page - 1) * limit;
-  const filter = hostelId ? { hostel_id: Number(hostelId) } : {};
-  const [reviews, total] = await Promise.all([
-    this.prisma.review.findMany({
-      where: filter,
-      skip,
-      take: limit,
-      include: { student: { select: { firstName: true } }, hostel: { select: { name: true } } },
-      orderBy: { created_at: 'desc' },
-    }),
-    this.prisma.review.count({ where: filter }),
-  ]);
-  return { reviews, total };
-}
+  // getAllReviews
+  async getAllReviews(page: number, limit: number, hostelId?: number) {
+    const skip = (page - 1) * limit;
+    const filter = hostelId ? { hostel_id: Number(hostelId) } : {};
+    const [reviews, total] = await Promise.all([
+      this.prisma.review.findMany({
+        where: filter,
+        skip,
+        take: limit,
+        include: { student: { select: { firstName: true } }, hostel: { select: { name: true } } },
+        orderBy: { created_at: 'desc' },
+      }),
+      this.prisma.review.count({ where: filter }),
+    ]);
+    return { reviews, total };
+  }
 
-// adminReplyToReview
-async adminReplyToReview(reviewId: number, dto: ReplyReviewDto) {
-  const review = await this.prisma.review.findUnique({ where: { id: reviewId } });
-  if (!review) throw new NotFoundException('Review not found');
+  // adminReplyToReview
+  async adminReplyToReview(reviewId: number, dto: ReplyReviewDto) {
+    const review = await this.prisma.review.findUnique({ where: { id: reviewId } });
+    if (!review) throw new NotFoundException('Review not found');
 
-  return this.prisma.review.update({
-    where: { id: reviewId },
-    data: { owner_reply: dto.reply, replied_at: new Date() }
-  });
-}
+    return this.prisma.review.update({
+      where: { id: reviewId },
+      data: { owner_reply: dto.reply, replied_at: new Date() }
+    });
+  }
 
-async createStudySpace(adminId: number, dto: CreateStudySpaceDto) {
-  return this.prisma.studySpace.create({
-    data: {
-      ...dto,
-      created_by: adminId,
-    },
-  });
-}
+  // createStudySpace
+  async createStudySpace(adminId: number, dto: CreateStudySpaceDto) {
+    return this.prisma.studySpace.create({
+      data: {
+        ...dto,
+        created_by: adminId,
+      },
+    });
+  }
+
+  // updateStudySpace
+  async updateStudySpace(id: number, dto: UpdateStudySpaceDto) {
+    const space = await this.prisma.studySpace.findUnique({ where: { id } });
+
+    if (!space) {
+      throw new NotFoundException('Study space not found');
+    }
+
+    let updatedStatus = dto.status || space.status;
+
+    if (dto.available_slots !== undefined && dto.available_slots === 0) {
+      updatedStatus = 'full';
+    } else if (dto.available_slots !== undefined && dto.available_slots > 0 && space.status === 'full') {
+      updatedStatus = 'open';
+    }
+
+    return this.prisma.studySpace.update({
+      where: { id },
+      data: {
+        ...dto,
+        status: updatedStatus
+      },
+    });
+  }
 
 }
