@@ -1,36 +1,68 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useAuthControllerRegister } from '../../api/generated/authentication/authentication';
-
-import { useCloudinaryControllerGetSignature } from
-    '../../api/generated/cloudinary/cloudinary';
+import { useCloudinaryControllerGetSignature } from '../../api/generated/cloudinary/cloudinary';
 import axios from 'axios';
-
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+// Validation Schema
+const registerSchema = z.object({
+    firstName: z.string().min(2, 'First name is required'),
+    lastName: z.string().min(2, 'Last name is required'),
+    phone: z.string().min(10, 'Invalid phone number'),
+    email: z.string().email('Invalid email address'),
+    password: z.string()
+        .min(8, 'At least 8 characters')
+        .regex(/[A-Z]/, 'Include an uppercase letter')
+        .regex(/[a-z]/, 'Include a lowercase letter')
+        .regex(/[0-9]/, 'Include a number')
+        .regex(/[^A-Za-z0-9]/, 'Include a special character'),
+    role: z.enum(['student', 'hostelOwner']),
+    image: z.string().min(1, 'Profile image is required'),
+});
+
+type RegisterFormData = z.infer<typeof registerSchema>;
 
 export const RegisterPage = () => {
-    const [role, setRole] = useState<'student' | 'hostelOwner'>('student');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [phone, setPhone] = useState('');
-    const [image, setImage] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [isUploading, setIsUploading] = useState(false);
     const navigate = useNavigate();
 
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        watch,
+        formState: { errors },
+    } = useForm<RegisterFormData>({
+        resolver: zodResolver(registerSchema),
+        defaultValues: { role: 'student', image: '' }
+    });
+
+    const role = watch('role');
+    const image = watch('image');
+
     const registerMutation = useAuthControllerRegister();
 
-    const handleRegister = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleRegister = (data: RegisterFormData) => {
         if (isUploading) return alert("Please wait for image to upload");
-        if (!image) return alert("Please upload a profile image first.");
+        if (!data.image) return alert("Please upload a profile image first.");
 
         registerMutation.mutate({
-            data: { email, password, role, firstName, lastName, phone, image: image as unknown as Blob }
+            data: { 
+                email: data.email, 
+                password: data.password, 
+                role: data.role, 
+                firstName: data.firstName, 
+                lastName: data.lastName, 
+                phone: data.phone, 
+                image: data.image as unknown as Blob 
+            }
         }, {
             onSuccess: () => {
                 alert("Registration Successful!");
-                navigate('/verify-otp', { state: { email } });
+                navigate('/verify-otp', { state: { email: data.email } });
             }
         });
     };
@@ -67,7 +99,7 @@ export const RegisterPage = () => {
             });
 
             //  Save the secure_url to our state for the Register DTO
-            setImage(res.data.secure_url);
+            setValue('image', res.data.secure_url, { shouldValidate: true });
         } catch (error) {
             console.error("Upload failed", error);
             alert("Image upload failed. Please try again.");
@@ -76,19 +108,18 @@ export const RegisterPage = () => {
         }
     };
 
-
     return (
         <div className="min-h-screen flex items-center justify-center bg-primary-100 p-6">
             <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-sm border border-primary-200">
                 <h2 className="text-2xl font-bold text-primary-700">Create Account</h2>
                 <p className="text-primary-500 mb-6 mt-2">Join the Student Welfare Platform</p>
 
-                <form onSubmit={handleRegister} className="space-y-4">
+                <form onSubmit={handleSubmit(handleRegister)} className="space-y-4">
                     {/* Role Selection */}
                     <div className="flex gap-4 mb-4">
                         <button
                             type="button"
-                            onClick={() => setRole('student')}
+                            onClick={() => setValue('role', 'student')}
                             className={`flex-1 py-2 rounded-lg border font-medium transition-all ${role === 'student' ? 'bg-brand text-white border-brand' : 'bg-white text-primary-600 border-primary-200 cursor-pointer'
                                 }`}
                         >
@@ -96,7 +127,7 @@ export const RegisterPage = () => {
                         </button>
                         <button
                             type="button"
-                            onClick={() => setRole('hostelOwner')}
+                            onClick={() => setValue('role', 'hostelOwner')}
                             className={`flex-1 py-2 rounded-lg border font-medium transition-all ${role === 'hostelOwner' ? 'bg-brand text-white border-brand' : 'bg-white text-primary-600 border-primary-200 cursor-pointer'
                                 }`}
                         >
@@ -108,53 +139,48 @@ export const RegisterPage = () => {
                         <div className="flex-1">
                             <label className="block text-sm font-medium text-primary-600 mb-1">First Name</label>
                             <input
-                                className="w-full p-2.5 border border-primary-200 rounded-lg focus:ring-2 focus:ring-brand outline-none"
-                                value={firstName}
-                                onChange={(e) => setFirstName(e.target.value)}
-                                required
+                                {...register('firstName')}
+                                className={`w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-brand outline-none ${errors.firstName ? 'border-red-500' : 'border-primary-200'}`}
                             />
+                            {errors.firstName && <p className="text-xs text-red-500 mt-1">{errors.firstName.message}</p>}
                         </div>
                         <div className="flex-1">
                             <label className="block text-sm font-medium text-primary-600 mb-1">Last Name</label>
                             <input
-                                className="w-full p-2.5 border border-primary-200 rounded-lg focus:ring-2 focus:ring-brand outline-none"
-                                value={lastName}
-                                onChange={(e) => setLastName(e.target.value)}
-                                required
+                                {...register('lastName')}
+                                className={`w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-brand outline-none ${errors.lastName ? 'border-red-500' : 'border-primary-200'}`}
                             />
+                            {errors.lastName && <p className="text-xs text-red-500 mt-1">{errors.lastName.message}</p>}
                         </div>
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-primary-600 mb-1">Phone Number</label>
                         <input
-                            className="w-full p-2.5 border border-primary-200 rounded-lg focus:ring-2 focus:ring-brand outline-none"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            required
+                            {...register('phone')}
+                            className={`w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-brand outline-none ${errors.phone ? 'border-red-500' : 'border-primary-200'}`}
                         />
+                        {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>}
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-primary-600 mb-1">Email</label>
                         <input
                             type="email"
-                            className="w-full p-2.5 border border-primary-200 rounded-lg focus:ring-2 focus:ring-brand outline-none"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
+                            {...register('email')}
+                            className={`w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-brand outline-none ${errors.email ? 'border-red-500' : 'border-primary-200'}`}
                         />
+                        {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-primary-600 mb-1">Password</label>
                         <input
                             type="password"
-                            className="w-full p-2.5 border border-primary-200 rounded-lg focus:ring-2 focus:ring-brand outline-none"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
+                            {...register('password')}
+                            className={`w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-brand outline-none ${errors.password ? 'border-red-500' : 'border-primary-200'}`}
                         />
+                        {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password.message}</p>}
                     </div>
 
                     <div className="space-y-1">
@@ -173,7 +199,7 @@ export const RegisterPage = () => {
                                 if (file) handleFileUpload(file);
                             }}
                         />
-                        {image && <p className="text-xs text-green-600">Image uploaded successfully!</p>}
+                        {errors.image && <p className="text-xs text-red-500 mt-1">{errors.image.message}</p>}
                     </div>
 
                     {isUploading && <p className="text-xs text-brand animate-pulse">Uploading to Cloudinary...</p>}
@@ -181,7 +207,7 @@ export const RegisterPage = () => {
 
                     <button
                         type="submit"
-                        disabled={registerMutation.isPending}
+                        disabled={registerMutation.isPending || isUploading}
                         className="w-full bg-brand hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg disabled:opacity-50 cursor-pointer"
                     >
                         {registerMutation.isPending ? 'Creating Account...' : 'Register'}
