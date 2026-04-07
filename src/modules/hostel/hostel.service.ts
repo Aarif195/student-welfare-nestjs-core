@@ -1,6 +1,7 @@
 import { DatabaseService } from '@/database/database.service';
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 
+import { MaintenanceStatus } from '@prisma/client';
 
 import { CreateHostelDto } from './dto/create-hostel.dto';
 import { UpdateHostelDto } from './dto/update-hostel.dto';
@@ -9,8 +10,6 @@ import { UpdateRoomDto } from './dto/update-room.dto';
 import { notificationEmailTemplate } from '@/common/templates/auth-emails.template';
 import { MailService } from '@/providers/mail/mail.service';
 import { OwnerNotificationDto } from './dto/create-notification.dto';
-
-import { MaintenanceStatus } from '@prisma/client';
 import { ReplyReviewDto } from './dto/reply-review.dto';
 
 @Injectable()
@@ -350,112 +349,112 @@ export class HostelService {
   }
 
   // deleteNotification
-async deleteHostelNotification(ownerId: number, notificationId: number) {
-  const notification = await this.prisma.notification.findFirst({
-    where: {
-      id: notificationId,
-      created_by: ownerId,
-    },
-  });
+  async deleteHostelNotification(ownerId: number, notificationId: number) {
+    const notification = await this.prisma.notification.findFirst({
+      where: {
+        id: notificationId,
+        created_by: ownerId,
+      },
+    });
 
-  if (!notification) {
-    throw new ForbiddenException('You can only delete notifications you created.');
+    if (!notification) {
+      throw new ForbiddenException('You can only delete notifications you created.');
+    }
+
+    return this.prisma.notification.delete({
+      where: { id: notificationId },
+    });
   }
 
-  return this.prisma.notification.delete({
-    where: { id: notificationId },
-  });
-}
-
-// getHostelMaintenance
-async getHostelMaintenance(ownerId: number, hostelId: number, page: number, limit: number) {
+  // getHostelMaintenance
+  async getHostelMaintenance(ownerId: number, hostelId: number, page: number, limit: number) {
     // Security: Verify the hostel belongs to this owner
     const hostel = await this.prisma.hostel.findFirst({
-        where: { id: hostelId, owner_id: ownerId },
+      where: { id: hostelId, owner_id: ownerId },
     });
 
     if (!hostel) {
-        throw new ForbiddenException('You do not have permission to view maintenance for this hostel.');
+      throw new ForbiddenException('You do not have permission to view maintenance for this hostel.');
     }
 
     const skip = (page - 1) * limit;
 
     const [requests, total] = await Promise.all([
-        this.prisma.maintenanceRequest.findMany({
-            where: { hostel_id: hostelId },
-            skip,
-            take: limit,
-            include: {
-                student: { select: { firstName: true, lastName: true, email: true } },
-                room: { select: { room_number: true } }
-            },
-            orderBy: { created_at: 'desc' }
-        }),
-        this.prisma.maintenanceRequest.count({
-            where: { hostel_id: hostelId }
-        })
+      this.prisma.maintenanceRequest.findMany({
+        where: { hostel_id: hostelId },
+        skip,
+        take: limit,
+        include: {
+          student: { select: { firstName: true, lastName: true, email: true } },
+          room: { select: { room_number: true } }
+        },
+        orderBy: { created_at: 'desc' }
+      }),
+      this.prisma.maintenanceRequest.count({
+        where: { hostel_id: hostelId }
+      })
     ]);
 
     return { total, requests };
-}
+  }
 
-// updateMaintenanceStatus
-async updateMaintenanceStatus(ownerId: number, requestId: number, status: MaintenanceStatus) {
+  // updateMaintenanceStatus
+  async updateMaintenanceStatus(ownerId: number, requestId: number, status: MaintenanceStatus) {
     //  Find request and verify ownership of the hostel it belongs to
     const request = await this.prisma.maintenanceRequest.findUnique({
-        where: { id: requestId },
-        include: { hostel: { select: { owner_id: true } } }
+      where: { id: requestId },
+      include: { hostel: { select: { owner_id: true } } }
     });
 
     if (!request) {
-        throw new NotFoundException('Maintenance request not found');
+      throw new NotFoundException('Maintenance request not found');
     }
 
     if (request.hostel.owner_id !== ownerId) {
-        throw new ForbiddenException('You do not have permission to update this request');
+      throw new ForbiddenException('You do not have permission to update this request');
     }
 
     //  Update status
     return this.prisma.maintenanceRequest.update({
-        where: { id: requestId },
-        data: { status }
+      where: { id: requestId },
+      data: { status }
     });
-}
-
-// getHostelReviews
-async getHostelReviews(ownerId: number, hostelId: number, page: number, limit: number) {
-  const hostel = await this.prisma.hostel.findFirst({ where: { id: hostelId, owner_id: ownerId } });
-  if (!hostel) throw new ForbiddenException('Access denied');
-
-  const skip = (page - 1) * limit;
-  const [reviews, total] = await Promise.all([
-    this.prisma.review.findMany({
-      where: { hostel_id: hostelId },
-      skip,
-      take: limit,
-      include: { student: { select: { firstName: true, lastName: true } } },
-      orderBy: { created_at: 'desc' },
-    }),
-    this.prisma.review.count({ where: { hostel_id: hostelId } }),
-  ]);
-  return { reviews, total };
-}
-
-// replyToReview
-async replyToReview(ownerId: number, reviewId: number, dto: ReplyReviewDto) {
-  const review = await this.prisma.review.findUnique({
-    where: { id: reviewId },
-    include: { hostel: { select: { owner_id: true } } }
-  });
-
-  if (!review || review.hostel.owner_id !== ownerId) {
-    throw new ForbiddenException('You can only reply to reviews for your own hostels.');
   }
 
-  return this.prisma.review.update({
-    where: { id: reviewId },
-    data: { owner_reply: dto.reply, replied_at: new Date() }
-  });
-}
+  // getHostelReviews
+  async getHostelReviews(ownerId: number, hostelId: number, page: number, limit: number) {
+    const hostel = await this.prisma.hostel.findFirst({ where: { id: hostelId, owner_id: ownerId } });
+    if (!hostel) throw new ForbiddenException('Access denied');
+
+    const skip = (page - 1) * limit;
+    const [reviews, total] = await Promise.all([
+      this.prisma.review.findMany({
+        where: { hostel_id: hostelId },
+        skip,
+        take: limit,
+        include: { student: { select: { firstName: true, lastName: true } } },
+        orderBy: { created_at: 'desc' },
+      }),
+      this.prisma.review.count({ where: { hostel_id: hostelId } }),
+    ]);
+    return { reviews, total };
+  }
+
+  // replyToReview
+  async replyToReview(ownerId: number, reviewId: number, dto: ReplyReviewDto) {
+    const review = await this.prisma.review.findUnique({
+      where: { id: reviewId },
+      include: { hostel: { select: { owner_id: true } } }
+    });
+
+    if (!review || review.hostel.owner_id !== ownerId) {
+      throw new ForbiddenException('You can only reply to reviews for your own hostels.');
+    }
+
+    return this.prisma.review.update({
+      where: { id: reviewId },
+      data: { owner_reply: dto.reply, replied_at: new Date() }
+    });
+  }
 
 }

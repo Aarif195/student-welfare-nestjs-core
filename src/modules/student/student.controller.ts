@@ -7,11 +7,12 @@ import { Role, StudySpaceStatus } from '@prisma/client';
 import { GetUser } from '@/common/decorators/get-user.decorator';
 import { StudentService } from './student.service';
 
+import { Throttle } from '@nestjs/throttler';
+
 import { ErrorResponseDto } from '@/common/dto/error-response.dto';
 import { MessageResponseDto } from '@/common/dto/message-response.dto';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { PaginationDto } from '@/common/dto/pagination.dto';
-import { Throttle } from '@nestjs/throttler';
 import { CreateMaintenanceDto } from './dto/create-maintenance.dto';
 import { CreateReviewDto } from './dto/create-review.dto';
 
@@ -225,59 +226,57 @@ export class StudentController {
     }
 
 
+    // getMyReviews
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Get('reviews')
+    @Roles(Role.student)
+    @ApiOperation({ summary: 'Get my reviews' })
+    @ApiOkResponse({ description: 'Reviews retrieved successfully', type: MessageResponseDto })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
+    async getMyReviews(
+        @GetUser() user: { id: number },
+        @Query() pagination: PaginationDto
+    ) {
+        const page = Number(pagination.page) || 1;
+        const limit = Number(pagination.limit) || 10;
 
-// getMyReviews
-@Throttle({ default: { limit: 3, ttl: 60000 } })
-@Get('reviews')
-@Roles(Role.student)
-@ApiOperation({ summary: 'Get my reviews' })
-@ApiOkResponse({ description: 'Reviews retrieved successfully', type: MessageResponseDto })
-@ApiBadRequestResponse({ type: ErrorResponseDto })
-@ApiQuery({ name: 'page', required: false, type: Number })
-@ApiQuery({ name: 'limit', required: false, type: Number })
-async getMyReviews(
-    @GetUser() user: { id: number },
-    @Query() pagination: PaginationDto
-) {
-    const page = Number(pagination.page) || 1;
-    const limit = Number(pagination.limit) || 10;
+        const { reviews, total } = await this.studentService.getMyReviews(user.id, page, limit);
 
-    const { reviews, total } = await this.studentService.getMyReviews(user.id, page, limit);
-
-    return {
-        success: true,
-        meta: { page, limit, total },
-        reviews,
-    };
-}
+        return {
+            success: true,
+            meta: { page, limit, total },
+            reviews,
+        };
+    }
 
 
-// getAvailableStudySpaces
-@Throttle({ default: { limit: 3, ttl: 60000 } })
-@Get('study-spaces')
-@Roles(Role.student)
-@ApiOperation({ summary: 'Get all available study spaces' })
-@ApiOkResponse({ description: 'Study spaces retrieved successfully', type: MessageResponseDto })
-@ApiBadRequestResponse({ type: ErrorResponseDto })
-@ApiQuery({ name: 'page', required: false, type: Number })
-@ApiQuery({ name: 'limit', required: false, type: Number })
-@ApiQuery({ name: 'status', required: false, enum: ['open', 'closed'] })
-async getAvailableStudySpaces(
-    @Query() pagination: PaginationDto,
-    @Query('status') status?: StudySpaceStatus
-) {
-    const page = Number(pagination.page) || 1;
-    const limit = Number(pagination.limit) || 10;
+    // getAvailableStudySpaces
+    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Get('study-spaces')
+    @Roles(Role.student)
+    @ApiOperation({ summary: 'Get all available study spaces' })
+    @ApiOkResponse({ description: 'Study spaces retrieved successfully', type: MessageResponseDto })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
+    @ApiQuery({ name: 'status', required: false, enum: ['open', 'closed'] })
+    async getAvailableStudySpaces(
+        @Query() pagination: PaginationDto,
+        @Query('status') status?: StudySpaceStatus
+    ) {
+        const page = Number(pagination.page) || 1;
+        const limit = Number(pagination.limit) || 10;
 
-    const { spaces, total } = await this.studentService.getAllStudySpaces(page, limit, status);
+        const { spaces, total } = await this.studentService.getAllStudySpaces(page, limit, status);
 
-    return {
-        success: true,
-        meta: { page, limit, total },
-        studySpaces: spaces,
-    };
-}
-
+        return {
+            success: true,
+            meta: { page, limit, total },
+            studySpaces: spaces,
+        };
+    }
 
 
 }
