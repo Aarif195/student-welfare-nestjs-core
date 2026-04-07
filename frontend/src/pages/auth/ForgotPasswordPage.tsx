@@ -14,7 +14,8 @@ export const ForgotPasswordPage = () => {
         }, {
             onSuccess: () => {
                 alert("Reset link sent! Please check your email.");
-                navigate('/login');
+                navigate('/reset-password', { state: { email } });
+                
             },
             onError: (error: any) => {
                 alert(error.response?.data?.message || "Something went wrong.");
@@ -54,10 +55,10 @@ export const ForgotPasswordPage = () => {
                     <div className="text-center mt-4">
                         <button
                             type="button"
-                            onClick={() => navigate('/login')}
+                            onClick={() => navigate('/reset-password')}
                             className="text-primary-500 hover:text-brand text-sm font-medium"
                         >
-                            Back to Login
+                            Already have a code? Reset Password
                         </button>
                     </div>
                 </form>
