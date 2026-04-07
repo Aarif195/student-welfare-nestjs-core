@@ -28,11 +28,16 @@ import type {
   CreateHostelDto,
   CreateRoomDto,
   ErrorResponseDto,
+  HostelControllerGetHostelMaintenanceParams,
+  HostelControllerGetHostelReviewsParams,
   HostelControllerGetMyHostelsParams,
   HostelControllerGetOwnerBookingsParams,
   HostelControllerGetRoomsByHostelParams,
   MessageResponseDto,
+  OwnerNotificationDto,
+  ReplyReviewDto,
   UpdateHostelDto,
+  UpdateMaintenanceStatusDto,
   UpdateRoomDto
 } from '../../model';
 
@@ -888,3 +893,548 @@ export function useHostelControllerGetOwnerBookings<TData = Awaited<ReturnType<t
 
 
 
+/**
+ * @summary Create notification for a specific owned hostel
+ */
+export const hostelControllerCreateNotification = (
+    hostelId: number,
+    ownerNotificationDto: OwnerNotificationDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/hostels/${hostelId}/notifications`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: ownerNotificationDto, signal
+    },
+      );
+    }
+  
+
+
+export const getHostelControllerCreateNotificationMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerCreateNotification>>, TError,{hostelId: number;data: OwnerNotificationDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof hostelControllerCreateNotification>>, TError,{hostelId: number;data: OwnerNotificationDto}, TContext> => {
+
+const mutationKey = ['hostelControllerCreateNotification'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof hostelControllerCreateNotification>>, {hostelId: number;data: OwnerNotificationDto}> = (props) => {
+          const {hostelId,data} = props ?? {};
+
+          return  hostelControllerCreateNotification(hostelId,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type HostelControllerCreateNotificationMutationResult = NonNullable<Awaited<ReturnType<typeof hostelControllerCreateNotification>>>
+    export type HostelControllerCreateNotificationMutationBody = OwnerNotificationDto
+    export type HostelControllerCreateNotificationMutationError = ErrorResponseDto
+
+    /**
+ * @summary Create notification for a specific owned hostel
+ */
+export const useHostelControllerCreateNotification = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerCreateNotification>>, TError,{hostelId: number;data: OwnerNotificationDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof hostelControllerCreateNotification>>,
+        TError,
+        {hostelId: number;data: OwnerNotificationDto},
+        TContext
+      > => {
+
+      const mutationOptions = getHostelControllerCreateNotificationMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Get all notifications for a specific owned hostel
+ */
+export const hostelControllerGetHostelNotifications = (
+    hostelId: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/hostels/${hostelId}/notifications`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+
+
+export const getHostelControllerGetHostelNotificationsQueryKey = (hostelId?: number,) => {
+    return [
+    `/api/v1/hostels/${hostelId}/notifications`
+    ] as const;
+    }
+
+    
+export const getHostelControllerGetHostelNotificationsQueryOptions = <TData = Awaited<ReturnType<typeof hostelControllerGetHostelNotifications>>, TError = ErrorResponseDto>(hostelId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetHostelNotifications>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getHostelControllerGetHostelNotificationsQueryKey(hostelId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof hostelControllerGetHostelNotifications>>> = ({ signal }) => hostelControllerGetHostelNotifications(hostelId, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(hostelId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetHostelNotifications>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type HostelControllerGetHostelNotificationsQueryResult = NonNullable<Awaited<ReturnType<typeof hostelControllerGetHostelNotifications>>>
+export type HostelControllerGetHostelNotificationsQueryError = ErrorResponseDto
+
+
+export function useHostelControllerGetHostelNotifications<TData = Awaited<ReturnType<typeof hostelControllerGetHostelNotifications>>, TError = ErrorResponseDto>(
+ hostelId: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetHostelNotifications>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof hostelControllerGetHostelNotifications>>,
+          TError,
+          Awaited<ReturnType<typeof hostelControllerGetHostelNotifications>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useHostelControllerGetHostelNotifications<TData = Awaited<ReturnType<typeof hostelControllerGetHostelNotifications>>, TError = ErrorResponseDto>(
+ hostelId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetHostelNotifications>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof hostelControllerGetHostelNotifications>>,
+          TError,
+          Awaited<ReturnType<typeof hostelControllerGetHostelNotifications>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useHostelControllerGetHostelNotifications<TData = Awaited<ReturnType<typeof hostelControllerGetHostelNotifications>>, TError = ErrorResponseDto>(
+ hostelId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetHostelNotifications>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get all notifications for a specific owned hostel
+ */
+
+export function useHostelControllerGetHostelNotifications<TData = Awaited<ReturnType<typeof hostelControllerGetHostelNotifications>>, TError = ErrorResponseDto>(
+ hostelId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetHostelNotifications>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getHostelControllerGetHostelNotificationsQueryOptions(hostelId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * @summary Delete a notification
+ */
+export const hostelControllerDeleteNotification = (
+    notificationId: number,
+ ) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/hostels/notifications/${notificationId}`, method: 'DELETE'
+    },
+      );
+    }
+  
+
+
+export const getHostelControllerDeleteNotificationMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerDeleteNotification>>, TError,{notificationId: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof hostelControllerDeleteNotification>>, TError,{notificationId: number}, TContext> => {
+
+const mutationKey = ['hostelControllerDeleteNotification'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof hostelControllerDeleteNotification>>, {notificationId: number}> = (props) => {
+          const {notificationId} = props ?? {};
+
+          return  hostelControllerDeleteNotification(notificationId,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type HostelControllerDeleteNotificationMutationResult = NonNullable<Awaited<ReturnType<typeof hostelControllerDeleteNotification>>>
+    
+    export type HostelControllerDeleteNotificationMutationError = ErrorResponseDto
+
+    /**
+ * @summary Delete a notification
+ */
+export const useHostelControllerDeleteNotification = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerDeleteNotification>>, TError,{notificationId: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof hostelControllerDeleteNotification>>,
+        TError,
+        {notificationId: number},
+        TContext
+      > => {
+
+      const mutationOptions = getHostelControllerDeleteNotificationMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Owner views maintenance requests for a specific hostel
+ */
+export const hostelControllerGetHostelMaintenance = (
+    hostelId: number,
+    params?: HostelControllerGetHostelMaintenanceParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/hostels/maintenance/${hostelId}`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getHostelControllerGetHostelMaintenanceQueryKey = (hostelId?: number,
+    params?: HostelControllerGetHostelMaintenanceParams,) => {
+    return [
+    `/api/v1/hostels/maintenance/${hostelId}`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getHostelControllerGetHostelMaintenanceQueryOptions = <TData = Awaited<ReturnType<typeof hostelControllerGetHostelMaintenance>>, TError = ErrorResponseDto>(hostelId: number,
+    params?: HostelControllerGetHostelMaintenanceParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetHostelMaintenance>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getHostelControllerGetHostelMaintenanceQueryKey(hostelId,params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof hostelControllerGetHostelMaintenance>>> = ({ signal }) => hostelControllerGetHostelMaintenance(hostelId,params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(hostelId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetHostelMaintenance>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type HostelControllerGetHostelMaintenanceQueryResult = NonNullable<Awaited<ReturnType<typeof hostelControllerGetHostelMaintenance>>>
+export type HostelControllerGetHostelMaintenanceQueryError = ErrorResponseDto
+
+
+export function useHostelControllerGetHostelMaintenance<TData = Awaited<ReturnType<typeof hostelControllerGetHostelMaintenance>>, TError = ErrorResponseDto>(
+ hostelId: number,
+    params: undefined |  HostelControllerGetHostelMaintenanceParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetHostelMaintenance>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof hostelControllerGetHostelMaintenance>>,
+          TError,
+          Awaited<ReturnType<typeof hostelControllerGetHostelMaintenance>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useHostelControllerGetHostelMaintenance<TData = Awaited<ReturnType<typeof hostelControllerGetHostelMaintenance>>, TError = ErrorResponseDto>(
+ hostelId: number,
+    params?: HostelControllerGetHostelMaintenanceParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetHostelMaintenance>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof hostelControllerGetHostelMaintenance>>,
+          TError,
+          Awaited<ReturnType<typeof hostelControllerGetHostelMaintenance>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useHostelControllerGetHostelMaintenance<TData = Awaited<ReturnType<typeof hostelControllerGetHostelMaintenance>>, TError = ErrorResponseDto>(
+ hostelId: number,
+    params?: HostelControllerGetHostelMaintenanceParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetHostelMaintenance>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Owner views maintenance requests for a specific hostel
+ */
+
+export function useHostelControllerGetHostelMaintenance<TData = Awaited<ReturnType<typeof hostelControllerGetHostelMaintenance>>, TError = ErrorResponseDto>(
+ hostelId: number,
+    params?: HostelControllerGetHostelMaintenanceParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetHostelMaintenance>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getHostelControllerGetHostelMaintenanceQueryOptions(hostelId,params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * @summary Owner updates maintenance request status
+ */
+export const hostelControllerUpdateMaintenanceStatus = (
+    id: number,
+    updateMaintenanceStatusDto: UpdateMaintenanceStatusDto,
+ ) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/hostels/maintenance/${id}/status`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateMaintenanceStatusDto
+    },
+      );
+    }
+  
+
+
+export const getHostelControllerUpdateMaintenanceStatusMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerUpdateMaintenanceStatus>>, TError,{id: number;data: UpdateMaintenanceStatusDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof hostelControllerUpdateMaintenanceStatus>>, TError,{id: number;data: UpdateMaintenanceStatusDto}, TContext> => {
+
+const mutationKey = ['hostelControllerUpdateMaintenanceStatus'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof hostelControllerUpdateMaintenanceStatus>>, {id: number;data: UpdateMaintenanceStatusDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  hostelControllerUpdateMaintenanceStatus(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type HostelControllerUpdateMaintenanceStatusMutationResult = NonNullable<Awaited<ReturnType<typeof hostelControllerUpdateMaintenanceStatus>>>
+    export type HostelControllerUpdateMaintenanceStatusMutationBody = UpdateMaintenanceStatusDto
+    export type HostelControllerUpdateMaintenanceStatusMutationError = ErrorResponseDto
+
+    /**
+ * @summary Owner updates maintenance request status
+ */
+export const useHostelControllerUpdateMaintenanceStatus = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerUpdateMaintenanceStatus>>, TError,{id: number;data: UpdateMaintenanceStatusDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof hostelControllerUpdateMaintenanceStatus>>,
+        TError,
+        {id: number;data: UpdateMaintenanceStatusDto},
+        TContext
+      > => {
+
+      const mutationOptions = getHostelControllerUpdateMaintenanceStatusMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Get all reviews for a specific owned hostel
+ */
+export const hostelControllerGetHostelReviews = (
+    hostelId: number,
+    params?: HostelControllerGetHostelReviewsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/hostels/${hostelId}/reviews`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getHostelControllerGetHostelReviewsQueryKey = (hostelId?: number,
+    params?: HostelControllerGetHostelReviewsParams,) => {
+    return [
+    `/api/v1/hostels/${hostelId}/reviews`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getHostelControllerGetHostelReviewsQueryOptions = <TData = Awaited<ReturnType<typeof hostelControllerGetHostelReviews>>, TError = ErrorResponseDto>(hostelId: number,
+    params?: HostelControllerGetHostelReviewsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetHostelReviews>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getHostelControllerGetHostelReviewsQueryKey(hostelId,params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof hostelControllerGetHostelReviews>>> = ({ signal }) => hostelControllerGetHostelReviews(hostelId,params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(hostelId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetHostelReviews>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type HostelControllerGetHostelReviewsQueryResult = NonNullable<Awaited<ReturnType<typeof hostelControllerGetHostelReviews>>>
+export type HostelControllerGetHostelReviewsQueryError = ErrorResponseDto
+
+
+export function useHostelControllerGetHostelReviews<TData = Awaited<ReturnType<typeof hostelControllerGetHostelReviews>>, TError = ErrorResponseDto>(
+ hostelId: number,
+    params: undefined |  HostelControllerGetHostelReviewsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetHostelReviews>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof hostelControllerGetHostelReviews>>,
+          TError,
+          Awaited<ReturnType<typeof hostelControllerGetHostelReviews>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useHostelControllerGetHostelReviews<TData = Awaited<ReturnType<typeof hostelControllerGetHostelReviews>>, TError = ErrorResponseDto>(
+ hostelId: number,
+    params?: HostelControllerGetHostelReviewsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetHostelReviews>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof hostelControllerGetHostelReviews>>,
+          TError,
+          Awaited<ReturnType<typeof hostelControllerGetHostelReviews>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useHostelControllerGetHostelReviews<TData = Awaited<ReturnType<typeof hostelControllerGetHostelReviews>>, TError = ErrorResponseDto>(
+ hostelId: number,
+    params?: HostelControllerGetHostelReviewsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetHostelReviews>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get all reviews for a specific owned hostel
+ */
+
+export function useHostelControllerGetHostelReviews<TData = Awaited<ReturnType<typeof hostelControllerGetHostelReviews>>, TError = ErrorResponseDto>(
+ hostelId: number,
+    params?: HostelControllerGetHostelReviewsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetHostelReviews>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getHostelControllerGetHostelReviewsQueryOptions(hostelId,params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * @summary Hostel owner replies to a review
+ */
+export const hostelControllerReplyToReview = (
+    reviewId: number,
+    replyReviewDto: ReplyReviewDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/hostels/reviews/${reviewId}/reply`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: replyReviewDto, signal
+    },
+      );
+    }
+  
+
+
+export const getHostelControllerReplyToReviewMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerReplyToReview>>, TError,{reviewId: number;data: ReplyReviewDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof hostelControllerReplyToReview>>, TError,{reviewId: number;data: ReplyReviewDto}, TContext> => {
+
+const mutationKey = ['hostelControllerReplyToReview'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof hostelControllerReplyToReview>>, {reviewId: number;data: ReplyReviewDto}> = (props) => {
+          const {reviewId,data} = props ?? {};
+
+          return  hostelControllerReplyToReview(reviewId,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type HostelControllerReplyToReviewMutationResult = NonNullable<Awaited<ReturnType<typeof hostelControllerReplyToReview>>>
+    export type HostelControllerReplyToReviewMutationBody = ReplyReviewDto
+    export type HostelControllerReplyToReviewMutationError = ErrorResponseDto
+
+    /**
+ * @summary Hostel owner replies to a review
+ */
+export const useHostelControllerReplyToReview = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof hostelControllerReplyToReview>>, TError,{reviewId: number;data: ReplyReviewDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof hostelControllerReplyToReview>>,
+        TError,
+        {reviewId: number;data: ReplyReviewDto},
+        TContext
+      > => {
+
+      const mutationOptions = getHostelControllerReplyToReviewMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    

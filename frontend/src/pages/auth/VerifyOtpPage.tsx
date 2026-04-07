@@ -1,17 +1,20 @@
 import React, { useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuthControllerVerifyOTP } from '../../api/generated/authentication/authentication';
+import { useAuthControllerVerifyOTP, useAuthControllerResendOTP } from '../../api/generated/authentication/authentication';
+
 
 export const VerifyOtpPage = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const email = location.state?.email || '';
-    
+
     // 6 individual boxes state
     const [otp, setOtp] = useState(['', '', '', '', '', '']);
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
+    // Initialize resend & verify hook
     const verifyMutation = useAuthControllerVerifyOTP();
+    const resendMutation = useAuthControllerResendOTP();
 
     const handleChange = (value: string, index: number) => {
         if (isNaN(Number(value))) return;
@@ -31,6 +34,7 @@ export const VerifyOtpPage = () => {
         }
     };
 
+    // handleVerify logic
     const handleVerify = (e: React.FormEvent) => {
         e.preventDefault();
         const otpString = otp.join('');
@@ -40,6 +44,21 @@ export const VerifyOtpPage = () => {
             onSuccess: () => {
                 alert("Email Verified Successfully!");
                 navigate('/login');
+            }
+        });
+    };
+
+
+    // handleResend logic
+    const handleResend = () => {
+        resendMutation.mutate({
+            data: { email }
+        }, {
+            onSuccess: () => {
+                alert("A new OTP code has been sent to your email.");
+            },
+            onError: (error: any) => {
+                alert(error.response?.data?.message || "Failed to resend OTP.");
             }
         });
     };
@@ -73,8 +92,23 @@ export const VerifyOtpPage = () => {
                     >
                         {verifyMutation.isPending ? 'Verifying...' : 'Verify OTP'}
                     </button>
+
+                    {/* Resend Button UI */}
+                    <div className="text-center">
+                        <button
+                            type="button"
+                            onClick={handleResend}
+                            disabled={resendMutation.isPending}
+                            className="text-brand font-medium hover:underline disabled:opacity-50 text-sm"
+                        >
+                            {resendMutation.isPending ? 'Sending...' : "Didn't get a code? Resend"}
+                        </button>
+                    </div>
+
                 </form>
             </div>
+
+
         </div>
     );
 };

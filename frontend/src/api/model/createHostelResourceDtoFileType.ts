@@ -13,5 +13,4 @@ export type CreateHostelResourceDtoFileType = typeof CreateHostelResourceDtoFile
 export const CreateHostelResourceDtoFileType = {
   IMAGE: 'IMAGE',
   VIDEO: 'VIDEO',
-  PDF: 'PDF',
 } as const;

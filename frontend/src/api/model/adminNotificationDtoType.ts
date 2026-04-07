@@ -6,11 +6,11 @@
  * OpenAPI spec version: 1.0
  */
 
-export type CreateRoomResourceDtoFileType = typeof CreateRoomResourceDtoFileType[keyof typeof CreateRoomResourceDtoFileType];
+export type AdminNotificationDtoType = typeof AdminNotificationDtoType[keyof typeof AdminNotificationDtoType];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateRoomResourceDtoFileType = {
-  IMAGE: 'IMAGE',
-  VIDEO: 'VIDEO',
+export const AdminNotificationDtoType = {
+  global: 'global',
+  hostel: 'hostel',
 } as const;

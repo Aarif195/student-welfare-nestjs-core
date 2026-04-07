@@ -26,11 +26,17 @@ import type {
 
 import type {
   CreateBookingDto,
+  CreateMaintenanceDto,
+  CreateReviewDto,
   ErrorResponseDto,
   MessageResponseDto,
   StudentControllerGetAvailableHostelsParams,
   StudentControllerGetAvailableRoomsParams,
-  StudentControllerGetMyBookingsParams
+  StudentControllerGetAvailableStudySpacesParams,
+  StudentControllerGetMyBookingsParams,
+  StudentControllerGetMyMaintenanceParams,
+  StudentControllerGetMyNotificationsParams,
+  StudentControllerGetMyReviewsParams
 } from '../../model';
 
 import { customInstance } from '../../axios-instance';
@@ -264,7 +270,7 @@ export const studentControllerGetAvailableHostels = (
 ) => {
       
       
-      return customInstance<void>(
+      return customInstance<void | MessageResponseDto>(
       {url: `/api/v1/student/hostels`, method: 'GET',
         params, signal
     },
@@ -429,6 +435,563 @@ export function useStudentControllerGetAvailableRooms<TData = Awaited<ReturnType
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getStudentControllerGetAvailableRoomsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * @summary Get my notifications
+ */
+export const studentControllerGetMyNotifications = (
+    params?: StudentControllerGetMyNotificationsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/student/notifications`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getStudentControllerGetMyNotificationsQueryKey = (params?: StudentControllerGetMyNotificationsParams,) => {
+    return [
+    `/api/v1/student/notifications`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getStudentControllerGetMyNotificationsQueryOptions = <TData = Awaited<ReturnType<typeof studentControllerGetMyNotifications>>, TError = ErrorResponseDto>(params?: StudentControllerGetMyNotificationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyNotifications>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStudentControllerGetMyNotificationsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof studentControllerGetMyNotifications>>> = ({ signal }) => studentControllerGetMyNotifications(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyNotifications>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type StudentControllerGetMyNotificationsQueryResult = NonNullable<Awaited<ReturnType<typeof studentControllerGetMyNotifications>>>
+export type StudentControllerGetMyNotificationsQueryError = ErrorResponseDto
+
+
+export function useStudentControllerGetMyNotifications<TData = Awaited<ReturnType<typeof studentControllerGetMyNotifications>>, TError = ErrorResponseDto>(
+ params: undefined |  StudentControllerGetMyNotificationsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyNotifications>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof studentControllerGetMyNotifications>>,
+          TError,
+          Awaited<ReturnType<typeof studentControllerGetMyNotifications>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStudentControllerGetMyNotifications<TData = Awaited<ReturnType<typeof studentControllerGetMyNotifications>>, TError = ErrorResponseDto>(
+ params?: StudentControllerGetMyNotificationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyNotifications>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof studentControllerGetMyNotifications>>,
+          TError,
+          Awaited<ReturnType<typeof studentControllerGetMyNotifications>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStudentControllerGetMyNotifications<TData = Awaited<ReturnType<typeof studentControllerGetMyNotifications>>, TError = ErrorResponseDto>(
+ params?: StudentControllerGetMyNotificationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyNotifications>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get my notifications
+ */
+
+export function useStudentControllerGetMyNotifications<TData = Awaited<ReturnType<typeof studentControllerGetMyNotifications>>, TError = ErrorResponseDto>(
+ params?: StudentControllerGetMyNotificationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyNotifications>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStudentControllerGetMyNotificationsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * @summary Mark a notification as read
+ */
+export const studentControllerMarkAsRead = (
+    notificationId: number,
+ ) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/student/notifications/${notificationId}/read`, method: 'PATCH'
+    },
+      );
+    }
+  
+
+
+export const getStudentControllerMarkAsReadMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof studentControllerMarkAsRead>>, TError,{notificationId: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof studentControllerMarkAsRead>>, TError,{notificationId: number}, TContext> => {
+
+const mutationKey = ['studentControllerMarkAsRead'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof studentControllerMarkAsRead>>, {notificationId: number}> = (props) => {
+          const {notificationId} = props ?? {};
+
+          return  studentControllerMarkAsRead(notificationId,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StudentControllerMarkAsReadMutationResult = NonNullable<Awaited<ReturnType<typeof studentControllerMarkAsRead>>>
+    
+    export type StudentControllerMarkAsReadMutationError = ErrorResponseDto
+
+    /**
+ * @summary Mark a notification as read
+ */
+export const useStudentControllerMarkAsRead = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof studentControllerMarkAsRead>>, TError,{notificationId: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof studentControllerMarkAsRead>>,
+        TError,
+        {notificationId: number},
+        TContext
+      > => {
+
+      const mutationOptions = getStudentControllerMarkAsReadMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Student creates a maintenance request
+ */
+export const studentControllerCreateRequest = (
+    createMaintenanceDto: CreateMaintenanceDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/student/maintenance/request`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createMaintenanceDto, signal
+    },
+      );
+    }
+  
+
+
+export const getStudentControllerCreateRequestMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof studentControllerCreateRequest>>, TError,{data: CreateMaintenanceDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof studentControllerCreateRequest>>, TError,{data: CreateMaintenanceDto}, TContext> => {
+
+const mutationKey = ['studentControllerCreateRequest'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof studentControllerCreateRequest>>, {data: CreateMaintenanceDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  studentControllerCreateRequest(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StudentControllerCreateRequestMutationResult = NonNullable<Awaited<ReturnType<typeof studentControllerCreateRequest>>>
+    export type StudentControllerCreateRequestMutationBody = CreateMaintenanceDto
+    export type StudentControllerCreateRequestMutationError = ErrorResponseDto
+
+    /**
+ * @summary Student creates a maintenance request
+ */
+export const useStudentControllerCreateRequest = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof studentControllerCreateRequest>>, TError,{data: CreateMaintenanceDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof studentControllerCreateRequest>>,
+        TError,
+        {data: CreateMaintenanceDto},
+        TContext
+      > => {
+
+      const mutationOptions = getStudentControllerCreateRequestMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Get my maintenance request history
+ */
+export const studentControllerGetMyMaintenance = (
+    params?: StudentControllerGetMyMaintenanceParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/student/maintenance`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getStudentControllerGetMyMaintenanceQueryKey = (params?: StudentControllerGetMyMaintenanceParams,) => {
+    return [
+    `/api/v1/student/maintenance`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getStudentControllerGetMyMaintenanceQueryOptions = <TData = Awaited<ReturnType<typeof studentControllerGetMyMaintenance>>, TError = ErrorResponseDto>(params?: StudentControllerGetMyMaintenanceParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyMaintenance>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStudentControllerGetMyMaintenanceQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof studentControllerGetMyMaintenance>>> = ({ signal }) => studentControllerGetMyMaintenance(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyMaintenance>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type StudentControllerGetMyMaintenanceQueryResult = NonNullable<Awaited<ReturnType<typeof studentControllerGetMyMaintenance>>>
+export type StudentControllerGetMyMaintenanceQueryError = ErrorResponseDto
+
+
+export function useStudentControllerGetMyMaintenance<TData = Awaited<ReturnType<typeof studentControllerGetMyMaintenance>>, TError = ErrorResponseDto>(
+ params: undefined |  StudentControllerGetMyMaintenanceParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyMaintenance>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof studentControllerGetMyMaintenance>>,
+          TError,
+          Awaited<ReturnType<typeof studentControllerGetMyMaintenance>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStudentControllerGetMyMaintenance<TData = Awaited<ReturnType<typeof studentControllerGetMyMaintenance>>, TError = ErrorResponseDto>(
+ params?: StudentControllerGetMyMaintenanceParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyMaintenance>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof studentControllerGetMyMaintenance>>,
+          TError,
+          Awaited<ReturnType<typeof studentControllerGetMyMaintenance>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStudentControllerGetMyMaintenance<TData = Awaited<ReturnType<typeof studentControllerGetMyMaintenance>>, TError = ErrorResponseDto>(
+ params?: StudentControllerGetMyMaintenanceParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyMaintenance>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get my maintenance request history
+ */
+
+export function useStudentControllerGetMyMaintenance<TData = Awaited<ReturnType<typeof studentControllerGetMyMaintenance>>, TError = ErrorResponseDto>(
+ params?: StudentControllerGetMyMaintenanceParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyMaintenance>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStudentControllerGetMyMaintenanceQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * @summary Student creates a review for a hostel
+ */
+export const studentControllerCreateReview = (
+    createReviewDto: CreateReviewDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/student/review`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createReviewDto, signal
+    },
+      );
+    }
+  
+
+
+export const getStudentControllerCreateReviewMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof studentControllerCreateReview>>, TError,{data: CreateReviewDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof studentControllerCreateReview>>, TError,{data: CreateReviewDto}, TContext> => {
+
+const mutationKey = ['studentControllerCreateReview'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof studentControllerCreateReview>>, {data: CreateReviewDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  studentControllerCreateReview(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StudentControllerCreateReviewMutationResult = NonNullable<Awaited<ReturnType<typeof studentControllerCreateReview>>>
+    export type StudentControllerCreateReviewMutationBody = CreateReviewDto
+    export type StudentControllerCreateReviewMutationError = ErrorResponseDto
+
+    /**
+ * @summary Student creates a review for a hostel
+ */
+export const useStudentControllerCreateReview = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof studentControllerCreateReview>>, TError,{data: CreateReviewDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof studentControllerCreateReview>>,
+        TError,
+        {data: CreateReviewDto},
+        TContext
+      > => {
+
+      const mutationOptions = getStudentControllerCreateReviewMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Get my reviews
+ */
+export const studentControllerGetMyReviews = (
+    params?: StudentControllerGetMyReviewsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/student/reviews`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getStudentControllerGetMyReviewsQueryKey = (params?: StudentControllerGetMyReviewsParams,) => {
+    return [
+    `/api/v1/student/reviews`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getStudentControllerGetMyReviewsQueryOptions = <TData = Awaited<ReturnType<typeof studentControllerGetMyReviews>>, TError = ErrorResponseDto>(params?: StudentControllerGetMyReviewsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyReviews>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStudentControllerGetMyReviewsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof studentControllerGetMyReviews>>> = ({ signal }) => studentControllerGetMyReviews(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyReviews>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type StudentControllerGetMyReviewsQueryResult = NonNullable<Awaited<ReturnType<typeof studentControllerGetMyReviews>>>
+export type StudentControllerGetMyReviewsQueryError = ErrorResponseDto
+
+
+export function useStudentControllerGetMyReviews<TData = Awaited<ReturnType<typeof studentControllerGetMyReviews>>, TError = ErrorResponseDto>(
+ params: undefined |  StudentControllerGetMyReviewsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyReviews>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof studentControllerGetMyReviews>>,
+          TError,
+          Awaited<ReturnType<typeof studentControllerGetMyReviews>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStudentControllerGetMyReviews<TData = Awaited<ReturnType<typeof studentControllerGetMyReviews>>, TError = ErrorResponseDto>(
+ params?: StudentControllerGetMyReviewsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyReviews>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof studentControllerGetMyReviews>>,
+          TError,
+          Awaited<ReturnType<typeof studentControllerGetMyReviews>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStudentControllerGetMyReviews<TData = Awaited<ReturnType<typeof studentControllerGetMyReviews>>, TError = ErrorResponseDto>(
+ params?: StudentControllerGetMyReviewsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyReviews>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get my reviews
+ */
+
+export function useStudentControllerGetMyReviews<TData = Awaited<ReturnType<typeof studentControllerGetMyReviews>>, TError = ErrorResponseDto>(
+ params?: StudentControllerGetMyReviewsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetMyReviews>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStudentControllerGetMyReviewsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * @summary Get all available study spaces
+ */
+export const studentControllerGetAvailableStudySpaces = (
+    params?: StudentControllerGetAvailableStudySpacesParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/student/study-spaces`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getStudentControllerGetAvailableStudySpacesQueryKey = (params?: StudentControllerGetAvailableStudySpacesParams,) => {
+    return [
+    `/api/v1/student/study-spaces`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getStudentControllerGetAvailableStudySpacesQueryOptions = <TData = Awaited<ReturnType<typeof studentControllerGetAvailableStudySpaces>>, TError = ErrorResponseDto>(params?: StudentControllerGetAvailableStudySpacesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableStudySpaces>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getStudentControllerGetAvailableStudySpacesQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof studentControllerGetAvailableStudySpaces>>> = ({ signal }) => studentControllerGetAvailableStudySpaces(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableStudySpaces>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type StudentControllerGetAvailableStudySpacesQueryResult = NonNullable<Awaited<ReturnType<typeof studentControllerGetAvailableStudySpaces>>>
+export type StudentControllerGetAvailableStudySpacesQueryError = ErrorResponseDto
+
+
+export function useStudentControllerGetAvailableStudySpaces<TData = Awaited<ReturnType<typeof studentControllerGetAvailableStudySpaces>>, TError = ErrorResponseDto>(
+ params: undefined |  StudentControllerGetAvailableStudySpacesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableStudySpaces>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof studentControllerGetAvailableStudySpaces>>,
+          TError,
+          Awaited<ReturnType<typeof studentControllerGetAvailableStudySpaces>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStudentControllerGetAvailableStudySpaces<TData = Awaited<ReturnType<typeof studentControllerGetAvailableStudySpaces>>, TError = ErrorResponseDto>(
+ params?: StudentControllerGetAvailableStudySpacesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableStudySpaces>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof studentControllerGetAvailableStudySpaces>>,
+          TError,
+          Awaited<ReturnType<typeof studentControllerGetAvailableStudySpaces>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useStudentControllerGetAvailableStudySpaces<TData = Awaited<ReturnType<typeof studentControllerGetAvailableStudySpaces>>, TError = ErrorResponseDto>(
+ params?: StudentControllerGetAvailableStudySpacesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableStudySpaces>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get all available study spaces
+ */
+
+export function useStudentControllerGetAvailableStudySpaces<TData = Awaited<ReturnType<typeof studentControllerGetAvailableStudySpaces>>, TError = ErrorResponseDto>(
+ params?: StudentControllerGetAvailableStudySpacesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableStudySpaces>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getStudentControllerGetAvailableStudySpacesQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
