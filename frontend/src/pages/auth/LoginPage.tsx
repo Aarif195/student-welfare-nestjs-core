@@ -1,19 +1,36 @@
-import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthControllerLogin } from '../../api/generated/authentication/authentication';
 import { useAuth } from '../../context/AuthContext';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import toast from 'react-hot-toast';
+
+// Validation Schema
+const loginSchema = z.object({
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(1, 'Password is required'),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginPage = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const navigate = useNavigate();
-    const { login } = useAuth(); 
+    const { login } = useAuth();
     const loginMutation = useAuthControllerLogin();
 
-    const handleLogin = (e: React.FormEvent) => {
-        e.preventDefault();
+    // React Hook Form Setup
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<LoginFormData>({
+        resolver: zodResolver(loginSchema),
+    });
+
+    const onLoginSubmit = (data: LoginFormData) => {
         loginMutation.mutate({
-            data: { email, password }
+            data: { email: data.email, password: data.password }
         }, {
             onSuccess: (response: any) => {
                 // Save to context and localStorage
@@ -33,7 +50,7 @@ export const LoginPage = () => {
                 }
             },
             onError: (error: any) => {
-                alert(error.response?.data?.message || "Invalid credentials");
+                toast.error(error.response?.data?.message || "Invalid credentials");
             }
         });
     };
@@ -42,43 +59,43 @@ export const LoginPage = () => {
         <div className="min-h-screen flex items-center justify-center bg-primary-100 p-6">
             <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-sm border border-primary-200">
                 <h2 className="text-2xl font-bold text-primary-700 mb-6 text-center">Login</h2>
-                
-                <form onSubmit={handleLogin} className="space-y-4">
+
+                <form onSubmit={handleSubmit(onLoginSubmit)} className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-primary-700 mb-1">Email</label>
                         <input
                             type="email"
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-2 border border-primary-200 rounded-lg outline-none focus:ring-2 focus:ring-brand"
-                            placeholder="yomoyeh345@nyspring.com
-"
+                            {...register('email')}
+                            className={`w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-brand ${errors.email ? 'border-red-500' : 'border-primary-200'}`}
+                            placeholder="yomoyeh345@nyspring.com"
                         />
+                        {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
                     </div>
 
                     <div>
                         <div className="flex justify-between mb-1">
                             <label className="text-sm font-medium text-primary-700">Password</label>
-                            <Link to="/forgot-password"  className="text-xs text-brand hover:underline">
+                            <Link to="/forgot-password" className="text-xs text-brand hover:underline">
                                 Forgot Password?
                             </Link>
                         </div>
                         <input
                             type="password"
-                            required
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-2 border border-primary-200 rounded-lg outline-none focus:ring-2 focus:ring-brand"
+                            {...register('password')}
+                            className={`w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-brand ${errors.password ? 'border-red-500' : 'border-primary-200'}`}
                             placeholder="••••••••"
                         />
+                        {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password.message}</p>}
                     </div>
 
                     <button
                         type="submit"
                         disabled={loginMutation.isPending}
-                        className="w-full bg-brand hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg disabled:opacity-50 cursor-pointer"
+                        className="w-full bg-brand hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
                     >
+                        {loginMutation.isPending && (
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        )}
                         {loginMutation.isPending ? 'Logging in...' : 'Login'}
                     </button>
 

@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { useAuthControllerRegister } from '../../api/generated/authentication/authentication';
 import { useCloudinaryControllerGetSignature } from '../../api/generated/cloudinary/cloudinary';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import toast from 'react-hot-toast';
 
 // Validation Schema
 const registerSchema = z.object({
@@ -46,23 +47,26 @@ export const RegisterPage = () => {
     const registerMutation = useAuthControllerRegister();
 
     const handleRegister = (data: RegisterFormData) => {
-        if (isUploading) return alert("Please wait for image to upload");
-        if (!data.image) return alert("Please upload a profile image first.");
+        if (isUploading) return toast.error("Please wait for image to upload");
+        if (!data.image) return toast.error("Please upload a profile image first.");
 
         registerMutation.mutate({
-            data: { 
-                email: data.email, 
-                password: data.password, 
-                role: data.role, 
-                firstName: data.firstName, 
-                lastName: data.lastName, 
-                phone: data.phone, 
-                image: data.image as unknown as Blob 
+            data: {
+                email: data.email,
+                password: data.password,
+                role: data.role,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                phone: data.phone,
+                image: data.image as unknown as Blob
             }
         }, {
             onSuccess: () => {
-                alert("Registration Successful!");
+                toast.success("Registration Successful!");
                 navigate('/verify-otp', { state: { email: data.email } });
+            },
+            onError: (error: any) => {
+                toast.error(error.response?.data?.message || "Registration failed.");
             }
         });
     };
@@ -102,7 +106,7 @@ export const RegisterPage = () => {
             setValue('image', res.data.secure_url, { shouldValidate: true });
         } catch (error) {
             console.error("Upload failed", error);
-            alert("Image upload failed. Please try again.");
+            toast.error("Image upload failed. Please try again.");
         } finally {
             setIsUploading(false);
         }
@@ -125,6 +129,8 @@ export const RegisterPage = () => {
                         >
                             Student
                         </button>
+
+
                         <button
                             type="button"
                             onClick={() => setValue('role', 'hostelOwner')}
@@ -208,10 +214,22 @@ export const RegisterPage = () => {
                     <button
                         type="submit"
                         disabled={registerMutation.isPending || isUploading}
-                        className="w-full bg-brand hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg disabled:opacity-50 cursor-pointer"
+                        className="w-full bg-brand hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
                     >
-                        {registerMutation.isPending ? 'Creating Account...' : 'Register'}
+                        {(registerMutation.isPending || isUploading) && (
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        )}
+                        {registerMutation.isPending ? 'Creating Account...' : isUploading ? 'Uploading Image...' : 'Register'}
                     </button>
+
+                    <p className="text-center text-sm text-primary-500 mt-4">
+                        Already have an account?{' '}
+                        <Link to="/login" className="text-brand font-semibold hover:underline">
+                            Login here
+                        </Link>
+                    </p>
+
+
                 </form>
 
                 {registerMutation.isError && (

@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthControllerVerifyOTP, useAuthControllerResendOTP } from '../../api/generated/authentication/authentication';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import toast from 'react-hot-toast';
 
 // 1. Validation Schema
 const otpSchema = z.object({
@@ -65,26 +66,26 @@ export const VerifyOtpPage = () => {
             data: { email: data.email, otp_code: data.otp_code } as any
         }, {
             onSuccess: () => {
-                alert("Email Verified Successfully!");
+                toast.success("Email Verified Successfully!");
                 navigate('/login');
             },
             onError: (error: any) => {
-                alert(error.response?.data?.message || "Invalid OTP code.");
+                toast.error(error.response?.data?.message || "Invalid OTP code.");
             }
         });
     };
 
     // handleResend logic
     const handleResend = () => {
-        if (!email) return alert("Email is missing.");
+        if (!email) return toast.error("Email is missing.");
         resendMutation.mutate({
             data: { email }
         }, {
             onSuccess: () => {
-                alert("A new OTP code has been sent to your email.");
+                toast.success("A new OTP code has been sent to your email.");
             },
             onError: (error: any) => {
-                alert(error.response?.data?.message || "Failed to resend OTP.");
+                toast.error(error.response?.data?.message || "Failed to resend OTP.");
             }
         });
     };
@@ -117,21 +118,35 @@ export const VerifyOtpPage = () => {
                     <button
                         type="submit"
                         disabled={verifyMutation.isPending || otp.includes('')}
-                        className="w-full bg-brand hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg disabled:opacity-50 cursor-pointer"
+                        className="w-full bg-brand hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
                     >
+                        {verifyMutation.isPending && (
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        )}
                         {verifyMutation.isPending ? 'Verifying...' : 'Verify OTP'}
                     </button>
 
                     {/* Resend Button UI */}
                     <div className="text-center">
+
                         <button
                             type="button"
                             onClick={handleResend}
                             disabled={resendMutation.isPending}
-                            className="text-brand font-medium hover:underline disabled:opacity-50 text-sm cursor-pointer"
+                            className="text-brand font-medium hover:underline disabled:opacity-50 text-sm cursor-pointer flex items-center justify-center gap-2 mx-auto"
                         >
+                            {resendMutation.isPending && (
+                                <div className="w-3 h-3 border-2 border-brand border-t-transparent rounded-full animate-spin"></div>
+                            )}
                             {resendMutation.isPending ? 'Sending...' : "Didn't get a code? Resend"}
                         </button>
+
+                        <p className="text-center text-sm text-primary-500 mt-4">
+                            Already have an account?{' '}
+                            <Link to="/login" className="text-brand font-semibold hover:underline">
+                                Login here
+                            </Link>
+                        </p>
                     </div>
 
                 </form>

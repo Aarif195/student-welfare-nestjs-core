@@ -4,6 +4,8 @@ import { useAuthControllerResetPassword } from '../../api/generated/authenticati
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import toast from 'react-hot-toast';
+
 
 // Validation Schema
 const resetPasswordSchema = z.object({
@@ -64,11 +66,11 @@ export const ResetPasswordPage = () => {
             }
         }, {
             onSuccess: () => {
-                alert("Password reset successful! Please login.");
+                toast.success("Password reset successful! Please login.");
                 navigate('/login');
             },
             onError: (error: any) => {
-                alert(error.response?.data?.message || "Reset failed.");
+                toast.error(error.response?.data?.message || "Reset failed.");
             }
         });
     };
@@ -120,10 +122,41 @@ export const ResetPasswordPage = () => {
                     <button
                         type="submit"
                         disabled={resetMutation.isPending || otp.includes('')}
-                        className="w-full bg-brand hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg disabled:opacity-50 cursor-pointer"
+                        className="w-full bg-brand hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
                     >
+                        {resetMutation.isPending && (
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        )}
                         {resetMutation.isPending ? 'Resetting...' : 'Update Password'}
                     </button>
+
+                    <div className="flex flex-col items-center mt-6 space-y-3">
+
+                        <button
+                            type="button"
+                            onClick={() => navigate('/forgot-password')}
+                            className="text-primary-500 hover:text-brand text-sm font-medium cursor-pointer"
+                        >
+                            Back to Forgot Password
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => navigate('/login')}
+                            className="text-primary-500 hover:text-brand text-sm font-medium cursor-pointer"
+                        >
+                            Back to Login
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => navigate('/register')}
+                            className="text-primary-500 hover:text-brand text-sm font-medium cursor-pointer"
+                        >
+                            Back to Register
+                        </button>
+
+                    </div>
                 </form>
             </div>
         </div>

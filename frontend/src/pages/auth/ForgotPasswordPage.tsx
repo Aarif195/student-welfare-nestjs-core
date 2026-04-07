@@ -3,6 +3,7 @@ import { useAuthControllerForgotPassword } from '../../api/generated/authenticat
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import toast from 'react-hot-toast';
 
 // Validation Schema
 const forgotPasswordSchema = z.object({
@@ -29,11 +30,11 @@ export const ForgotPasswordPage = () => {
             data: { email: data.email }
         }, {
             onSuccess: () => {
-                alert("Reset link sent! Please check your email.");
+                toast.success("Reset link sent! Please check your email.");
                 navigate('/reset-password', { state: { email: data.email } });
             },
             onError: (error: any) => {
-                alert(error.response?.data?.message || "Something went wrong.");
+                toast.error(error.response?.data?.message || "Something went wrong.");
             }
         });
     };
@@ -61,12 +62,16 @@ export const ForgotPasswordPage = () => {
                     <button
                         type="submit"
                         disabled={forgotPasswordMutation.isPending}
-                        className="w-full bg-brand hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg disabled:opacity-50 cursor-pointer"
+                        className="w-full bg-brand hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
                     >
+                        {forgotPasswordMutation.isPending && (
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        )}
                         {forgotPasswordMutation.isPending ? 'Sending...' : 'Send Reset Link'}
                     </button>
 
-                    <div className="text-center mt-4">
+                    <div className="flex flex-col items-center mt-6 space-y-3">
+
                         <button
                             type="button"
                             onClick={() => navigate('/reset-password')}
@@ -74,7 +79,26 @@ export const ForgotPasswordPage = () => {
                         >
                             Already have a code? Reset Password
                         </button>
+
+                        <button
+                            type="button"
+                            onClick={() => navigate('/login')}
+                            className="text-primary-500 hover:text-brand text-sm font-medium cursor-pointer"
+                        >
+                            Back to Login
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => navigate('/register')}
+                            className="text-primary-500 hover:text-brand text-sm font-medium cursor-pointer"
+                        >
+                            Back to Register
+                        </button>
+
                     </div>
+
+
                 </form>
             </div>
         </div>
