@@ -1,0 +1,1 @@
+export const HostelOwnerDashboard = () => <p className="p-8 text-primary-700">Owner Dashboard: Welcome, Hostel Owner!</p>;
