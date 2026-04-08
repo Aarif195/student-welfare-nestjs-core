@@ -6,8 +6,11 @@ import toast from 'react-hot-toast';
 
 export const MyHostelsPage = () => {
     const navigate = useNavigate();
-    
-const { data: hostels, isLoading, error } = useHostelControllerGetMyHostels<{ data: any[] }>(undefined);
+
+    // const { data: hostels, isLoading, error } = useHostelControllerGetMyHostels<{ data: any[] }>(undefined);
+
+    const { data: hostels, isLoading, error } = useHostelControllerGetMyHostels();
+    console.log("Hostels from hook:", hostels);
 
     if (error) {
         toast.error("Failed to load hostels");
@@ -43,44 +46,48 @@ const { data: hostels, isLoading, error } = useHostelControllerGetMyHostels<{ da
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {hostels?.data?.map((hostel) => (
-                        <div 
-                            key={hostel.id} 
-                            onClick={() => navigate(`/dashboard/owner/hostels/${hostel.id}`)}
-                            className="bg-white border border-primary-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-                        >
-                            <div className="h-40 bg-primary-200 relative">
-                                {hostel.images?.[0] ? (
-                                    <img src={hostel.images[0]} alt={hostel.name} className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-primary-400">
-                                        <Building2 size={48} />
+
+                    {Array.isArray(hostels?.data?.data) && hostels.data.data.map((hostel) => {
+                        console.log("Each hostel:", hostel);
+                        return (
+                            <div
+                                key={hostel.id}
+                                onClick={() => navigate(`/dashboard/owner/hostels/${hostel.id}`)}
+                                className="bg-white border border-primary-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                            >
+                                {/* Image Section */}
+                                <div className="h-40 bg-primary-200 relative">
+                                    {hostel.images?.[0] ? (
+                                        <img src={hostel.images[0]} alt={hostel.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-primary-400">
+                                            <Building2 size={48} />
+                                        </div>
+                                    )}
+                                    <div className="absolute top-3 right-3 bg-white px-2 py-1 rounded text-xs font-bold text-brand shadow-sm">
+                                        {hostel.category}
                                     </div>
-                                )}
-                                <div className="absolute top-3 right-3 bg-white px-2 py-1 rounded text-xs font-bold text-brand shadow-sm">
-                                    {hostel.category}
+                                </div>
+                                <div className="p-4 space-y-3">
+                                    <h3 className="font-bold text-primary-700 truncate">{hostel.name}</h3>
+                                    <div className="flex items-center gap-2 text-primary-500 text-sm">
+                                        <MapPin size={16} />
+                                        <span className="truncate">{hostel.address}</span>
+                                    </div>
+                                    <div className="pt-3 border-t border-primary-100 flex justify-between items-center text-primary-600 text-sm">
+                                        <div className="flex items-center gap-1">
+                                            <Bed size={16} />
+                                            <span>{hostel._count?.rooms || 0} Rooms</span>
+                                        </div>
+                                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${hostel.isApproved ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                                            }`}>
+                                            {hostel.isApproved ? 'Approved' : 'Pending'}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="p-4 space-y-3">
-                                <h3 className="font-bold text-primary-700 truncate">{hostel.name}</h3>
-                                <div className="flex items-center gap-2 text-primary-500 text-sm">
-                                    <MapPin size={16} />
-                                    <span className="truncate">{hostel.address}</span>
-                                </div>
-                                <div className="pt-3 border-t border-primary-100 flex justify-between items-center text-primary-600 text-sm">
-                                    <div className="flex items-center gap-1">
-                                        <Bed size={16} />
-                                        <span>{hostel._count?.rooms || 0} Rooms</span>
-                                    </div>
-                                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                                        hostel.isApproved ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                                    }`}>
-                                        {hostel.isApproved ? 'Approved' : 'Pending'}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                        )
+                    })}
                 </div>
             )}
         </div>

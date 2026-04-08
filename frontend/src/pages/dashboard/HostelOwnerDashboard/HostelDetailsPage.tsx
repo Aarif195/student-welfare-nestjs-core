@@ -8,7 +8,8 @@ export const HostelDetailsPage = () => {
     const navigate = useNavigate();
 
     const { data: hostel, isLoading: hostelLoading } = useHostelControllerGetOne<{ data: any }>(hostelId);
-    const { data: rooms, isLoading: roomsLoading } = useHostelControllerGetRoomsByHostel<{ data: any[] }>(hostelId, undefined);
+    const { data: rooms, isLoading: roomsLoading } = useHostelControllerGetRoomsByHostel(hostelId);
+
 
     if (hostelLoading || roomsLoading) {
         return (
@@ -18,7 +19,8 @@ export const HostelDetailsPage = () => {
         );
     }
 
-    const hostelData = hostel?.data;
+    const hostelData = hostel?.data?.data;
+    const roomsData = (rooms?.data?.data ?? []) as any[];
 
     return (
         <div className="space-y-8">
@@ -54,12 +56,12 @@ export const HostelDetailsPage = () => {
                     </div>
 
                     <div className="grid grid-cols-1 gap-4">
-                        {rooms?.data?.length === 0 ? (
+                        {roomsData.length === 0 ? (
                             <div className="bg-white border border-primary-200 rounded-xl p-8 text-center text-primary-500">
                                 No rooms added to this hostel yet.
                             </div>
                         ) : (
-                            rooms?.data?.map((room) => (
+                            roomsData.map((room: any) => (
                                 <div key={room.id} className="bg-white border border-primary-200 p-4 rounded-xl flex justify-between items-center">
                                     <div className="flex items-center gap-4">
                                         <div className="bg-primary-100 p-3 rounded-lg text-brand">
@@ -88,8 +90,7 @@ export const HostelDetailsPage = () => {
                     <div className="bg-white border border-primary-200 rounded-xl p-5 space-y-4">
                         <div className="flex justify-between items-center">
                             <span className="text-primary-500 text-sm">Approval Status</span>
-                            <span className={`px-2 py-1 rounded text-xs font-bold ${hostelData?.isApproved ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                                }`}>
+                            <span className={`px-2 py-1 rounded text-xs font-bold ${hostelData?.isApproved ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
                                 {hostelData?.isApproved ? 'Approved' : 'Pending Review'}
                             </span>
                         </div>
