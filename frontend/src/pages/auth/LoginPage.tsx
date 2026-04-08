@@ -38,15 +38,17 @@ export const LoginPage = () => {
 
                 const role = response.data.user?.role || response.data.admin?.role;
 
+                console.log(response.data)
+
                 // Role-based redirection
                 if (role === 'student') {
                     navigate('/dashboard/student');
-                } else if (role === 'hostel_owner') {
+                } else if (role === 'hostelOwner') {
                     navigate('/dashboard/owner');
                 } else if (role === 'superadmin') {
                     navigate('/dashboard/admin');
                 } else {
-                    navigate('/'); // Fallback
+                    navigate('/');
                 }
             },
             onError: (error: any) => {

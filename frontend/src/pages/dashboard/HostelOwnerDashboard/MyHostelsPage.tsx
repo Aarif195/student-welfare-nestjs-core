@@ -1,4 +1,3 @@
-// import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useHostelControllerGetMyHostels } from '../../../api/generated/hostels/hostels';
 import { Plus, Building2, MapPin, Bed } from 'lucide-react';
@@ -7,7 +6,8 @@ import toast from 'react-hot-toast';
 
 export const MyHostelsPage = () => {
     const navigate = useNavigate();
-    const { data: hostels, isLoading, error } = useHostelControllerGetMyHostels();
+    
+const { data: hostels, isLoading, error } = useHostelControllerGetMyHostels<{ data: any[] }>(undefined);
 
     if (error) {
         toast.error("Failed to load hostels");
@@ -43,7 +43,7 @@ export const MyHostelsPage = () => {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {hostels?.data?.map((hostel: any) => (
+                    {hostels?.data?.map((hostel) => (
                         <div 
                             key={hostel.id} 
                             onClick={() => navigate(`/dashboard/owner/hostels/${hostel.id}`)}

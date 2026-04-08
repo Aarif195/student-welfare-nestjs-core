@@ -9,6 +9,9 @@ import { HostelOwnerDashboard } from './pages/dashboard/HostelOwnerDashboard/Hos
 import { StudentDashboard } from './pages/dashboard/StudentDashboard';
 import { ProtectedRoute } from './pages/auth/ProtectedRoute';
 import { Toaster } from 'react-hot-toast';
+import { MyHostelsPage } from './pages/dashboard/HostelOwnerDashboard/MyHostelsPage';
+import { HostelDetailsPage } from './pages/dashboard/HostelOwnerDashboard/HostelDetailsPage';
+import { CreateHostelPage } from './pages/dashboard/HostelOwnerDashboard/CreateHostelPage';
 
 function App() {
   return (
@@ -26,12 +29,21 @@ function App() {
           <Route path="/dashboard/student" element={<StudentDashboard />} />
         </Route>
 
-        <Route element={<ProtectedRoute allowedRoles={['hostel_owner']} />}>
-          <Route path="/dashboard/owner" element={<HostelOwnerDashboard />} />
-          {/* <Route index element={<OwnerOverviewPage />} /> */}
-          {/* <Route path="hostels" element={<MyHostelsPage />} /> */}
-          {/* <Route path="maintenance" element={<MaintenancePage />} /> */}
-          {/* <Route path="notifications" element={<NotificationsPage />} /> */}
+        <Route element={<ProtectedRoute allowedRoles={['hostelOwner']} />}>
+          <Route path="/dashboard/owner" element={<HostelOwnerDashboard />}>
+
+            {/* default page */}
+            {/* <Route index element={<OwnerOverviewPage />} /> */}
+
+            {/* nested routes */}
+            <Route path="hostels" element={<MyHostelsPage />} />
+            <Route path="hostels/:id" element={<HostelDetailsPage />} />
+            <Route path="hostels/create" element={<CreateHostelPage />} />
+
+            {/* <Route path="maintenance" element={<MaintenancePage />} /> */}
+            {/* <Route path="notifications" element={<NotificationsPage />} /> */}
+
+          </Route>
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={['superadmin']} />}>

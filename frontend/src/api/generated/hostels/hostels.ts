@@ -206,13 +206,8 @@ const {query: queryOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getHostelControllerGetOneQueryKey(id);
 
-  
-
     const queryFn: QueryFunction<Awaited<ReturnType<typeof hostelControllerGetOne>>> = ({ signal }) => hostelControllerGetOne(id, signal);
 
-      
-
-      
 
    return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOne>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
