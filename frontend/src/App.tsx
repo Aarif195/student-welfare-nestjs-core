@@ -12,6 +12,7 @@ import { Toaster } from 'react-hot-toast';
 import { MyHostelsPage } from './pages/dashboard/HostelOwnerDashboard/MyHostelsPage';
 import { HostelDetailsPage } from './pages/dashboard/HostelOwnerDashboard/HostelDetailsPage';
 import { CreateHostelPage } from './pages/dashboard/HostelOwnerDashboard/CreateHostelPage';
+import { CreateRoomPage } from './pages/dashboard/HostelOwnerDashboard/CreateRoomPage';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
             <Route path="hostels" element={<MyHostelsPage />} />
             <Route path="hostels/:id" element={<HostelDetailsPage />} />
             <Route path="hostels/create" element={<CreateHostelPage />} />
+            <Route path="hostels/:id/rooms/create" element={<CreateRoomPage />} />
 
             {/* <Route path="maintenance" element={<MaintenancePage />} /> */}
             {/* <Route path="notifications" element={<NotificationsPage />} /> */}
