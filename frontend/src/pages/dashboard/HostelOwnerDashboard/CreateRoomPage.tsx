@@ -5,12 +5,12 @@ import { useState } from 'react';
 import { useHostelControllerCreateRoom } from '../../../api/generated/hostels/hostels';
 import { useCloudinaryControllerGetSignature } from '../../../api/generated/cloudinary/cloudinary';
 import { CreateRoomResourceDtoFileType } from '../../../api/model';
-
+import { uploadToCloudinary } from '../../utils/cloudinaryUpload';
 
 import { ArrowLeft, Bed } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-import axios from 'axios';
+
 
 export const CreateRoomPage = () => {
     const { id } = useParams<{ id: string }>();
@@ -34,34 +34,10 @@ export const CreateRoomPage = () => {
         { query: { enabled: false } }
     );
 
-    const handleFileUpload = async (file: File) => {
-        try {
-            const result = await signatureQuery.refetch();
-            const signData = (result.data as any)?.data || result.data;
 
-            if (!signData) return;
-
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('api_key', signData.apiKey);
-            formData.append('timestamp', String(signData.timestamp));
-            formData.append('signature', signData.signature);
-            formData.append('folder', signData.folder);
-
-            const res = await axios.post(
-                `https://api.cloudinary.com/v1_1/${signData.cloudName}/auto/upload`,
-                formData
-            );
-
-            setUploadedUrls(prev => [...prev, res.data.secure_url]);
-
-        } catch (err) {
-            toast.error("Upload failed");
-        }
-    };
+    const handleFileUpload = (file: File) => uploadToCloudinary(file, signatureQuery, setUploadedUrls);
 
     const onSubmit = (data: any) => {
-        // Converting numeric strings from form to actual numbers as per DTO @Type(() => Number)
         const payload = {
             hostelId: Number(id),
             data: {

@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import toast from 'react-hot-toast';
+import { uploadToCloudinary } from '../utils/cloudinaryUpload';
 
 // Validation Schema
 const registerSchema = z.object({
@@ -77,45 +78,8 @@ export const RegisterPage = () => {
         { query: { enabled: false } }
     );
 
-   const handleFileUpload = async (file: File) => {
-    setIsUploading(true);
-    try {
-        //  Get signature and timestamp from your NestJS backend
-        const result = await signatureQuery.refetch();
-        const signData = (result.data as any)?.data || result.data;
+    const handleFileUpload = (file: File) => uploadToCloudinary(file, signatureQuery, setUploadedUrls);
 
-        if (!signData) return;
-
-        //  Prepare Form Data for Cloudinary
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('api_key', signData.apiKey);
-        formData.append('timestamp', String(signData.timestamp));
-        formData.append('signature', signData.signature);
-        formData.append('folder', signData.folder);
-
-        //  Upload directly to Cloudinary
-        const res = await axios.post(
-            `https://api.cloudinary.com/v1_1/${signData.cloudName}/auto/upload`,
-            formData
-        ).catch(err => {
-            console.error("Cloudinary Response Error:", err.response?.data);
-            throw err;
-        });
-
-        //  Save the secure_url to our state for the Register DTO
-        setValue('image', res.data.secure_url, { shouldValidate: true });
-
-        //  upload Cloudinary URL to uploadedUrls state
-        setUploadedUrls(prev => [...prev, res.data.secure_url]);
-
-    } catch (error) {
-        console.error("Upload failed", error);
-        toast.error("Image upload failed. Please try again.");
-    } finally {
-        setIsUploading(false);
-    }
-};
     return (
         <div className="min-h-screen flex items-center justify-center bg-primary-100 p-6">
             <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-sm border border-primary-200">
