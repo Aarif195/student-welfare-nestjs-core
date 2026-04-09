@@ -20,7 +20,12 @@ export const HostelDetailsPage = () => {
     }
 
     const hostelData = hostel?.data?.data;
-    const roomsData = (rooms?.data?.data ?? []) as any[];
+    // const roomsData = (rooms?.data?.MyRooms ?? []) as any[];
+    const roomsData = ((rooms?.data?.MyRooms ?? []) as any[]).map((room: any) => ({
+        ...room,
+        isAvailable: room.availability
+    }));
+
 
     return (
         <div className="space-y-8">
@@ -63,13 +68,29 @@ export const HostelDetailsPage = () => {
                         ) : (
                             roomsData.map((room: any) => (
                                 <div key={room.id} className="bg-white border border-primary-200 p-4 rounded-xl flex justify-between items-center">
+
                                     <div className="flex items-center gap-4">
-                                        <div className="bg-primary-100 p-3 rounded-lg text-brand">
-                                            <Bed size={24} />
-                                        </div>
+
+                                        {room.resources?.[0] && (
+                                            <img
+                                                src={room.resources[0].file_url}
+                                                alt="room"
+                                                className="w-16 h-16 object-cover rounded-lg"
+                                            />
+                                        )}
+
+                                        {/* fallback icon */}
+                                        {!room.resources?.[0] && (
+                                            <div className="bg-primary-100 p-3 rounded-lg text-brand">
+                                                <Bed size={24} />
+                                            </div>
+                                        )}
+
                                         <div>
                                             <p className="font-bold text-primary-700">Room {room.roomNumber}</p>
-                                            <p className="text-sm text-primary-500">{room.type} • {room.capacity} Students</p>
+                                            <p className="text-sm text-primary-500">
+                                                {room.type} • {room.capacity} Students
+                                            </p>
                                         </div>
                                     </div>
                                     <div className="text-right">
