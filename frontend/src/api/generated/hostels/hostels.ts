@@ -571,6 +571,7 @@ export function useHostelControllerGetRoomsByHostel<TData = Awaited<ReturnType<t
 
 
 
+
 /**
  * @summary Get single room details
  */

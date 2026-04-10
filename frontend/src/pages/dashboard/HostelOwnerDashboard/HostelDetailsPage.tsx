@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useHostelControllerGetOne, useHostelControllerGetRoomsByHostel } from '../../../api/generated/hostels/hostels';
-import { ArrowLeft, Plus, Bed, MapPin } from 'lucide-react';
-import { CreateRoomResourceDtoFileType } from '../../../api/model';
+import { ArrowLeft, Plus, Bed, MapPin, Edit } from 'lucide-react';
+
 
 export const HostelDetailsPage = () => {
     const { id } = useParams<{ id: string }>();
@@ -21,13 +21,11 @@ export const HostelDetailsPage = () => {
     }
 
     const hostelData = hostel?.data?.data;
-    // const roomsData = (rooms?.data?.MyRooms ?? []) as any[];
     const roomsData = ((rooms?.data?.MyRooms ?? []) as any[]).map((room: any) => ({
         ...room,
         isAvailable: room.availability
     }));
 
-    console.log('Rooms data fetched from backend:', roomsData);
 
     return (
         <div className="space-y-8">
@@ -39,6 +37,9 @@ export const HostelDetailsPage = () => {
                 >
                     <ArrowLeft size={24} className="text-primary-600" />
                 </button>
+
+                <div className='flex items-center justify-between w-full gap-4'>
+              
                 <div>
                     <h2 className="text-2xl font-bold text-primary-700">{hostelData?.name}</h2>
                     <div className="flex items-center gap-2 text-primary-500 text-sm">
@@ -46,6 +47,20 @@ export const HostelDetailsPage = () => {
                         <span>{hostelData?.location}</span>
                     </div>
                 </div>
+                
+                <div className=''>
+                <button
+                    onClick={() => navigate(`/dashboard/owner/hostels/${id}/edit`)}
+                    className="text-sm bg-brand text-white px-3 py-1.5 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors cursor-pointer"
+                >
+                    <Edit size={16} />
+                    Edit Hostel
+                </button>
+                </div>
+
+                </div>
+
+                
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -70,7 +85,6 @@ export const HostelDetailsPage = () => {
                         ) : (
                             roomsData.map((room: any) =>
                             (
-
                                 <div key={room.id} className="bg-white border border-primary-200 p-4 rounded-xl flex justify-between items-center">
 
                                     <div className="flex items-center gap-4">
