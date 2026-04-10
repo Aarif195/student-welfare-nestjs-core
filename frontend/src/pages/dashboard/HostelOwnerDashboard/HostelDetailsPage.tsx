@@ -1,12 +1,21 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useHostelControllerGetOne, useHostelControllerGetRoomsByHostel } from '../../../api/generated/hostels/hostels';
-import { ArrowLeft, Plus, Bed, MapPin, Edit, Edit3 } from 'lucide-react';
+import { useHostelControllerDeleteRoom, useHostelControllerGetOne, useHostelControllerGetRoomsByHostel } from '../../../api/generated/hostels/hostels';
+import { useQueryClient } from '@tanstack/react-query';
+import { ArrowLeft, Plus, Bed, MapPin, Edit, Edit3, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { useState } from 'react';
+import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 
 
 export const HostelDetailsPage = () => {
     const { id } = useParams<{ id: string }>();
     const hostelId = Number(id);
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
+
+    const [deleteRoomId, setDeleteRoomId] = useState<number | null>(null);
+    const deleteRoomMutation = useHostelControllerDeleteRoom();
+
 
     const { data: hostel, isLoading: hostelLoading } = useHostelControllerGetOne<{ data: any }>(hostelId);
     const { data: rooms, isLoading: roomsLoading } = useHostelControllerGetRoomsByHostel(hostelId);
@@ -21,10 +30,64 @@ export const HostelDetailsPage = () => {
     }
 
     const hostelData = hostel?.data?.data;
-    const roomsData = ((rooms?.data?.MyRooms ?? []) as any[]).map((room: any) => ({
-        ...room,
-        isAvailable: room.availability
-    }));
+    // const roomsData = ((rooms?.data?.MyRooms ?? []) as any[]).map((room: any) => ({
+    //     ...room,
+    //     isAvailable: room.availability
+    // }));
+
+    const roomsList = rooms?.data?.MyRooms;
+
+    const roomsData = Array.isArray(roomsList)
+        ? roomsList.map((room: any) => ({
+            ...room,
+            isAvailable: room.availability
+        }))
+        : [];
+
+
+    // const handleDeleteRoom = (roomId: number) => {
+    //     if (window.confirm("Are you sure you want to delete this room? This action cannot be undone.")) {
+    //         deleteRoomMutation.mutate({
+    //             hostelId: Number(id),
+    //             roomId: roomId
+    //         }, {
+    //             onSuccess: () => {
+    //                 toast.success("Room deleted successfully");
+
+    //                 queryClient.invalidateQueries({
+    //                     queryKey: ['hostelControllerGetRoomsByHostel']
+    //                 });
+    //             },
+    //             onError: (error: any) => {
+    //                 toast.error(error.response?.data?.message || "Failed to delete room");
+    //             }
+    //         });
+    //     }
+    // };
+
+    const handleDeleteRoom = (roomId: number) => {
+        setDeleteRoomId(roomId);
+    };
+
+    const confirmDeleteRoom = () => {
+        if (deleteRoomId === null) return;
+
+        deleteRoomMutation.mutate({
+            hostelId: Number(id),
+            roomId: deleteRoomId
+        }, {
+            onSuccess: () => {
+                toast.success("Room deleted successfully");
+                queryClient.invalidateQueries({ queryKey: ['hostelControllerGetRoomsByHostel'] });
+            },
+            onError: (error: any) => {
+                toast.error(error.response?.data?.message || "Failed to delete room");
+            },
+            onSettled: () => {
+                setDeleteRoomId(null);
+            }
+        });
+    };
 
 
     return (
@@ -57,6 +120,9 @@ export const HostelDetailsPage = () => {
                             Edit Hostel
                         </button>
                     </div>
+
+                    {/* de */}
+
 
                 </div>
 
@@ -117,21 +183,36 @@ export const HostelDetailsPage = () => {
                                         <div className="flex items-center gap-2">
                                             <button
                                                 onClick={() => navigate(`/dashboard/owner/hostels/${id}/rooms/${room.id}/edit`)}
-                                                className="p-2 text-primary-400 hover:text-brand hover:bg-primary-50 rounded-lg transition-colors"
+                                                className="p-2 text-primary-400 hover:text-brand hover:bg-primary-50 rounded-lg transition-colors cursor-pointer"
                                             >
-                                                <Edit3 size={18} />
+                                                <Edit3 size={18} className='cursor-pointer' />
+                                            </button>
+                                        </div>
+
+                                        {/* delete */}
+                                        <div className="flex items-center gap-2">
+
+                                            <button
+                                                onClick={() => handleDeleteRoom(room.id)}
+                                                className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                            >
+                                                <Trash2 size={18} className='cursor-pointer' />
                                             </button>
                                         </div>
 
 
-
                                     </div>
+
+
                                     <div className="text-right">
                                         <p className="font-bold text-brand">₦{room.price.toLocaleString()}</p>
                                         <p className={`text-xs font-medium ${room.isAvailable ? 'text-green-600' : 'text-red-600'}`}>
                                             {room.isAvailable ? 'Available' : 'Occupied'}
                                         </p>
                                     </div>
+
+
+
                                 </div>
                             ))
                         )}
@@ -158,6 +239,16 @@ export const HostelDetailsPage = () => {
                     </div>
                 </div>
             </div>
+
+            <ConfirmModal
+                open={deleteRoomId !== null}
+                title="Delete Room"
+                message="This action cannot be undone. Do you want to continue?"
+                confirmText="Delete"
+                onClose={() => setDeleteRoomId(null)}
+                onConfirm={confirmDeleteRoom}
+            />
+
         </div>
     );
 };

@@ -59,8 +59,8 @@ export const EditRoomPage = () => {
 
             <div className="bg-white border border-primary-200 rounded-xl p-8 shadow-sm">
                 <h2 className="text-2xl font-bold text-primary-700 mb-6">
-  Edit Room {(room?.data as any)?.room_number || ''}
-</h2>
+                    Edit Room {(room?.data as any)?.room_number || ''}
+                </h2>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                     <div>
