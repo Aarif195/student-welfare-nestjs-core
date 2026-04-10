@@ -6,13 +6,16 @@ import { CreateHostelResourceDtoFileType, type UpdateHostelDto } from '../../../
 
 import { ArrowLeft, Save } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useCloudinaryControllerGetSignature } from '../../../api/generated/cloudinary/cloudinary';
+import { uploadToCloudinary } from '../../utils/cloudinaryUpload';
 
 
 export const EditHostelPage = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const [images, setImages] = useState<File[]>([]);
-    const [uploadedUrls] = useState<string[]>([]);
+    const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
+    const [isUploading, setIsUploading] = useState(false);
 
     const { data: hostel, isLoading } = useHostelControllerGetOne(Number(id));
     const updateMutation = useHostelControllerUpdate();
@@ -30,6 +33,22 @@ export const EditHostelPage = () => {
         }
     }, [hostel, reset]);
 
+    const signatureQuery = useCloudinaryControllerGetSignature(
+        { folder: 'avatars' },
+        { query: { enabled: false } }
+    );
+
+    // upload function
+    const handleFilesUpload = async (files: File[]) => {
+        setIsUploading(true);
+
+        const uploadPromises = files.map(file =>
+            uploadToCloudinary(file, signatureQuery, setUploadedUrls)
+        );
+
+        await Promise.all(uploadPromises);
+        setIsUploading(false);
+    };
 
     const onSubmit = (data: any) => {
         const payload: UpdateHostelDto = {
@@ -71,10 +90,13 @@ export const EditHostelPage = () => {
                         <label className="block text-sm font-semibold mb-1">Hostel Name</label>
                         <input {...register('name')} className="w-full p-2.5 border rounded-lg" />
                     </div>
+                    {/* Location */}
                     <div>
                         <label className="block text-sm font-semibold mb-1">Location</label>
                         <input {...register('location')} className="w-full p-2.5 border rounded-lg" />
                     </div>
+
+                    {/* Description */}
                     <div>
                         <label className="block text-sm font-semibold mb-1">Description</label>
                         <textarea {...register('description')} rows={4} className="w-full p-2.5 border rounded-lg" />
@@ -88,10 +110,16 @@ export const EditHostelPage = () => {
                             type="file"
                             multiple
                             accept="image/*"
-                            onChange={e => {
+                            onChange={async e => {
                                 if (!e.target.files) return;
-                                setImages(Array.from(e.target.files));
+
+                                const files = Array.from(e.target.files);
+                                setImages(files);
+                                setUploadedUrls([]);
+
+                                await handleFilesUpload(files);
                             }}
+
                             className="w-full border border-primary-200 rounded-lg p-2.5 focus:ring-2 focus:ring-brand outline-none"
                         />
                         {images.length > 0 && (
@@ -112,6 +140,7 @@ export const EditHostelPage = () => {
                         )}
                     </div>
 
+                    {/* Submit Button */}
                     <button
                         type="submit"
                         disabled={updateMutation.isPending}

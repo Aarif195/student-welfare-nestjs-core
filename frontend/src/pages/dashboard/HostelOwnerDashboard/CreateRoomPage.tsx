@@ -33,15 +33,14 @@ export const CreateRoomPage = () => {
         { query: { enabled: false } }
     );
 
-
-    // const handleFileUpload = (file: File) => uploadToCloudinary(file, signatureQuery, setUploadedUrls);
+    // upload function
     const handleFilesUpload = async (files: File[]) => {
-        setIsUploading(true); // start uploading
+        setIsUploading(true);
         const uploadPromises = files.map(file =>
             uploadToCloudinary(file, signatureQuery, setUploadedUrls)
         );
         await Promise.all(uploadPromises);
-        setIsUploading(false); // finished all uploads
+        setIsUploading(false);
     };
 
 
@@ -189,16 +188,7 @@ export const CreateRoomPage = () => {
                                 ? 'Uploading Images...'
                                 : 'Create Room'}
                     </button>
-                    {/* <button
-                        type="submit"
-                        disabled={createRoomMutation.isPending}
-                        className="w-full bg-brand hover:bg-blue-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
-                    >
-                        {createRoomMutation.isPending && (
-                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        )}
-                        {createRoomMutation.isPending ? 'Adding Room...' : 'Create Room'}
-                    </button> */}
+
                 </form>
             </div>
         </div>

@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useHostelControllerGetOne, useHostelControllerGetRoomsByHostel } from '../../../api/generated/hostels/hostels';
-import { ArrowLeft, Plus, Bed, MapPin, Edit } from 'lucide-react';
+import { ArrowLeft, Plus, Bed, MapPin, Edit, Edit3 } from 'lucide-react';
 
 
 export const HostelDetailsPage = () => {
@@ -39,28 +39,28 @@ export const HostelDetailsPage = () => {
                 </button>
 
                 <div className='flex items-center justify-between w-full gap-4'>
-              
-                <div>
-                    <h2 className="text-2xl font-bold text-primary-700">{hostelData?.name}</h2>
-                    <div className="flex items-center gap-2 text-primary-500 text-sm">
-                        <MapPin size={14} />
-                        <span>{hostelData?.location}</span>
+
+                    <div>
+                        <h2 className="text-2xl font-bold text-primary-700">{hostelData?.name}</h2>
+                        <div className="flex items-center gap-2 text-primary-500 text-sm">
+                            <MapPin size={14} />
+                            <span>{hostelData?.location}</span>
+                        </div>
                     </div>
-                </div>
-                
-                <div className=''>
-                <button
-                    onClick={() => navigate(`/dashboard/owner/hostels/${id}/edit`)}
-                    className="text-sm bg-brand text-white px-3 py-1.5 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors cursor-pointer"
-                >
-                    <Edit size={16} />
-                    Edit Hostel
-                </button>
-                </div>
+
+                    <div className=''>
+                        <button
+                            onClick={() => navigate(`/dashboard/owner/hostels/${id}/edit`)}
+                            className="text-sm bg-brand text-white px-3 py-1.5 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors cursor-pointer"
+                        >
+                            <Edit size={16} />
+                            Edit Hostel
+                        </button>
+                    </div>
 
                 </div>
 
-                
+
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -86,6 +86,7 @@ export const HostelDetailsPage = () => {
                             roomsData.map((room: any) =>
                             (
                                 <div key={room.id} className="bg-white border border-primary-200 p-4 rounded-xl flex justify-between items-center">
+                                    {/* image mapping */}
 
                                     <div className="flex items-center gap-4">
                                         {(() => {
@@ -107,11 +108,23 @@ export const HostelDetailsPage = () => {
                                         })()}
 
                                         <div>
-                                            <p className="font-bold text-primary-700">Room {room.roomNumber}</p>
+                                            <p className="font-bold text-primary-700">Room {room.room_number}</p>
                                             <p className="text-sm text-primary-500">
                                                 {room.type} • {room.capacity} Students
                                             </p>
                                         </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => navigate(`/dashboard/owner/hostels/${id}/rooms/${room.id}/edit`)}
+                                                className="p-2 text-primary-400 hover:text-brand hover:bg-primary-50 rounded-lg transition-colors"
+                                            >
+                                                <Edit3 size={18} />
+                                            </button>
+                                        </div>
+
+
+
                                     </div>
                                     <div className="text-right">
                                         <p className="font-bold text-brand">₦{room.price.toLocaleString()}</p>
@@ -123,6 +136,7 @@ export const HostelDetailsPage = () => {
                             ))
                         )}
                     </div>
+
                 </div>
 
                 {/* Right: Hostel Status Stats */}
