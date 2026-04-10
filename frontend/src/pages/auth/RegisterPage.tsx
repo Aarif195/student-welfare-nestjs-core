@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useAuthControllerRegister } from '../../api/generated/authentication/authentication';
 import { useCloudinaryControllerGetSignature } from '../../api/generated/cloudinary/cloudinary';
-import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';

@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useHostelControllerGetOne, useHostelControllerGetRoomsByHostel } from '../../../api/generated/hostels/hostels';
 import { ArrowLeft, Plus, Bed, MapPin } from 'lucide-react';
+import { CreateRoomResourceDtoFileType } from '../../../api/model';
 
 export const HostelDetailsPage = () => {
     const { id } = useParams<{ id: string }>();
@@ -26,6 +27,7 @@ export const HostelDetailsPage = () => {
         isAvailable: room.availability
     }));
 
+    console.log('Rooms data fetched from backend:', roomsData);
 
     return (
         <div className="space-y-8">
@@ -41,7 +43,7 @@ export const HostelDetailsPage = () => {
                     <h2 className="text-2xl font-bold text-primary-700">{hostelData?.name}</h2>
                     <div className="flex items-center gap-2 text-primary-500 text-sm">
                         <MapPin size={14} />
-                        <span>{hostelData?.address}</span>
+                        <span>{hostelData?.location}</span>
                     </div>
                 </div>
             </div>
@@ -66,25 +68,29 @@ export const HostelDetailsPage = () => {
                                 No rooms added to this hostel yet.
                             </div>
                         ) : (
-                            roomsData.map((room: any) => (
+                            roomsData.map((room: any) =>
+                            (
+
                                 <div key={room.id} className="bg-white border border-primary-200 p-4 rounded-xl flex justify-between items-center">
 
                                     <div className="flex items-center gap-4">
+                                        {(() => {
+                                            const image = room.resources?.find(
+                                                (r: any) => r.type === "IMAGE"
+                                            );
 
-                                        {room.resources?.[0] && (
-                                            <img
-                                                src={room.resources[0].file_url}
-                                                alt="room"
-                                                className="w-16 h-16 object-cover rounded-lg"
-                                            />
-                                        )}
-
-                                        {/* fallback icon */}
-                                        {!room.resources?.[0] && (
-                                            <div className="bg-primary-100 p-3 rounded-lg text-brand">
-                                                <Bed size={24} />
-                                            </div>
-                                        )}
+                                            return image?.url ? (
+                                                <img
+                                                    src={image.url}
+                                                    alt="room"
+                                                    className="w-24 h-24 object-cover rounded-lg"
+                                                />
+                                            ) : (
+                                                <div className="bg-primary-100 p-3 rounded-lg text-brand">
+                                                    <Bed size={24} />
+                                                </div>
+                                            );
+                                        })()}
 
                                         <div>
                                             <p className="font-bold text-primary-700">Room {room.roomNumber}</p>

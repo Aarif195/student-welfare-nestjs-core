@@ -10,8 +10,6 @@ import { uploadToCloudinary } from '../../utils/cloudinaryUpload';
 import { ArrowLeft, Bed } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-
-
 export const CreateRoomPage = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -19,6 +17,7 @@ export const CreateRoomPage = () => {
     const queryClient = useQueryClient();
     const [images, setImages] = useState<File[]>([]);
     const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
+    const [isUploading, setIsUploading] = useState(false);
 
     const { register, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
@@ -35,9 +34,21 @@ export const CreateRoomPage = () => {
     );
 
 
-    const handleFileUpload = (file: File) => uploadToCloudinary(file, signatureQuery, setUploadedUrls);
+    // const handleFileUpload = (file: File) => uploadToCloudinary(file, signatureQuery, setUploadedUrls);
+    const handleFilesUpload = async (files: File[]) => {
+        setIsUploading(true); // start uploading
+        const uploadPromises = files.map(file =>
+            uploadToCloudinary(file, signatureQuery, setUploadedUrls)
+        );
+        await Promise.all(uploadPromises);
+        setIsUploading(false); // finished all uploads
+    };
 
-    const onSubmit = (data: any) => {
+
+    const onSubmit = async (data: any) => {
+
+        if (uploadedUrls.length === 0) return toast.error("Please upload at least one image.");
+
         const payload = {
             hostelId: Number(id),
             data: {
@@ -50,8 +61,13 @@ export const CreateRoomPage = () => {
                     file_url: url,
                     file_type: CreateRoomResourceDtoFileType.IMAGE
                 }))
+
             }
+
         };
+
+        console.log('Room payload being sent:', payload);
+
         createRoomMutation.mutate(payload, {
             onSuccess: () => {
                 toast.success("Room created successfully!");
@@ -129,6 +145,11 @@ export const CreateRoomPage = () => {
                     <div className="space-y-2">
                         <label className="text-sm font-semibold text-primary-600">Room Images</label>
 
+                        {isUploading && <p className="text-xs text-brand animate-pulse">Uploading images...</p>}
+                        {!isUploading && uploadedUrls.length > 0 && (
+                            <p className="text-xs text-green-600 font-bold">✓ All images ready</p>
+                        )}
+
                         <input
                             type="file"
                             accept="image/*"
@@ -136,9 +157,8 @@ export const CreateRoomPage = () => {
                             onChange={(e) => {
                                 const files = Array.from(e.target.files || []);
                                 setImages(files);
-
-                                files.forEach(file => handleFileUpload(file));
-
+                                setUploadedUrls([]);
+                                handleFilesUpload(files);
                             }}
                             className="w-full"
                         />
@@ -157,6 +177,20 @@ export const CreateRoomPage = () => {
 
                     <button
                         type="submit"
+                        disabled={createRoomMutation.isPending || isUploading || uploadedUrls.length === 0}
+                        className="w-full bg-brand hover:bg-blue-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                    >
+                        {(createRoomMutation.isPending || isUploading) && (
+                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        )}
+                        {createRoomMutation.isPending
+                            ? 'Adding Room...'
+                            : isUploading
+                                ? 'Uploading Images...'
+                                : 'Create Room'}
+                    </button>
+                    {/* <button
+                        type="submit"
                         disabled={createRoomMutation.isPending}
                         className="w-full bg-brand hover:bg-blue-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
                     >
@@ -164,7 +198,7 @@ export const CreateRoomPage = () => {
                             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         )}
                         {createRoomMutation.isPending ? 'Adding Room...' : 'Create Room'}
-                    </button>
+                    </button> */}
                 </form>
             </div>
         </div>

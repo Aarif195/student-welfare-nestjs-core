@@ -2,15 +2,13 @@ import { useNavigate } from 'react-router-dom';
 import { useHostelControllerGetMyHostels } from '../../../api/generated/hostels/hostels';
 import { Plus, Building2, MapPin, Bed } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { CreateHostelResourceDtoFileType } from '../../../api/model';
 
 
 export const MyHostelsPage = () => {
     const navigate = useNavigate();
 
-    // const { data: hostels, isLoading, error } = useHostelControllerGetMyHostels<{ data: any[] }>(undefined);
-
     const { data: hostels, isLoading, error } = useHostelControllerGetMyHostels();
-    console.log("Hostels from hook:", hostels);
 
     if (error) {
         toast.error("Failed to load hostels");
@@ -48,7 +46,6 @@ export const MyHostelsPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
                     {Array.isArray(hostels?.data?.data) && hostels.data.data.map((hostel) => {
-                        console.log("Each hostel:", hostel);
                         return (
                             <div
                                 key={hostel.id}
@@ -57,22 +54,25 @@ export const MyHostelsPage = () => {
                             >
                                 {/* Image Section */}
                                 <div className="h-40 bg-primary-200 relative">
-                                    {hostel.images?.[0] ? (
-                                        <img src={hostel.images[0]} alt={hostel.name} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-primary-400">
-                                            <Building2 size={48} />
-                                        </div>
-                                    )}
-                                    <div className="absolute top-3 right-3 bg-white px-2 py-1 rounded text-xs font-bold text-brand shadow-sm">
-                                        {hostel.category}
-                                    </div>
+                                    {(() => {
+                                        const imageResource = hostel.resources?.find(
+                                            (r: { file_url: string; file_type: string }) => r.file_type === CreateHostelResourceDtoFileType.IMAGE
+                                        );
+                                        if (imageResource?.file_url) {
+                                            return <img src={imageResource.file_url} alt={hostel.name} className="w-full h-full object-cover" />;
+                                        }
+                                        return (
+                                            <div className="w-full h-full flex items-center justify-center text-primary-400">
+                                                <Building2 size={48} />
+                                            </div>
+                                        );
+                                    })()}
                                 </div>
                                 <div className="p-4 space-y-3">
                                     <h3 className="font-bold text-primary-700 truncate">{hostel.name}</h3>
                                     <div className="flex items-center gap-2 text-primary-500 text-sm">
                                         <MapPin size={16} />
-                                        <span className="truncate">{hostel.address}</span>
+                                        <span className="truncate">{hostel.location}</span>
                                     </div>
                                     <div className="pt-3 border-t border-primary-100 flex justify-between items-center text-primary-600 text-sm">
                                         <div className="flex items-center gap-1">
