@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useHostelControllerDeleteRoom, useHostelControllerGetOne, useHostelControllerGetRoomsByHostel } from '../../../api/generated/hostels/hostels';
+import { useHostelControllerDeleteHostel, useHostelControllerDeleteRoom, useHostelControllerGetOne, useHostelControllerGetRoomsByHostel } from '../../../api/generated/hostels/hostels';
 import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Plus, Bed, MapPin, Edit, Edit3, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -16,8 +16,11 @@ export const HostelDetailsPage = () => {
     const [deleteRoomId, setDeleteRoomId] = useState<number | null>(null);
     const [localRooms, setLocalRooms] = useState<any[]>([]);
 
+    // Mutation Functions
     const deleteRoomMutation = useHostelControllerDeleteRoom();
+    const deleteHostelMutation = useHostelControllerDeleteHostel();
 
+    // Query Functions
     const { data: hostel, isLoading: hostelLoading } = useHostelControllerGetOne<{ data: any }>(hostelId);
     const { data: rooms, isLoading: roomsLoading } = useHostelControllerGetRoomsByHostel(hostelId);
 
@@ -32,7 +35,7 @@ export const HostelDetailsPage = () => {
                     ...room,
                     isAvailable: room.availability
                 }))
-            ); 
+            );
         }
     }, [roomsList]);
 
@@ -72,6 +75,20 @@ export const HostelDetailsPage = () => {
         });
     };
 
+    // handleDeleteHostel
+    const handleDeleteHostel = () => {
+        if (window.confirm("Are you sure? Deleting this hostel will remove all its rooms and data. This cannot be undone.")) {
+            deleteHostelMutation.mutate({ id: Number(id) }, {
+                onSuccess: () => {
+                    toast.success("Hostel deleted successfully");
+                    navigate('/dashboard/owner/hostels'); // Redirect to list after delete
+                },
+                onError: (error: any) => {
+                    toast.error(error.response?.data?.message || "Failed to delete hostel");
+                }
+            });
+        }
+    };
 
 
     return (
@@ -95,7 +112,9 @@ export const HostelDetailsPage = () => {
                         </div>
                     </div>
 
-                    <div className=''>
+                    <div className='flex items-center justify-between  gap-4'>
+
+                        {/* Edit Hostel */}
                         <button
                             onClick={() => navigate(`/dashboard/owner/hostels/${id}/edit`)}
                             className="text-sm bg-brand text-white px-3 py-1.5 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors cursor-pointer"
@@ -103,10 +122,18 @@ export const HostelDetailsPage = () => {
                             <Edit size={16} />
                             Edit Hostel
                         </button>
+
+                        {/* Delete Hostel */}
+                        <button
+                            onClick={handleDeleteHostel}
+                            disabled={deleteHostelMutation.isPending}
+                            className="flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors cursor-pointer disabled:opacity-50"
+                        >
+                            <Trash2 size={18} />
+                            <span>{deleteHostelMutation.isPending ? 'Deleting...' : 'Delete'}</span>
+                        </button>
+
                     </div>
-
-                    {/* de */}
-
 
                 </div>
 
@@ -165,6 +192,7 @@ export const HostelDetailsPage = () => {
                                         </div>
 
                                         <div className="flex items-center gap-2">
+
                                             <button
                                                 onClick={() => navigate(`/dashboard/owner/hostels/${id}/rooms/${room.id}/edit`)}
                                                 className="p-2 text-primary-400 hover:text-brand hover:bg-primary-50 rounded-lg transition-colors cursor-pointer"

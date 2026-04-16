@@ -117,7 +117,6 @@ export const CreateHostelPage = () => {
                             accept="image/*"
                             onChange={e => {
                                 if (!e.target.files) return;
-                                // setImages(Array.from(e.target.files));
                                 const files = Array.from(e.target.files);
                                 setImages(files);
                                 setUploadedUrls([]);
