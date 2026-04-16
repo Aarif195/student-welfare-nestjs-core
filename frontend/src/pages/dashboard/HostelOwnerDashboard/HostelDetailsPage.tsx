@@ -21,6 +21,21 @@ export const HostelDetailsPage = () => {
     const { data: hostel, isLoading: hostelLoading } = useHostelControllerGetOne<{ data: any }>(hostelId);
     const { data: rooms, isLoading: roomsLoading } = useHostelControllerGetRoomsByHostel(hostelId);
 
+    const hostelData = hostel?.data?.data;
+    const roomsList = rooms?.data?.MyRooms;
+
+
+    useEffect(() => {
+        if (Array.isArray(roomsList)) {
+            setLocalRooms(
+                roomsList.map((room: any) => ({
+                    ...room,
+                    isAvailable: room.availability
+                }))
+            ); 
+        }
+    }, [roomsList]);
+
     if (hostelLoading || roomsLoading) {
         return (
             <div className="flex justify-center py-20">
@@ -29,22 +44,8 @@ export const HostelDetailsPage = () => {
         );
     }
 
-    const hostelData = hostel?.data?.data;
-    const roomsList = rooms?.data?.MyRooms;
 
-
-    useEffect(() => {
-    if (Array.isArray(roomsList)) {
-        setLocalRooms(
-            roomsList.map((room: any) => ({
-                ...room,
-                isAvailable: room.availability
-            }))
-        );
-    }
-}, [roomsList]);
-
-// handleDeleteRoom
+    // handleDeleteRoom
     const handleDeleteRoom = (roomId: number) => {
         setDeleteRoomId(roomId);
     };
