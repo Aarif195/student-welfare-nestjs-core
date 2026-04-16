@@ -3,7 +3,7 @@ import { useHostelControllerDeleteRoom, useHostelControllerGetOne, useHostelCont
 import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Plus, Bed, MapPin, Edit, Edit3, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 
 
@@ -14,12 +14,12 @@ export const HostelDetailsPage = () => {
     const queryClient = useQueryClient();
 
     const [deleteRoomId, setDeleteRoomId] = useState<number | null>(null);
-    const deleteRoomMutation = useHostelControllerDeleteRoom();
+    const [localRooms, setLocalRooms] = useState<any[]>([]);
 
+    const deleteRoomMutation = useHostelControllerDeleteRoom();
 
     const { data: hostel, isLoading: hostelLoading } = useHostelControllerGetOne<{ data: any }>(hostelId);
     const { data: rooms, isLoading: roomsLoading } = useHostelControllerGetRoomsByHostel(hostelId);
-
 
     if (hostelLoading || roomsLoading) {
         return (
@@ -30,45 +30,26 @@ export const HostelDetailsPage = () => {
     }
 
     const hostelData = hostel?.data?.data;
-    // const roomsData = ((rooms?.data?.MyRooms ?? []) as any[]).map((room: any) => ({
-    //     ...room,
-    //     isAvailable: room.availability
-    // }));
-
     const roomsList = rooms?.data?.MyRooms;
 
-    const roomsData = Array.isArray(roomsList)
-        ? roomsList.map((room: any) => ({
-            ...room,
-            isAvailable: room.availability
-        }))
-        : [];
 
+    useEffect(() => {
+    if (Array.isArray(roomsList)) {
+        setLocalRooms(
+            roomsList.map((room: any) => ({
+                ...room,
+                isAvailable: room.availability
+            }))
+        );
+    }
+}, [roomsList]);
 
-    // const handleDeleteRoom = (roomId: number) => {
-    //     if (window.confirm("Are you sure you want to delete this room? This action cannot be undone.")) {
-    //         deleteRoomMutation.mutate({
-    //             hostelId: Number(id),
-    //             roomId: roomId
-    //         }, {
-    //             onSuccess: () => {
-    //                 toast.success("Room deleted successfully");
-
-    //                 queryClient.invalidateQueries({
-    //                     queryKey: ['hostelControllerGetRoomsByHostel']
-    //                 });
-    //             },
-    //             onError: (error: any) => {
-    //                 toast.error(error.response?.data?.message || "Failed to delete room");
-    //             }
-    //         });
-    //     }
-    // };
-
+// handleDeleteRoom
     const handleDeleteRoom = (roomId: number) => {
         setDeleteRoomId(roomId);
     };
 
+    // confirmDeleteRoom
     const confirmDeleteRoom = () => {
         if (deleteRoomId === null) return;
 
@@ -78,7 +59,8 @@ export const HostelDetailsPage = () => {
         }, {
             onSuccess: () => {
                 toast.success("Room deleted successfully");
-                queryClient.invalidateQueries({ queryKey: ['hostelControllerGetRoomsByHostel'] });
+                queryClient.invalidateQueries({ queryKey: ['hostelControllerGetRoomsByHostel', hostelId] });
+                setLocalRooms(prev => prev.filter(room => room.id !== deleteRoomId));
             },
             onError: (error: any) => {
                 toast.error(error.response?.data?.message || "Failed to delete room");
@@ -88,6 +70,7 @@ export const HostelDetailsPage = () => {
             }
         });
     };
+
 
 
     return (
@@ -144,12 +127,12 @@ export const HostelDetailsPage = () => {
                     </div>
 
                     <div className="grid grid-cols-1 gap-4">
-                        {roomsData.length === 0 ? (
+                        {localRooms.length === 0 ? (
                             <div className="bg-white border border-primary-200 rounded-xl p-8 text-center text-primary-500">
                                 No rooms added to this hostel yet.
                             </div>
                         ) : (
-                            roomsData.map((room: any) =>
+                            localRooms.map((room: any) =>
                             (
                                 <div key={room.id} className="bg-white border border-primary-200 p-4 rounded-xl flex justify-between items-center">
                                     {/* image mapping */}

@@ -177,7 +177,7 @@ export const CreateRoomPage = () => {
                     <button
                         type="submit"
                         disabled={createRoomMutation.isPending || isUploading || uploadedUrls.length === 0}
-                        className="w-full bg-brand hover:bg-blue-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                        className="w-full bg-brand hover:bg-blue-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
                     >
                         {(createRoomMutation.isPending || isUploading) && (
                             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
