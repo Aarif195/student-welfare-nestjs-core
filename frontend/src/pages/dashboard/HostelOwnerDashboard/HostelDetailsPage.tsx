@@ -15,6 +15,7 @@ export const HostelDetailsPage = () => {
 
     const [deleteRoomId, setDeleteRoomId] = useState<number | null>(null);
     const [localRooms, setLocalRooms] = useState<any[]>([]);
+    const [deleteHostelOpen, setDeleteHostelOpen] = useState(false);
 
     // Mutation Functions
     const deleteRoomMutation = useHostelControllerDeleteRoom();
@@ -77,17 +78,26 @@ export const HostelDetailsPage = () => {
 
     // handleDeleteHostel
     const handleDeleteHostel = () => {
-        if (window.confirm("Are you sure? Deleting this hostel will remove all its rooms and data. This cannot be undone.")) {
-            deleteHostelMutation.mutate({ id: Number(id) }, {
+        setDeleteHostelOpen(true);
+    };
+
+    // confirmDeleteHostel
+    const confirmDeleteHostel = () => {
+        deleteHostelMutation.mutate(
+            { id: Number(id) },
+            {
                 onSuccess: () => {
                     toast.success("Hostel deleted successfully");
-                    navigate('/dashboard/owner/hostels'); // Redirect to list after delete
+                    navigate('/dashboard/owner/hostels');
                 },
                 onError: (error: any) => {
                     toast.error(error.response?.data?.message || "Failed to delete hostel");
+                },
+                onSettled: () => {
+                    setDeleteHostelOpen(false);
                 }
-            });
-        }
+            }
+        );
     };
 
 
@@ -259,6 +269,15 @@ export const HostelDetailsPage = () => {
                 confirmText="Delete"
                 onClose={() => setDeleteRoomId(null)}
                 onConfirm={confirmDeleteRoom}
+            />
+
+            <ConfirmModal
+                open={deleteHostelOpen}
+                title="Delete Hostel"
+                message="Deleting this hostel will remove all its rooms and data. This cannot be undone."
+                confirmText="Delete"
+                onClose={() => setDeleteHostelOpen(false)}
+                onConfirm={confirmDeleteHostel}
             />
 
         </div>
