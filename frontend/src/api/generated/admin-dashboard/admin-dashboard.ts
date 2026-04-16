@@ -6,19 +6,42 @@
  * OpenAPI spec version: 1.0
  */
 import {
-  useMutation
+  useMutation,
+  useQuery
 } from '@tanstack/react-query';
 import type {
+  DataTag,
+  DefinedInitialDataOptions,
+  DefinedUseQueryResult,
   MutationFunction,
   QueryClient,
+  QueryFunction,
+  QueryKey,
+  UndefinedInitialDataOptions,
   UseMutationOptions,
-  UseMutationResult
+  UseMutationResult,
+  UseQueryOptions,
+  UseQueryResult
 } from '@tanstack/react-query';
 
 import type {
+  AdminControllerGetAllHostelsParams,
+  AdminControllerGetAllMaintenanceParams,
+  AdminControllerGetAllNotificationsParams,
+  AdminControllerGetAllOwnersParams,
+  AdminControllerGetAllReviewsParams,
+  AdminControllerGetAllStudentsParams,
+  AdminControllerGetPendingBookingsParams,
   AdminLoginDto,
+  AdminNotificationDto,
   AdminResponseDto,
-  ErrorResponseDto
+  CreateStudySpaceDto,
+  ErrorResponseDto,
+  MessageResponseDto,
+  RejectHostelDto,
+  ReplyReviewDto,
+  UpdateMaintenanceStatusDto,
+  UpdateStudySpaceDto
 } from '../../model';
 
 import { customInstance } from '../../axios-instance';
@@ -87,6 +110,1405 @@ export const useAdminControllerLogin = <TError = ErrorResponseDto,
       > => {
 
       const mutationOptions = getAdminControllerLoginMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Admin logout
+ */
+export const adminControllerLogout = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/admin/logout`, method: 'POST', signal
+    },
+      );
+    }
+  
+
+
+export const getAdminControllerLogoutMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerLogout>>, TError,void, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof adminControllerLogout>>, TError,void, TContext> => {
+
+const mutationKey = ['adminControllerLogout'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof adminControllerLogout>>, void> = () => {
+          
+
+          return  adminControllerLogout()
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AdminControllerLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof adminControllerLogout>>>
+    
+    export type AdminControllerLogoutMutationError = ErrorResponseDto
+
+    /**
+ * @summary Admin logout
+ */
+export const useAdminControllerLogout = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerLogout>>, TError,void, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof adminControllerLogout>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getAdminControllerLogoutMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Get all hostels (Admin)
+ */
+export const adminControllerGetAllHostels = (
+    params?: AdminControllerGetAllHostelsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/admin/hostels`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getAdminControllerGetAllHostelsQueryKey = (params?: AdminControllerGetAllHostelsParams,) => {
+    return [
+    `/api/v1/admin/hostels`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getAdminControllerGetAllHostelsQueryOptions = <TData = Awaited<ReturnType<typeof adminControllerGetAllHostels>>, TError = ErrorResponseDto>(params?: AdminControllerGetAllHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllHostels>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAdminControllerGetAllHostelsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminControllerGetAllHostels>>> = ({ signal }) => adminControllerGetAllHostels(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllHostels>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AdminControllerGetAllHostelsQueryResult = NonNullable<Awaited<ReturnType<typeof adminControllerGetAllHostels>>>
+export type AdminControllerGetAllHostelsQueryError = ErrorResponseDto
+
+
+export function useAdminControllerGetAllHostels<TData = Awaited<ReturnType<typeof adminControllerGetAllHostels>>, TError = ErrorResponseDto>(
+ params: undefined |  AdminControllerGetAllHostelsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllHostels>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminControllerGetAllHostels>>,
+          TError,
+          Awaited<ReturnType<typeof adminControllerGetAllHostels>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminControllerGetAllHostels<TData = Awaited<ReturnType<typeof adminControllerGetAllHostels>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllHostels>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminControllerGetAllHostels>>,
+          TError,
+          Awaited<ReturnType<typeof adminControllerGetAllHostels>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminControllerGetAllHostels<TData = Awaited<ReturnType<typeof adminControllerGetAllHostels>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllHostels>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get all hostels (Admin)
+ */
+
+export function useAdminControllerGetAllHostels<TData = Awaited<ReturnType<typeof adminControllerGetAllHostels>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllHostels>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAdminControllerGetAllHostelsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * @summary Approve a hostel
+ */
+export const adminControllerApproveHostel = (
+    hostelId: number,
+ ) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/admin/approve/${hostelId}`, method: 'PATCH'
+    },
+      );
+    }
+  
+
+
+export const getAdminControllerApproveHostelMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerApproveHostel>>, TError,{hostelId: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof adminControllerApproveHostel>>, TError,{hostelId: number}, TContext> => {
+
+const mutationKey = ['adminControllerApproveHostel'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof adminControllerApproveHostel>>, {hostelId: number}> = (props) => {
+          const {hostelId} = props ?? {};
+
+          return  adminControllerApproveHostel(hostelId,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AdminControllerApproveHostelMutationResult = NonNullable<Awaited<ReturnType<typeof adminControllerApproveHostel>>>
+    
+    export type AdminControllerApproveHostelMutationError = ErrorResponseDto
+
+    /**
+ * @summary Approve a hostel
+ */
+export const useAdminControllerApproveHostel = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerApproveHostel>>, TError,{hostelId: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof adminControllerApproveHostel>>,
+        TError,
+        {hostelId: number},
+        TContext
+      > => {
+
+      const mutationOptions = getAdminControllerApproveHostelMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Reject a hostel
+ */
+export const adminControllerRejectHostel = (
+    hostelId: number,
+    rejectHostelDto: RejectHostelDto,
+ ) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/admin/reject/${hostelId}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: rejectHostelDto
+    },
+      );
+    }
+  
+
+
+export const getAdminControllerRejectHostelMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerRejectHostel>>, TError,{hostelId: number;data: RejectHostelDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof adminControllerRejectHostel>>, TError,{hostelId: number;data: RejectHostelDto}, TContext> => {
+
+const mutationKey = ['adminControllerRejectHostel'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof adminControllerRejectHostel>>, {hostelId: number;data: RejectHostelDto}> = (props) => {
+          const {hostelId,data} = props ?? {};
+
+          return  adminControllerRejectHostel(hostelId,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AdminControllerRejectHostelMutationResult = NonNullable<Awaited<ReturnType<typeof adminControllerRejectHostel>>>
+    export type AdminControllerRejectHostelMutationBody = RejectHostelDto
+    export type AdminControllerRejectHostelMutationError = ErrorResponseDto
+
+    /**
+ * @summary Reject a hostel
+ */
+export const useAdminControllerRejectHostel = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerRejectHostel>>, TError,{hostelId: number;data: RejectHostelDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof adminControllerRejectHostel>>,
+        TError,
+        {hostelId: number;data: RejectHostelDto},
+        TContext
+      > => {
+
+      const mutationOptions = getAdminControllerRejectHostelMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Get all pending bookings (Admin)
+ */
+export const adminControllerGetPendingBookings = (
+    params?: AdminControllerGetPendingBookingsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/admin/bookings`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getAdminControllerGetPendingBookingsQueryKey = (params?: AdminControllerGetPendingBookingsParams,) => {
+    return [
+    `/api/v1/admin/bookings`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getAdminControllerGetPendingBookingsQueryOptions = <TData = Awaited<ReturnType<typeof adminControllerGetPendingBookings>>, TError = ErrorResponseDto>(params?: AdminControllerGetPendingBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetPendingBookings>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAdminControllerGetPendingBookingsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminControllerGetPendingBookings>>> = ({ signal }) => adminControllerGetPendingBookings(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetPendingBookings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AdminControllerGetPendingBookingsQueryResult = NonNullable<Awaited<ReturnType<typeof adminControllerGetPendingBookings>>>
+export type AdminControllerGetPendingBookingsQueryError = ErrorResponseDto
+
+
+export function useAdminControllerGetPendingBookings<TData = Awaited<ReturnType<typeof adminControllerGetPendingBookings>>, TError = ErrorResponseDto>(
+ params: undefined |  AdminControllerGetPendingBookingsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetPendingBookings>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminControllerGetPendingBookings>>,
+          TError,
+          Awaited<ReturnType<typeof adminControllerGetPendingBookings>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminControllerGetPendingBookings<TData = Awaited<ReturnType<typeof adminControllerGetPendingBookings>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetPendingBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetPendingBookings>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminControllerGetPendingBookings>>,
+          TError,
+          Awaited<ReturnType<typeof adminControllerGetPendingBookings>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminControllerGetPendingBookings<TData = Awaited<ReturnType<typeof adminControllerGetPendingBookings>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetPendingBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetPendingBookings>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get all pending bookings (Admin)
+ */
+
+export function useAdminControllerGetPendingBookings<TData = Awaited<ReturnType<typeof adminControllerGetPendingBookings>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetPendingBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetPendingBookings>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAdminControllerGetPendingBookingsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * @summary Approve a student booking
+ */
+export const adminControllerApproveBooking = (
+    bookingId: number,
+ ) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/admin/booking/approve/${bookingId}`, method: 'PATCH'
+    },
+      );
+    }
+  
+
+
+export const getAdminControllerApproveBookingMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerApproveBooking>>, TError,{bookingId: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof adminControllerApproveBooking>>, TError,{bookingId: number}, TContext> => {
+
+const mutationKey = ['adminControllerApproveBooking'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof adminControllerApproveBooking>>, {bookingId: number}> = (props) => {
+          const {bookingId} = props ?? {};
+
+          return  adminControllerApproveBooking(bookingId,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AdminControllerApproveBookingMutationResult = NonNullable<Awaited<ReturnType<typeof adminControllerApproveBooking>>>
+    
+    export type AdminControllerApproveBookingMutationError = ErrorResponseDto
+
+    /**
+ * @summary Approve a student booking
+ */
+export const useAdminControllerApproveBooking = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerApproveBooking>>, TError,{bookingId: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof adminControllerApproveBooking>>,
+        TError,
+        {bookingId: number},
+        TContext
+      > => {
+
+      const mutationOptions = getAdminControllerApproveBookingMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Reject a student booking
+ */
+export const adminControllerRejectBooking = (
+    bookingId: number,
+    rejectHostelDto: RejectHostelDto,
+ ) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/admin/booking/reject/${bookingId}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: rejectHostelDto
+    },
+      );
+    }
+  
+
+
+export const getAdminControllerRejectBookingMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerRejectBooking>>, TError,{bookingId: number;data: RejectHostelDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof adminControllerRejectBooking>>, TError,{bookingId: number;data: RejectHostelDto}, TContext> => {
+
+const mutationKey = ['adminControllerRejectBooking'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof adminControllerRejectBooking>>, {bookingId: number;data: RejectHostelDto}> = (props) => {
+          const {bookingId,data} = props ?? {};
+
+          return  adminControllerRejectBooking(bookingId,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AdminControllerRejectBookingMutationResult = NonNullable<Awaited<ReturnType<typeof adminControllerRejectBooking>>>
+    export type AdminControllerRejectBookingMutationBody = RejectHostelDto
+    export type AdminControllerRejectBookingMutationError = ErrorResponseDto
+
+    /**
+ * @summary Reject a student booking
+ */
+export const useAdminControllerRejectBooking = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerRejectBooking>>, TError,{bookingId: number;data: RejectHostelDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof adminControllerRejectBooking>>,
+        TError,
+        {bookingId: number;data: RejectHostelDto},
+        TContext
+      > => {
+
+      const mutationOptions = getAdminControllerRejectBookingMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Get all hostel owners
+ */
+export const adminControllerGetAllOwners = (
+    params?: AdminControllerGetAllOwnersParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/admin/owners`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getAdminControllerGetAllOwnersQueryKey = (params?: AdminControllerGetAllOwnersParams,) => {
+    return [
+    `/api/v1/admin/owners`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getAdminControllerGetAllOwnersQueryOptions = <TData = Awaited<ReturnType<typeof adminControllerGetAllOwners>>, TError = ErrorResponseDto>(params?: AdminControllerGetAllOwnersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllOwners>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAdminControllerGetAllOwnersQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminControllerGetAllOwners>>> = ({ signal }) => adminControllerGetAllOwners(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllOwners>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AdminControllerGetAllOwnersQueryResult = NonNullable<Awaited<ReturnType<typeof adminControllerGetAllOwners>>>
+export type AdminControllerGetAllOwnersQueryError = ErrorResponseDto
+
+
+export function useAdminControllerGetAllOwners<TData = Awaited<ReturnType<typeof adminControllerGetAllOwners>>, TError = ErrorResponseDto>(
+ params: undefined |  AdminControllerGetAllOwnersParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllOwners>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminControllerGetAllOwners>>,
+          TError,
+          Awaited<ReturnType<typeof adminControllerGetAllOwners>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminControllerGetAllOwners<TData = Awaited<ReturnType<typeof adminControllerGetAllOwners>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllOwnersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllOwners>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminControllerGetAllOwners>>,
+          TError,
+          Awaited<ReturnType<typeof adminControllerGetAllOwners>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminControllerGetAllOwners<TData = Awaited<ReturnType<typeof adminControllerGetAllOwners>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllOwnersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllOwners>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get all hostel owners
+ */
+
+export function useAdminControllerGetAllOwners<TData = Awaited<ReturnType<typeof adminControllerGetAllOwners>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllOwnersParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllOwners>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAdminControllerGetAllOwnersQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * @summary Get all students
+ */
+export const adminControllerGetAllStudents = (
+    params?: AdminControllerGetAllStudentsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/admin/students`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getAdminControllerGetAllStudentsQueryKey = (params?: AdminControllerGetAllStudentsParams,) => {
+    return [
+    `/api/v1/admin/students`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getAdminControllerGetAllStudentsQueryOptions = <TData = Awaited<ReturnType<typeof adminControllerGetAllStudents>>, TError = ErrorResponseDto>(params?: AdminControllerGetAllStudentsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllStudents>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAdminControllerGetAllStudentsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminControllerGetAllStudents>>> = ({ signal }) => adminControllerGetAllStudents(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllStudents>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AdminControllerGetAllStudentsQueryResult = NonNullable<Awaited<ReturnType<typeof adminControllerGetAllStudents>>>
+export type AdminControllerGetAllStudentsQueryError = ErrorResponseDto
+
+
+export function useAdminControllerGetAllStudents<TData = Awaited<ReturnType<typeof adminControllerGetAllStudents>>, TError = ErrorResponseDto>(
+ params: undefined |  AdminControllerGetAllStudentsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllStudents>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminControllerGetAllStudents>>,
+          TError,
+          Awaited<ReturnType<typeof adminControllerGetAllStudents>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminControllerGetAllStudents<TData = Awaited<ReturnType<typeof adminControllerGetAllStudents>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllStudentsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllStudents>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminControllerGetAllStudents>>,
+          TError,
+          Awaited<ReturnType<typeof adminControllerGetAllStudents>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminControllerGetAllStudents<TData = Awaited<ReturnType<typeof adminControllerGetAllStudents>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllStudentsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllStudents>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get all students
+ */
+
+export function useAdminControllerGetAllStudents<TData = Awaited<ReturnType<typeof adminControllerGetAllStudents>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllStudentsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllStudents>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAdminControllerGetAllStudentsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * @summary Create global or hostel-specific notification
+ */
+export const adminControllerCreateNotification = (
+    adminNotificationDto: AdminNotificationDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/admin/notifications`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: adminNotificationDto, signal
+    },
+      );
+    }
+  
+
+
+export const getAdminControllerCreateNotificationMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerCreateNotification>>, TError,{data: AdminNotificationDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof adminControllerCreateNotification>>, TError,{data: AdminNotificationDto}, TContext> => {
+
+const mutationKey = ['adminControllerCreateNotification'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof adminControllerCreateNotification>>, {data: AdminNotificationDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  adminControllerCreateNotification(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AdminControllerCreateNotificationMutationResult = NonNullable<Awaited<ReturnType<typeof adminControllerCreateNotification>>>
+    export type AdminControllerCreateNotificationMutationBody = AdminNotificationDto
+    export type AdminControllerCreateNotificationMutationError = ErrorResponseDto
+
+    /**
+ * @summary Create global or hostel-specific notification
+ */
+export const useAdminControllerCreateNotification = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerCreateNotification>>, TError,{data: AdminNotificationDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof adminControllerCreateNotification>>,
+        TError,
+        {data: AdminNotificationDto},
+        TContext
+      > => {
+
+      const mutationOptions = getAdminControllerCreateNotificationMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Get all notifications
+ */
+export const adminControllerGetAllNotifications = (
+    params?: AdminControllerGetAllNotificationsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/admin/notifications`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getAdminControllerGetAllNotificationsQueryKey = (params?: AdminControllerGetAllNotificationsParams,) => {
+    return [
+    `/api/v1/admin/notifications`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getAdminControllerGetAllNotificationsQueryOptions = <TData = Awaited<ReturnType<typeof adminControllerGetAllNotifications>>, TError = ErrorResponseDto>(params?: AdminControllerGetAllNotificationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllNotifications>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAdminControllerGetAllNotificationsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminControllerGetAllNotifications>>> = ({ signal }) => adminControllerGetAllNotifications(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllNotifications>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AdminControllerGetAllNotificationsQueryResult = NonNullable<Awaited<ReturnType<typeof adminControllerGetAllNotifications>>>
+export type AdminControllerGetAllNotificationsQueryError = ErrorResponseDto
+
+
+export function useAdminControllerGetAllNotifications<TData = Awaited<ReturnType<typeof adminControllerGetAllNotifications>>, TError = ErrorResponseDto>(
+ params: undefined |  AdminControllerGetAllNotificationsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllNotifications>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminControllerGetAllNotifications>>,
+          TError,
+          Awaited<ReturnType<typeof adminControllerGetAllNotifications>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminControllerGetAllNotifications<TData = Awaited<ReturnType<typeof adminControllerGetAllNotifications>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllNotificationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllNotifications>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminControllerGetAllNotifications>>,
+          TError,
+          Awaited<ReturnType<typeof adminControllerGetAllNotifications>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminControllerGetAllNotifications<TData = Awaited<ReturnType<typeof adminControllerGetAllNotifications>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllNotificationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllNotifications>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get all notifications
+ */
+
+export function useAdminControllerGetAllNotifications<TData = Awaited<ReturnType<typeof adminControllerGetAllNotifications>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllNotificationsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllNotifications>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAdminControllerGetAllNotificationsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * @summary Delete any notification
+ */
+export const adminControllerDeleteNotification = (
+    notificationId: number,
+ ) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/admin/notifications/${notificationId}`, method: 'DELETE'
+    },
+      );
+    }
+  
+
+
+export const getAdminControllerDeleteNotificationMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerDeleteNotification>>, TError,{notificationId: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof adminControllerDeleteNotification>>, TError,{notificationId: number}, TContext> => {
+
+const mutationKey = ['adminControllerDeleteNotification'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof adminControllerDeleteNotification>>, {notificationId: number}> = (props) => {
+          const {notificationId} = props ?? {};
+
+          return  adminControllerDeleteNotification(notificationId,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AdminControllerDeleteNotificationMutationResult = NonNullable<Awaited<ReturnType<typeof adminControllerDeleteNotification>>>
+    
+    export type AdminControllerDeleteNotificationMutationError = ErrorResponseDto
+
+    /**
+ * @summary Delete any notification
+ */
+export const useAdminControllerDeleteNotification = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerDeleteNotification>>, TError,{notificationId: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof adminControllerDeleteNotification>>,
+        TError,
+        {notificationId: number},
+        TContext
+      > => {
+
+      const mutationOptions = getAdminControllerDeleteNotificationMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Superadmin views all maintenance requests
+ */
+export const adminControllerGetAllMaintenance = (
+    params?: AdminControllerGetAllMaintenanceParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/admin/maintenance`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getAdminControllerGetAllMaintenanceQueryKey = (params?: AdminControllerGetAllMaintenanceParams,) => {
+    return [
+    `/api/v1/admin/maintenance`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getAdminControllerGetAllMaintenanceQueryOptions = <TData = Awaited<ReturnType<typeof adminControllerGetAllMaintenance>>, TError = ErrorResponseDto>(params?: AdminControllerGetAllMaintenanceParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllMaintenance>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAdminControllerGetAllMaintenanceQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminControllerGetAllMaintenance>>> = ({ signal }) => adminControllerGetAllMaintenance(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllMaintenance>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AdminControllerGetAllMaintenanceQueryResult = NonNullable<Awaited<ReturnType<typeof adminControllerGetAllMaintenance>>>
+export type AdminControllerGetAllMaintenanceQueryError = ErrorResponseDto
+
+
+export function useAdminControllerGetAllMaintenance<TData = Awaited<ReturnType<typeof adminControllerGetAllMaintenance>>, TError = ErrorResponseDto>(
+ params: undefined |  AdminControllerGetAllMaintenanceParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllMaintenance>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminControllerGetAllMaintenance>>,
+          TError,
+          Awaited<ReturnType<typeof adminControllerGetAllMaintenance>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminControllerGetAllMaintenance<TData = Awaited<ReturnType<typeof adminControllerGetAllMaintenance>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllMaintenanceParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllMaintenance>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminControllerGetAllMaintenance>>,
+          TError,
+          Awaited<ReturnType<typeof adminControllerGetAllMaintenance>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminControllerGetAllMaintenance<TData = Awaited<ReturnType<typeof adminControllerGetAllMaintenance>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllMaintenanceParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllMaintenance>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Superadmin views all maintenance requests
+ */
+
+export function useAdminControllerGetAllMaintenance<TData = Awaited<ReturnType<typeof adminControllerGetAllMaintenance>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllMaintenanceParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllMaintenance>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAdminControllerGetAllMaintenanceQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * @summary Superadmin to updates any maintenance request status
+ */
+export const adminControllerUpdateMaintenanceStatus = (
+    id: number,
+    updateMaintenanceStatusDto: UpdateMaintenanceStatusDto,
+ ) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/admin/maintenance/${id}/status`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateMaintenanceStatusDto
+    },
+      );
+    }
+  
+
+
+export const getAdminControllerUpdateMaintenanceStatusMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerUpdateMaintenanceStatus>>, TError,{id: number;data: UpdateMaintenanceStatusDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof adminControllerUpdateMaintenanceStatus>>, TError,{id: number;data: UpdateMaintenanceStatusDto}, TContext> => {
+
+const mutationKey = ['adminControllerUpdateMaintenanceStatus'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof adminControllerUpdateMaintenanceStatus>>, {id: number;data: UpdateMaintenanceStatusDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  adminControllerUpdateMaintenanceStatus(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AdminControllerUpdateMaintenanceStatusMutationResult = NonNullable<Awaited<ReturnType<typeof adminControllerUpdateMaintenanceStatus>>>
+    export type AdminControllerUpdateMaintenanceStatusMutationBody = UpdateMaintenanceStatusDto
+    export type AdminControllerUpdateMaintenanceStatusMutationError = ErrorResponseDto
+
+    /**
+ * @summary Superadmin to updates any maintenance request status
+ */
+export const useAdminControllerUpdateMaintenanceStatus = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerUpdateMaintenanceStatus>>, TError,{id: number;data: UpdateMaintenanceStatusDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof adminControllerUpdateMaintenanceStatus>>,
+        TError,
+        {id: number;data: UpdateMaintenanceStatusDto},
+        TContext
+      > => {
+
+      const mutationOptions = getAdminControllerUpdateMaintenanceStatusMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Superadmin views all reviews
+ */
+export const adminControllerGetAllReviews = (
+    params?: AdminControllerGetAllReviewsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<void>(
+      {url: `/api/v1/admin/reviews`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getAdminControllerGetAllReviewsQueryKey = (params?: AdminControllerGetAllReviewsParams,) => {
+    return [
+    `/api/v1/admin/reviews`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getAdminControllerGetAllReviewsQueryOptions = <TData = Awaited<ReturnType<typeof adminControllerGetAllReviews>>, TError = ErrorResponseDto>(params?: AdminControllerGetAllReviewsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllReviews>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAdminControllerGetAllReviewsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminControllerGetAllReviews>>> = ({ signal }) => adminControllerGetAllReviews(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllReviews>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AdminControllerGetAllReviewsQueryResult = NonNullable<Awaited<ReturnType<typeof adminControllerGetAllReviews>>>
+export type AdminControllerGetAllReviewsQueryError = ErrorResponseDto
+
+
+export function useAdminControllerGetAllReviews<TData = Awaited<ReturnType<typeof adminControllerGetAllReviews>>, TError = ErrorResponseDto>(
+ params: undefined |  AdminControllerGetAllReviewsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllReviews>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminControllerGetAllReviews>>,
+          TError,
+          Awaited<ReturnType<typeof adminControllerGetAllReviews>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminControllerGetAllReviews<TData = Awaited<ReturnType<typeof adminControllerGetAllReviews>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllReviewsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllReviews>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminControllerGetAllReviews>>,
+          TError,
+          Awaited<ReturnType<typeof adminControllerGetAllReviews>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminControllerGetAllReviews<TData = Awaited<ReturnType<typeof adminControllerGetAllReviews>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllReviewsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllReviews>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Superadmin views all reviews
+ */
+
+export function useAdminControllerGetAllReviews<TData = Awaited<ReturnType<typeof adminControllerGetAllReviews>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllReviewsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllReviews>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAdminControllerGetAllReviewsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
+ * @summary Admin replies to a review
+ */
+export const adminControllerAdminReplyToReview = (
+    reviewId: number,
+    replyReviewDto: ReplyReviewDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/admin/reviews/${reviewId}/reply`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: replyReviewDto, signal
+    },
+      );
+    }
+  
+
+
+export const getAdminControllerAdminReplyToReviewMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerAdminReplyToReview>>, TError,{reviewId: number;data: ReplyReviewDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof adminControllerAdminReplyToReview>>, TError,{reviewId: number;data: ReplyReviewDto}, TContext> => {
+
+const mutationKey = ['adminControllerAdminReplyToReview'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof adminControllerAdminReplyToReview>>, {reviewId: number;data: ReplyReviewDto}> = (props) => {
+          const {reviewId,data} = props ?? {};
+
+          return  adminControllerAdminReplyToReview(reviewId,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AdminControllerAdminReplyToReviewMutationResult = NonNullable<Awaited<ReturnType<typeof adminControllerAdminReplyToReview>>>
+    export type AdminControllerAdminReplyToReviewMutationBody = ReplyReviewDto
+    export type AdminControllerAdminReplyToReviewMutationError = ErrorResponseDto
+
+    /**
+ * @summary Admin replies to a review
+ */
+export const useAdminControllerAdminReplyToReview = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerAdminReplyToReview>>, TError,{reviewId: number;data: ReplyReviewDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof adminControllerAdminReplyToReview>>,
+        TError,
+        {reviewId: number;data: ReplyReviewDto},
+        TContext
+      > => {
+
+      const mutationOptions = getAdminControllerAdminReplyToReviewMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Create a new study space
+ */
+export const adminControllerCreateStudySpace = (
+    createStudySpaceDto: CreateStudySpaceDto,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/admin/study-spaces`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: createStudySpaceDto, signal
+    },
+      );
+    }
+  
+
+
+export const getAdminControllerCreateStudySpaceMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerCreateStudySpace>>, TError,{data: CreateStudySpaceDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof adminControllerCreateStudySpace>>, TError,{data: CreateStudySpaceDto}, TContext> => {
+
+const mutationKey = ['adminControllerCreateStudySpace'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof adminControllerCreateStudySpace>>, {data: CreateStudySpaceDto}> = (props) => {
+          const {data} = props ?? {};
+
+          return  adminControllerCreateStudySpace(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AdminControllerCreateStudySpaceMutationResult = NonNullable<Awaited<ReturnType<typeof adminControllerCreateStudySpace>>>
+    export type AdminControllerCreateStudySpaceMutationBody = CreateStudySpaceDto
+    export type AdminControllerCreateStudySpaceMutationError = ErrorResponseDto
+
+    /**
+ * @summary Create a new study space
+ */
+export const useAdminControllerCreateStudySpace = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerCreateStudySpace>>, TError,{data: CreateStudySpaceDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof adminControllerCreateStudySpace>>,
+        TError,
+        {data: CreateStudySpaceDto},
+        TContext
+      > => {
+
+      const mutationOptions = getAdminControllerCreateStudySpaceMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Update a study space
+ */
+export const adminControllerUpdateStudySpace = (
+    id: number,
+    updateStudySpaceDto: UpdateStudySpaceDto,
+ ) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/admin/study-spaces/${id}`, method: 'PATCH',
+      headers: {'Content-Type': 'application/json', },
+      data: updateStudySpaceDto
+    },
+      );
+    }
+  
+
+
+export const getAdminControllerUpdateStudySpaceMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerUpdateStudySpace>>, TError,{id: number;data: UpdateStudySpaceDto}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof adminControllerUpdateStudySpace>>, TError,{id: number;data: UpdateStudySpaceDto}, TContext> => {
+
+const mutationKey = ['adminControllerUpdateStudySpace'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof adminControllerUpdateStudySpace>>, {id: number;data: UpdateStudySpaceDto}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  adminControllerUpdateStudySpace(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AdminControllerUpdateStudySpaceMutationResult = NonNullable<Awaited<ReturnType<typeof adminControllerUpdateStudySpace>>>
+    export type AdminControllerUpdateStudySpaceMutationBody = UpdateStudySpaceDto
+    export type AdminControllerUpdateStudySpaceMutationError = ErrorResponseDto
+
+    /**
+ * @summary Update a study space
+ */
+export const useAdminControllerUpdateStudySpace = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerUpdateStudySpace>>, TError,{id: number;data: UpdateStudySpaceDto}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof adminControllerUpdateStudySpace>>,
+        TError,
+        {id: number;data: UpdateStudySpaceDto},
+        TContext
+      > => {
+
+      const mutationOptions = getAdminControllerUpdateStudySpaceMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
+ * @summary Delete a study space
+ */
+export const adminControllerDeleteStudySpace = (
+    id: number,
+ ) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/admin/study-spaces/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  
+
+
+export const getAdminControllerDeleteStudySpaceMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerDeleteStudySpace>>, TError,{id: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof adminControllerDeleteStudySpace>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['adminControllerDeleteStudySpace'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof adminControllerDeleteStudySpace>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  adminControllerDeleteStudySpace(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AdminControllerDeleteStudySpaceMutationResult = NonNullable<Awaited<ReturnType<typeof adminControllerDeleteStudySpace>>>
+    
+    export type AdminControllerDeleteStudySpaceMutationError = ErrorResponseDto
+
+    /**
+ * @summary Delete a study space
+ */
+export const useAdminControllerDeleteStudySpace = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminControllerDeleteStudySpace>>, TError,{id: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof adminControllerDeleteStudySpace>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+
+      const mutationOptions = getAdminControllerDeleteStudySpaceMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

@@ -491,6 +491,68 @@ export const useAuthControllerGoogleLogin = <TError = ErrorResponseDto,
       return useMutation(mutationOptions, queryClient);
     }
     /**
+ * @summary User logout
+ */
+export const authControllerLogout = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/auth/logout`, method: 'POST', signal
+    },
+      );
+    }
+  
+
+
+export const getAuthControllerLogoutMutationOptions = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogout>>, TError,void, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof authControllerLogout>>, TError,void, TContext> => {
+
+const mutationKey = ['authControllerLogout'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authControllerLogout>>, void> = () => {
+          
+
+          return  authControllerLogout()
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthControllerLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof authControllerLogout>>>
+    
+    export type AuthControllerLogoutMutationError = ErrorResponseDto
+
+    /**
+ * @summary User logout
+ */
+export const useAuthControllerLogout = <TError = ErrorResponseDto,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authControllerLogout>>, TError,void, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof authControllerLogout>>,
+        TError,
+        void,
+        TContext
+      > => {
+
+      const mutationOptions = getAuthControllerLogoutMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
  * @summary Get profile (Protected Route Test)
  */
 export const authControllerGetProfile = (

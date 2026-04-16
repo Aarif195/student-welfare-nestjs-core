@@ -7,6 +7,15 @@ export const AXIOS_INSTANCE = axios.create({
   },
 });
 
+// Interceptor logic
+AXIOS_INSTANCE.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export const customInstance = <T>(config: any): Promise<T> => {
   return AXIOS_INSTANCE(config).then((response) => response.data);
 };

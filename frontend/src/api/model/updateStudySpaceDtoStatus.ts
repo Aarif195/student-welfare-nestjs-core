@@ -6,11 +6,12 @@
  * OpenAPI spec version: 1.0
  */
 
-export type CreateRoomResourceDtoFileType = typeof CreateRoomResourceDtoFileType[keyof typeof CreateRoomResourceDtoFileType];
+export type UpdateStudySpaceDtoStatus = typeof UpdateStudySpaceDtoStatus[keyof typeof UpdateStudySpaceDtoStatus];
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export const CreateRoomResourceDtoFileType = {
-  IMAGE: 'IMAGE',
-  VIDEO: 'VIDEO',
+export const UpdateStudySpaceDtoStatus = {
+  open: 'open',
+  closed: 'closed',
+  full: 'full',
 } as const;
