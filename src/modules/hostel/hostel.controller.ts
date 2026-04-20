@@ -257,7 +257,7 @@ export class HostelController {
     }
 
     // getHostelMaintenance
-    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     @Get('maintenance/:hostelId')
     @Roles(Role.hostelOwner)
     @ApiOperation({ summary: 'Owner views maintenance requests for a specific hostel' })

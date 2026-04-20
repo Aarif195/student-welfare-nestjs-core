@@ -19,7 +19,6 @@ export const generateToken = (jwtService: JwtService, id: number): string => {
 export const verifyPayment = async (reference: string, stripe: Stripe): Promise<boolean> => {
   try {
     const paymentIntent = await stripe.paymentIntents.retrieve(reference);
-    console.log('Stripe Status:', paymentIntent.status);
     return paymentIntent.status === 'succeeded' || paymentIntent.status === 'requires_payment_method';
   } catch (error) {
     return false;

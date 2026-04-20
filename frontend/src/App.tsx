@@ -17,6 +17,7 @@ import { EditHostelPage } from './pages/dashboard/HostelOwnerDashboard/EditHoste
 import { EditRoomPage } from './pages/dashboard/HostelOwnerDashboard/EditRoomPage';
 import { OwnerBookingsPage } from './pages/dashboard/HostelOwnerDashboard/OwnerBookingsPage';
 import { NotificationsPage } from './pages/dashboard/HostelOwnerDashboard/NotificationsPage';
+import { MaintenancePage } from './pages/dashboard/HostelOwnerDashboard/MaintenancePage';
 
 function App() {
   return (
@@ -53,7 +54,7 @@ function App() {
 
             <Route path="bookings" element={<OwnerBookingsPage />} />
             <Route path="notifications" element={<NotificationsPage />} />
-            {/* <Route path="maintenance" element={<MaintenancePage />} /> */}
+            <Route path="maintenance" element={<MaintenancePage />} />
             {/* <Route path="reviews" element={<ReviewsPage />} /> */}
           </Route>
         </Route>
