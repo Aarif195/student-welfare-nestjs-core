@@ -21,6 +21,7 @@ function App() {
     <>
       <Toaster position="top-right" reverseOrder={false} />
       <Routes>
+        {/* Onboarding Routes */}
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify-otp" element={<VerifyOtpPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -28,10 +29,12 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<Navigate to="/register" replace />} />
 
+{/* Student Routes */}
         <Route element={<ProtectedRoute allowedRoles={['student']} />}>
           <Route path="/dashboard/student" element={<StudentDashboard />} />
         </Route>
 
+{/* HostelOwner Routes */}
         <Route element={<ProtectedRoute allowedRoles={['hostelOwner']} />}>
           <Route path="/dashboard/owner" element={<HostelOwnerDashboard />}>
 

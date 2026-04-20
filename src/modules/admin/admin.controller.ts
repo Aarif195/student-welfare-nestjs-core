@@ -20,7 +20,7 @@ import { ReplyReviewDto } from '../hostel/dto/reply-review.dto';
 import { CreateStudySpaceDto } from './dto/create-study-space.dto';
 import { UpdateStudySpaceDto } from './dto/update-study-space.dto';
 
-@ApiTags('Admin Dashboard')
+@ApiTags('Superadmin Dashboard')
 @Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) { }

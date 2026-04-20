@@ -53,7 +53,7 @@ export const EditRoomPage = () => {
 
     return (
         <div className="max-w-2xl mx-auto space-y-6">
-            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-primary-500">
+            <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-primary-500 cursor-pointer">
                 <ArrowLeft size={20} /> Back
             </button>
 
@@ -98,7 +98,7 @@ export const EditRoomPage = () => {
                     <button
                         type="submit"
                         disabled={updateMutation.isPending}
-                        className="w-full bg-brand text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2"
+                        className="w-full bg-brand text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2 cursor-pointer"
                     >
                         <Save size={20} />
                         {updateMutation.isPending ? 'Saving...' : 'Update Room'}
