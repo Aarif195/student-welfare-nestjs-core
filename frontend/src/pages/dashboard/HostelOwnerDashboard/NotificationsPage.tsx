@@ -3,9 +3,11 @@ import { useForm } from 'react-hook-form';
 import { Bell, Send, Trash2, Info, Building2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useHostelControllerCreateNotification, useHostelControllerDeleteNotification, useHostelControllerGetHostelNotifications, useHostelControllerGetMyHostels } from '../../../api/generated/hostels/hostels';
+import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 
 export const NotificationsPage = () => {
     const [selectedHostelId, setSelectedHostelId] = useState<number | null>(null);
+    const [deleteNotificationId, setDeleteNotificationId] = useState<number | null>(null);
 
     // Fetch hostels to populate the selector
     const { data: hostels } = useHostelControllerGetMyHostels();
@@ -44,17 +46,23 @@ export const NotificationsPage = () => {
         });
     };
 
-    const onDelete = (id: number) => {
-        if (window.confirm("Delete this notification?")) {
-            deleteMutation.mutate({ notificationId: id }, {
-                onSuccess: () => {
-                    toast.success("Deleted");
-                    refetch();
-                }
-            });
-        }
-    };
+ 
+    const confirmDeleteNotification = () => {
+    if (!deleteNotificationId) return;
 
+    deleteMutation.mutate(
+        { notificationId: deleteNotificationId },
+        {
+            onSuccess: () => {
+                toast.success("Deleted");
+                refetch();
+            },
+            onSettled: () => {
+                setDeleteNotificationId(null);
+            }
+        }
+    );
+};
 
     return (
         <div className="max-w-6xl mx-auto p-4 sm:p-6 space-y-8">
@@ -115,9 +123,7 @@ export const NotificationsPage = () => {
                         <div className="space-y-3">
 
                             {
-
                                 notificationsList.map((n: any) => (
-
 
                                     <div key={n.id} className="bg-white p-4 rounded-xl border border-primary-100 flex justify-between items-start gap-4 hover:shadow-md transition-shadow">
                                         <div className="space-y-1">
@@ -128,20 +134,34 @@ export const NotificationsPage = () => {
                                             </p>
                                         </div>
                                         <button
-                                            onClick={() => onDelete(n.id)}
+                                            onClick={() => setDeleteNotificationId(n.id)}
                                             className="p-2 text-primary-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                                         >
                                             <Trash2 size={16} />
                                         </button>
                                     </div>
                                 ))}
-                            {notificationsList.length === 0 && (
-                                <p className="text-center text-primary-400 py-10">No notifications sent to this hostel yet.</p>
-                            )}
+                            {
+                                notificationsList.length === 0 &&
+                                (
+                                    <p className="text-center text-primary-400 py-10">No notifications sent to this hostel yet.</p>
+                                )}
                         </div>
                     )}
                 </div>
+
+
             </div>
+
+<ConfirmModal
+    open={deleteNotificationId !== null}
+    title="Delete Notification"
+    message="This action cannot be undone. Do you want to continue?"
+    confirmText="Delete"
+    onClose={() => setDeleteNotificationId(null)}
+    onConfirm={confirmDeleteNotification}
+/>
+
         </div>
     );
 };
