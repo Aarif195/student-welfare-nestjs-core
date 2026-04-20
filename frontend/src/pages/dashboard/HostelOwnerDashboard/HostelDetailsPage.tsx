@@ -248,8 +248,8 @@ export const HostelDetailsPage = () => {
                     <div className="bg-white border border-primary-200 rounded-xl p-5 space-y-4">
                         <div className="flex justify-between items-center">
                             <span className="text-primary-500 text-sm">Approval Status</span>
-                            <span className={`px-2 py-1 rounded text-xs font-bold ${hostelData?.isApproved ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                                {hostelData?.isApproved ? 'Approved' : 'Pending Review'}
+                            <span className={`px-2 py-1 rounded text-xs font-bold ${hostelData?.status === 'APPROVED' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                {hostelData?.status === 'APPROVED' ? 'Approved' : 'Pending Review'}
                             </span>
                         </div>
                         <div className="pt-4 border-t border-primary-100">
