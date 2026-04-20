@@ -6,7 +6,8 @@ import {
   BedDouble, 
   ClipboardList, 
   Bell, 
-  LogOut 
+  LogOut, 
+  CalendarCheck
 } from 'lucide-react';
 
 export const HostelOwnerDashboard = () => {
@@ -17,6 +18,7 @@ export const HostelOwnerDashboard = () => {
     const navItems = [
         { name: 'Overview', path: '/dashboard/owner', icon: <LayoutDashboard size={20} /> },
         { name: 'My Hostels', path: '/dashboard/owner/hostels', icon: <Building2 size={20} /> },
+        { name: 'Bookings', path: '/dashboard/owner/bookings', icon: <CalendarCheck size={20} /> },
         { name: 'Maintenance', path: '/dashboard/owner/maintenance', icon: <ClipboardList size={20} /> },
         { name: 'Notifications', path: '/dashboard/owner/notifications', icon: <Bell size={20} /> },
     ];
