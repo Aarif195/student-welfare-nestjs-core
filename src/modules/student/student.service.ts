@@ -40,10 +40,30 @@ export class StudentService {
       throw new BadRequestException('Invalid payment reference format');
     }
 
+    //  Checking if the payment reference has already been used in database
+    const existingPayment = await this.prisma.payment.findUnique({
+      where: { reference: data.reference },
+    });
+
+    if (existingPayment) {
+      throw new BadRequestException('Payment reference already exists.');
+    }
+
+    //  Verify payment
     const isValid = await verifyPayment(data.reference, this.stripe);
 
     if (!isValid) {
       throw new BadRequestException('Payment verification failed');
+    }
+
+
+    //  Checking if the student already has a booking
+    const existingBooking = await this.prisma.booking.findFirst({
+      where: { student_id: studentId },
+    });
+
+    if (existingBooking) {
+      throw new BadRequestException('Student already has a booking');
     }
 
     //  Create Booking & Payment in Transaction
@@ -338,80 +358,80 @@ export class StudentService {
     return request;
   }
 
-// createReview
-async createReview(studentId: number, dto: CreateReviewDto) {
-  //   Check for an approved booking for this specific hostel
-  const hasStayed = await this.prisma.booking.findFirst({
-    where: {
-      student_id: studentId,
-      room: { hostel_id: dto.hostel_id },
-      booking_status: 'approved',
-    },
-  });
+  // createReview
+  async createReview(studentId: number, dto: CreateReviewDto) {
+    //   Check for an approved booking for this specific hostel
+    const hasStayed = await this.prisma.booking.findFirst({
+      where: {
+        student_id: studentId,
+        room: { hostel_id: dto.hostel_id },
+        booking_status: 'approved',
+      },
+    });
 
-  if (!hasStayed) {
-    throw new ForbiddenException('You can only review hostels where you have an approved booking.');
-  }
+    if (!hasStayed) {
+      throw new ForbiddenException('You can only review hostels where you have an approved booking.');
+    }
 
-  //  Check if review already exists
-  const existingReview = await this.prisma.review.findUnique({
-    where: {
-      student_id_hostel_id: {
+    //  Check if review already exists
+    const existingReview = await this.prisma.review.findUnique({
+      where: {
+        student_id_hostel_id: {
+          student_id: studentId,
+          hostel_id: dto.hostel_id,
+        },
+      },
+    });
+
+    if (existingReview) {
+      throw new ConflictException('You have already reviewed this hostel.');
+    }
+
+    // Create Review
+    return this.prisma.review.create({
+      data: {
         student_id: studentId,
         hostel_id: dto.hostel_id,
+        rating: dto.rating,
+        comment: dto.comment,
       },
-    },
-  });
-
-  if (existingReview) {
-    throw new ConflictException('You have already reviewed this hostel.');
+    });
   }
 
-  // Create Review
-  return this.prisma.review.create({
-    data: {
-      student_id: studentId,
-      hostel_id: dto.hostel_id,
-      rating: dto.rating,
-      comment: dto.comment,
-    },
-  });
-}
+  // getMyReviews
+  async getMyReviews(studentId: number, page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    const [reviews, total] = await Promise.all([
+      this.prisma.review.findMany({
+        where: { student_id: studentId },
+        skip,
+        take: limit,
+        include: { hostel: { select: { name: true } } },
+        orderBy: { created_at: 'desc' },
+      }),
+      this.prisma.review.count({ where: { student_id: studentId } }),
+    ]);
+    return { reviews, total };
+  }
 
-// getMyReviews
-async getMyReviews(studentId: number, page: number, limit: number) {
-  const skip = (page - 1) * limit;
-  const [reviews, total] = await Promise.all([
-    this.prisma.review.findMany({
-      where: { student_id: studentId },
-      skip,
-      take: limit,
-      include: { hostel: { select: { name: true } } },
-      orderBy: { created_at: 'desc' },
-    }),
-    this.prisma.review.count({ where: { student_id: studentId } }),
-  ]);
-  return { reviews, total };
-}
+  // getAllStudySpaces
+  async getAllStudySpaces(page: number, limit: number, status?: StudySpaceStatus) {
+    const skip = (page - 1) * limit;
 
-// getAllStudySpaces
-async getAllStudySpaces(page: number, limit: number, status?: StudySpaceStatus) {
-  const skip = (page - 1) * limit;
-  
-  // Optional filter for 'open' spaces
-  const filter = status ? { status } : {};
+    // Optional filter for 'open' spaces
+    const filter = status ? { status } : {};
 
-  const [spaces, total] = await Promise.all([
-    this.prisma.studySpace.findMany({
-      where: filter,
-      skip,
-      take: limit,
-      orderBy: { name: 'asc' },
-    }),
-    this.prisma.studySpace.count({ where: filter }),
-  ]);
+    const [spaces, total] = await Promise.all([
+      this.prisma.studySpace.findMany({
+        where: filter,
+        skip,
+        take: limit,
+        orderBy: { name: 'asc' },
+      }),
+      this.prisma.studySpace.count({ where: filter }),
+    ]);
 
-  return { total, spaces };
-}
+    return { total, spaces };
+  }
 
 }
