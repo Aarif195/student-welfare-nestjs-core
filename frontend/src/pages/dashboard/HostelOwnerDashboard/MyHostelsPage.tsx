@@ -77,7 +77,7 @@ export const MyHostelsPage = () => {
                                     <div className="pt-3 border-t border-primary-100 flex justify-between items-center text-primary-600 text-sm">
                                         <div className="flex items-center gap-1">
                                             <Bed size={16} />
-                                            <span>{hostel._count?.rooms || 0} Rooms</span>
+                                            <span>{hostel._count.rooms || 0} Rooms</span>
                                         </div>
                                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${hostel.status === 'APPROVED' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
                                             }`}>

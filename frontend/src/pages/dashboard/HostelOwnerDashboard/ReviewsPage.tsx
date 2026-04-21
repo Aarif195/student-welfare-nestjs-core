@@ -24,7 +24,7 @@ export const ReviewsPage = () => {
     const reviewsList: any[] =
         (reviews as any)?.data?.reviews || [];
 
-// replyMutation function
+    // replyMutation function
     const replyMutation = useHostelControllerReplyToReview();
     const { register, handleSubmit, reset } = useForm();
 

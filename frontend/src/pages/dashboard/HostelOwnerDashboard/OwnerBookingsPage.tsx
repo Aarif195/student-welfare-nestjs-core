@@ -73,7 +73,7 @@ export const OwnerBookingsPage = () => {
                                     <td className="px-6 py-4">
                                         <p className="text-xs text-primary-500 flex items-center gap-1">
                                             <Clock size={14} />
-                                            {new Date(booking.createdAt).toLocaleDateString()}
+                                            {new Date(booking.created_at).toLocaleDateString()}
                                         </p>
                                     </td>
                                 </tr>
