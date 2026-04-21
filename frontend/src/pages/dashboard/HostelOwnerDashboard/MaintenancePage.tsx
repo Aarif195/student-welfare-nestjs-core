@@ -4,7 +4,7 @@ import {
     useHostelControllerGetHostelMaintenance,
     useHostelControllerUpdateMaintenanceStatus
 } from '../../../api/generated/hostels/hostels';
-import { ClipboardList, CheckCircle, Clock, XCircle, Building2 } from 'lucide-react';
+import { ClipboardList, CheckCircle, Clock, XCircle, Building2, ImageIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const MaintenancePage = () => {
@@ -18,10 +18,13 @@ export const MaintenancePage = () => {
 
     const { data: hostels } = useHostelControllerGetMyHostels();
     const hostelList: any = hostels?.data?.data || [];
-    const maintenanceList = Array.isArray(maintenanceRequests?.data?.data)
-    ? maintenanceRequests.data.data
-    : [];
+    const maintenanceList: any[] =
+        (maintenanceRequests as any)?.data?.MaintenanceRequests || [];
 
+
+
+
+    // console.log(maintenanceList)
 
     const updateStatusMutation = useHostelControllerUpdateMaintenanceStatus();
 
@@ -75,7 +78,7 @@ export const MaintenancePage = () => {
                 <div className="text-center py-10 animate-pulse text-primary-500">Loading requests...</div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                   {maintenanceList.map((req: any) => (
+                    {maintenanceList.map((req: any) => (
                         <div key={req.id} className="bg-white border border-primary-100 rounded-xl p-5 shadow-sm space-y-4">
                             <div className="flex justify-between items-start">
                                 <div className="space-y-1">
@@ -84,10 +87,24 @@ export const MaintenancePage = () => {
                                     </span>
                                     <h3 className="font-bold text-primary-700 pt-1">{req.title || 'General Repair'}</h3>
                                 </div>
+
                                 <p className="text-xs text-primary-400 flex items-center gap-1">
-                                    <Clock size={12} /> {new Date(req.createdAt).toLocaleDateString()}
+                                    <Clock size={12} /> {new Date(req.created_at).toLocaleDateString()}
                                 </p>
                             </div>
+
+                            {req.image_url &&
+                                req.image_url.trim() ? (
+                                <img
+                                    src={req.image_url}
+                                    alt="maintenance"
+                                    className="w-full h-40 object-cover rounded-lg"
+                                />
+                            ) : (
+                                <div className="w-full h-40 bg-primary-50 rounded-lg flex items-center justify-center text-primary-300">
+                                    <ImageIcon size={28} />
+                                </div>
+                            )}
 
                             <p className="text-sm text-primary-600 bg-primary-50/50 p-3 rounded-lg italic">
                                 "{req.description}"

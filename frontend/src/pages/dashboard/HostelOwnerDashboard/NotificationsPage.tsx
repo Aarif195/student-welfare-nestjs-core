@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Bell, Send, Trash2, Info, Building2 } from 'lucide-react';
+import { Bell, Send, Trash2, Info } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useHostelControllerCreateNotification, useHostelControllerDeleteNotification, useHostelControllerGetHostelNotifications, useHostelControllerGetMyHostels } from '../../../api/generated/hostels/hostels';
 import { ConfirmModal } from '../../../components/ui/ConfirmModal';
