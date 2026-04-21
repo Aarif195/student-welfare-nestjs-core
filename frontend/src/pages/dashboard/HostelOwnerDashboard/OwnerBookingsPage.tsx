@@ -9,7 +9,8 @@ export const OwnerBookingsPage = () => {
         return <div className="p-6 animate-pulse text-primary-500 text-center">Loading Bookings...</div>;
     }
 
-    const bookingsList: any = bookings?.data?.data || [];
+    // const bookingsList: any = bookings?.data?.data || [];
+    const bookingsList: any[] = (bookings as any)?.data?.data || [];
 
     return (
         <div className="space-y-6 px-4 sm:px-6">
@@ -45,7 +46,7 @@ export const OwnerBookingsPage = () => {
                                                 <User size={16} />
                                             </div>
                                             <div>
-                                                <p className="font-semibold text-primary-700">{booking.student?.name || 'Unknown Student'}</p>
+                                                <p className="font-semibold text-primary-700">{`${booking.student?.firstName} ${booking.student?.lastName}`}</p>
                                                 <p className="text-xs text-primary-500">{booking.student?.email}</p>
                                             </div>
                                         </div>
@@ -53,27 +54,27 @@ export const OwnerBookingsPage = () => {
                                     <td className="px-6 py-4">
                                         <div className="space-y-1">
                                             <p className="text-sm font-medium text-primary-700 flex items-center gap-1">
-                                                <Building2 size={14} /> {booking.hostel?.name}
+                                                <Building2 size={14} /> {booking.room?.hostel?.name}
                                             </p>
                                             <p className="text-xs text-primary-500">Room: {booking.room?.room_number}</p>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <p className="font-bold text-primary-700">₦{booking.amount?.toLocaleString()}</p>
+                                        <p className="font-bold text-primary-700">₦{booking.price.toLocaleString()}</p>
                                         <p className="text-[10px] text-primary-400 uppercase tracking-wider flex items-center gap-1">
                                             <CreditCard size={10} /> {booking.paymentStatus || 'Paid'}
                                         </p>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 rounded-full text-[11px] font-bold uppercase ${booking.status === 'CONFIRMED' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                                        <span className={`px-2 py-1 rounded-full text-[11px] font-bold uppercase ${booking.booking_status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
                                             }`}>
-                                            {booking.status}
+                                            {booking.booking_status}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4">
                                         <p className="text-xs text-primary-500 flex items-center gap-1">
                                             <Clock size={14} />
-                                            {new Date(booking.created_at).toLocaleDateString()}
+                                            {new Date(booking.booked_at).toLocaleDateString()}
                                         </p>
                                     </td>
                                 </tr>
