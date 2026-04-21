@@ -1,14 +1,20 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+
+import { ProtectedRoute } from './pages/auth/ProtectedRoute';
+
+
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { VerifyOtpPage } from './pages/auth/VerifyOtpPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { LoginPage } from './pages/auth/LoginPage';
+
 import { SuperAdminDashboard } from './pages/dashboard/SuperAdminDashboard';
-import { HostelOwnerDashboard } from './pages/dashboard/HostelOwnerDashboard/HostelOwnerDashboard';
 import { StudentDashboard } from './pages/dashboard/StudentDashboard';
-import { ProtectedRoute } from './pages/auth/ProtectedRoute';
-import { Toaster } from 'react-hot-toast';
+
+
+import { HostelOwnerDashboard } from './pages/dashboard/HostelOwnerDashboard/HostelOwnerDashboard';
 import { MyHostelsPage } from './pages/dashboard/HostelOwnerDashboard/MyHostelsPage';
 import { HostelDetailsPage } from './pages/dashboard/HostelOwnerDashboard/HostelDetailsPage';
 import { CreateHostelPage } from './pages/dashboard/HostelOwnerDashboard/CreateHostelPage';
@@ -18,6 +24,7 @@ import { EditRoomPage } from './pages/dashboard/HostelOwnerDashboard/EditRoomPag
 import { OwnerBookingsPage } from './pages/dashboard/HostelOwnerDashboard/OwnerBookingsPage';
 import { NotificationsPage } from './pages/dashboard/HostelOwnerDashboard/NotificationsPage';
 import { MaintenancePage } from './pages/dashboard/HostelOwnerDashboard/MaintenancePage';
+import { ReviewsPage } from './pages/dashboard/HostelOwnerDashboard/ReviewsPage';
 
 function App() {
   return (
@@ -55,7 +62,7 @@ function App() {
             <Route path="bookings" element={<OwnerBookingsPage />} />
             <Route path="notifications" element={<NotificationsPage />} />
             <Route path="maintenance" element={<MaintenancePage />} />
-            {/* <Route path="reviews" element={<ReviewsPage />} /> */}
+            <Route path="reviews" element={<ReviewsPage />} />
           </Route>
         </Route>
 

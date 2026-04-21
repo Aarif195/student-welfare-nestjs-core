@@ -22,12 +22,9 @@ export const MaintenancePage = () => {
         (maintenanceRequests as any)?.data?.MaintenanceRequests || [];
 
 
-
-
-    // console.log(maintenanceList)
-
     const updateStatusMutation = useHostelControllerUpdateMaintenanceStatus();
 
+    // HandleStatusChange of Requests
     const handleStatusChange = (requestId: number, newStatus: any) => {
         updateStatusMutation.mutate({
             id: requestId,
