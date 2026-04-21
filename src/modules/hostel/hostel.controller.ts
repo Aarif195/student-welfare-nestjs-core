@@ -300,7 +300,7 @@ export class HostelController {
 
 
     // getHostelReviews
-    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Throttle({ default: { limit: 6, ttl: 60000 } })
     @Get(':hostelId/reviews')
     @Roles(Role.hostelOwner)
     @ApiOperation({ summary: 'Get all reviews for a specific owned hostel' })
@@ -345,7 +345,6 @@ export class HostelController {
         await this.hostelService.replyToReview(ownerId, reviewId, dto);
         return { success: true, message: 'Review replied to successfully' };
     }
-    
 
 
 }

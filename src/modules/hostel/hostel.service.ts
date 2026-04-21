@@ -88,7 +88,14 @@ export class HostelService {
         skip: (page - 1) * limit,
         take: limit,
         orderBy: { created_at: 'desc' },
-        include: { resources: true },
+        include: {
+          resources: true,
+          _count: {
+            select: {
+              rooms: true,
+            },
+          },
+        },
       }),
     ]);
 
@@ -258,8 +265,29 @@ export class HostelService {
         select: {
           booking_status: true,
           start_date: true,
-          student: { select: { firstName: true, lastName: true, phone: true } },
-          room: { select: { room_number: true } },
+          end_date: true,
+          booked_at: true,
+          price: true,
+
+
+          student: { select: { firstName: true, lastName: true, email: true, phone: true } },
+          room: {
+            select: {
+              room_number: true,
+              hostel: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+          payments: {
+            select: {
+              amount: true,
+              payment_status: true,
+              paid_at: true,
+            },
+          },
         },
       }),
     ]);
