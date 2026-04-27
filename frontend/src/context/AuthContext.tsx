@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 interface AuthContextType {
   user: any;
@@ -10,7 +10,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  // const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || 'null'));
+ 
   const [user, setUser] = useState(() => {
   try {
     return JSON.parse(localStorage.getItem('user') || 'null');

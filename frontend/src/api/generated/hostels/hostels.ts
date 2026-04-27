@@ -206,8 +206,13 @@ const {query: queryOptions} = options ?? {};
 
   const queryKey =  queryOptions?.queryKey ?? getHostelControllerGetOneQueryKey(id);
 
+  
+
     const queryFn: QueryFunction<Awaited<ReturnType<typeof hostelControllerGetOne>>> = ({ signal }) => hostelControllerGetOne(id, signal);
 
+      
+
+      
 
    return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOne>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
@@ -408,6 +413,98 @@ export function useHostelControllerGetMyHostels<TData = Awaited<ReturnType<typeo
 
 
 /**
+ * @summary Get all bookings for all hostels owned by the user
+ */
+export const hostelControllerGetOwnerBookings = (
+    params?: HostelControllerGetOwnerBookingsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/hostels/bookings`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getHostelControllerGetOwnerBookingsQueryKey = (params?: HostelControllerGetOwnerBookingsParams,) => {
+    return [
+    `/api/v1/hostels/bookings`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getHostelControllerGetOwnerBookingsQueryOptions = <TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = ErrorResponseDto>(params?: HostelControllerGetOwnerBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getHostelControllerGetOwnerBookingsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>> = ({ signal }) => hostelControllerGetOwnerBookings(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type HostelControllerGetOwnerBookingsQueryResult = NonNullable<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>>
+export type HostelControllerGetOwnerBookingsQueryError = ErrorResponseDto
+
+
+export function useHostelControllerGetOwnerBookings<TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = ErrorResponseDto>(
+ params: undefined |  HostelControllerGetOwnerBookingsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>,
+          TError,
+          Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useHostelControllerGetOwnerBookings<TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = ErrorResponseDto>(
+ params?: HostelControllerGetOwnerBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>,
+          TError,
+          Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useHostelControllerGetOwnerBookings<TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = ErrorResponseDto>(
+ params?: HostelControllerGetOwnerBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get all bookings for all hostels owned by the user
+ */
+
+export function useHostelControllerGetOwnerBookings<TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = ErrorResponseDto>(
+ params?: HostelControllerGetOwnerBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getHostelControllerGetOwnerBookingsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
  * @summary Create a new room
  */
 export const hostelControllerCreateRoom = (
@@ -568,7 +665,6 @@ export function useHostelControllerGetRoomsByHostel<TData = Awaited<ReturnType<t
 
   return query;
 }
-
 
 
 
@@ -798,98 +894,6 @@ export const useHostelControllerDeleteRoom = <TError = ErrorResponseDto,
       return useMutation(mutationOptions, queryClient);
     }
     /**
- * @summary Get all bookings for all hostels owned by the user
- */
-export const hostelControllerGetOwnerBookings = (
-    params?: HostelControllerGetOwnerBookingsParams,
- signal?: AbortSignal
-) => {
-      
-      
-      return customInstance<MessageResponseDto>(
-      {url: `/api/v1/hostels/bookings`, method: 'GET',
-        params, signal
-    },
-      );
-    }
-  
-
-
-
-export const getHostelControllerGetOwnerBookingsQueryKey = (params?: HostelControllerGetOwnerBookingsParams,) => {
-    return [
-    `/api/v1/hostels/bookings`, ...(params ? [params]: [])
-    ] as const;
-    }
-
-    
-export const getHostelControllerGetOwnerBookingsQueryOptions = <TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = ErrorResponseDto>(params?: HostelControllerGetOwnerBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData>>, }
-) => {
-
-const {query: queryOptions} = options ?? {};
-
-  const queryKey =  queryOptions?.queryKey ?? getHostelControllerGetOwnerBookingsQueryKey(params);
-
-  
-
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>> = ({ signal }) => hostelControllerGetOwnerBookings(params, signal);
-
-      
-
-      
-
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
-}
-
-export type HostelControllerGetOwnerBookingsQueryResult = NonNullable<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>>
-export type HostelControllerGetOwnerBookingsQueryError = ErrorResponseDto
-
-
-export function useHostelControllerGetOwnerBookings<TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = ErrorResponseDto>(
- params: undefined |  HostelControllerGetOwnerBookingsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData>> & Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>,
-          TError,
-          Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useHostelControllerGetOwnerBookings<TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = ErrorResponseDto>(
- params?: HostelControllerGetOwnerBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData>> & Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>,
-          TError,
-          Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>
-        > , 'initialData'
-      >, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useHostelControllerGetOwnerBookings<TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = ErrorResponseDto>(
- params?: HostelControllerGetOwnerBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData>>, }
- , queryClient?: QueryClient
-  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-/**
- * @summary Get all bookings for all hostels owned by the user
- */
-
-export function useHostelControllerGetOwnerBookings<TData = Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError = ErrorResponseDto>(
- params?: HostelControllerGetOwnerBookingsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof hostelControllerGetOwnerBookings>>, TError, TData>>, }
- , queryClient?: QueryClient 
- ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
-
-  const queryOptions = getHostelControllerGetOwnerBookingsQueryOptions(params,options)
-
-  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  query.queryKey = queryOptions.queryKey ;
-
-  return query;
-}
-
-
-
-/**
  * @summary Create notification for a specific owned hostel
  */
 export const hostelControllerCreateNotification = (
