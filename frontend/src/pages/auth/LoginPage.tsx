@@ -1,10 +1,11 @@
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuthControllerLogin } from '../../api/generated/authentication/authentication';
+import { useAuthControllerGoogleLogin, useAuthControllerLogin } from '../../api/generated/authentication/authentication';
 import { useAuth } from '../../context/AuthContext';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import toast from 'react-hot-toast';
+import type { AuthResponseDto } from '../../api/model';
 
 // Validation Schema
 const loginSchema = z.object({
@@ -28,6 +29,7 @@ export const LoginPage = () => {
         resolver: zodResolver(loginSchema),
     });
 
+    // onLoginSubmit
     const onLoginSubmit = (data: LoginFormData) => {
         loginMutation.mutate({
             data: { email: data.email, password: data.password }
@@ -57,10 +59,17 @@ export const LoginPage = () => {
         });
     };
 
+
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-primary-100 p-6">
             <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-sm border border-primary-200">
                 <h2 className="text-2xl font-bold text-primary-700 mb-6 text-center">Login</h2>
+
+                <div className="relative flex items-center justify-center mb-4">
+                    <div className="border-t border-primary-100 w-full"></div>
+                    <span className="bg-white px-3 text-xs text-primary-400 absolute">OR</span>
+                </div>
 
                 <form onSubmit={handleSubmit(onLoginSubmit)} className="space-y-4">
                     <div>
