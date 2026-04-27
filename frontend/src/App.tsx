@@ -25,6 +25,7 @@ import { OwnerBookingsPage } from './pages/dashboard/HostelOwnerDashboard/OwnerB
 import { NotificationsPage } from './pages/dashboard/HostelOwnerDashboard/NotificationsPage';
 import { MaintenancePage } from './pages/dashboard/HostelOwnerDashboard/MaintenancePage';
 import { ReviewsPage } from './pages/dashboard/HostelOwnerDashboard/ReviewsPage';
+import { OwnerOverviewPage } from './pages/dashboard/HostelOwnerDashboard/OwnerOverviewPage';
 
 function App() {
   return (
@@ -49,7 +50,7 @@ function App() {
           <Route path="/dashboard/owner" element={<HostelOwnerDashboard />}>
 
             {/* default page */}
-            {/* <Route index element={<OwnerOverviewPage />} /> */}
+            <Route index element={<OwnerOverviewPage />} />
 
             {/* nested routes */}
             <Route path="hostels" element={<MyHostelsPage />} />
