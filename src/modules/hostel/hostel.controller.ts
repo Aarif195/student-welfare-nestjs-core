@@ -70,7 +70,7 @@ export class HostelController {
     }
 
        // getOwnerBookings
-    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     @Get('bookings')
     @Roles(Role.hostelOwner)
     @ApiOperation({ summary: 'Get all bookings for all hostels owned by the user' })
@@ -150,7 +150,7 @@ export class HostelController {
     }
 
     // getSingleRoom
-    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     @Get(':hostelId/rooms/:roomId')
     @Roles(Role.hostelOwner)
     @ApiOperation({ summary: 'Get single room details' })
@@ -221,7 +221,7 @@ export class HostelController {
     }
 
     // getHostelNotifications
-    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     @Get(':hostelId/notifications')
     @Roles(Role.hostelOwner)
     @ApiBearerAuth()
@@ -300,7 +300,7 @@ export class HostelController {
 
 
     // getHostelReviews
-    @Throttle({ default: { limit: 6, ttl: 60000 } })
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     @Get(':hostelId/reviews')
     @Roles(Role.hostelOwner)
     @ApiOperation({ summary: 'Get all reviews for a specific owned hostel' })

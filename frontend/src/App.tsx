@@ -3,7 +3,6 @@ import { Toaster } from 'react-hot-toast';
 
 import { ProtectedRoute } from './pages/auth/ProtectedRoute';
 
-
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { VerifyOtpPage } from './pages/auth/VerifyOtpPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
@@ -12,7 +11,6 @@ import { LoginPage } from './pages/auth/LoginPage';
 
 import { SuperAdminDashboard } from './pages/dashboard/SuperAdminDashboard';
 import { StudentDashboard } from './pages/dashboard/StudentDashboard';
-
 
 import { HostelOwnerDashboard } from './pages/dashboard/HostelOwnerDashboard/HostelOwnerDashboard';
 import { MyHostelsPage } from './pages/dashboard/HostelOwnerDashboard/MyHostelsPage';
