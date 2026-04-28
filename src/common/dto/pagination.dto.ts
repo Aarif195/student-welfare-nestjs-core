@@ -1,19 +1,19 @@
 import { StudySpaceStatus } from '@prisma/client';
 import { Type } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, Min } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, Min } from 'class-validator';
 
 export class PaginationDto {
   @IsOptional()
-  @IsInt()
-  @Min(1)
   @Type(() => Number)
-  readonly page: number;
+  @IsNumber()
+  @Min(1)
+  page?: number;
 
   @IsOptional()
-  @IsInt()
-  @Min(1)
   @Type(() => Number)
-  readonly limit: number;
+  @IsNumber()
+  @Min(1)
+  limit?: number;
 
   @IsOptional()
   @IsEnum(StudySpaceStatus)

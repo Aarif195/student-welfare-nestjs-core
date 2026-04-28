@@ -1,12 +1,17 @@
 import { useState } from 'react';
-import { useAuthControllerRegister } from '../../api/generated/authentication/authentication';
+import toast from 'react-hot-toast';
+
+import { useAuthControllerGoogleLogin, useAuthControllerRegister } from '../../api/generated/authentication/authentication';
 import { useCloudinaryControllerGetSignature } from '../../api/generated/cloudinary/cloudinary';
+import { uploadToCloudinary } from '../utils/cloudinaryUpload';
+
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import toast from 'react-hot-toast';
-import { uploadToCloudinary } from '../utils/cloudinaryUpload';
+
+import { GoogleLogin } from '@react-oauth/google';
+import { useAuth } from '../../context/AuthContext';
 
 // Validation Schema
 const registerSchema = z.object({
@@ -29,7 +34,9 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export const RegisterPage = () => {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
+    const [googleReady, setGoogleReady] = useState(false);
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const {
         register,
@@ -45,8 +52,12 @@ export const RegisterPage = () => {
     const role = watch('role');
     const image = watch('image');
 
+    // API Calls
     const registerMutation = useAuthControllerRegister();
+    const googleLoginMutation = useAuthControllerGoogleLogin();
 
+
+    // handleRegister
     const handleRegister = (data: RegisterFormData) => {
         if (isUploading) return toast.error("Please wait for image to upload");
         if (!data.image) return toast.error("Please upload a profile image first.");
@@ -72,18 +83,66 @@ export const RegisterPage = () => {
         });
     };
 
+    // signatureQuery
     const signatureQuery = useCloudinaryControllerGetSignature(
         { folder: 'avatars' },
         { query: { enabled: false } }
     );
 
+    // handleFileUpload
     const handleFileUpload = (file: File) => uploadToCloudinary(file, signatureQuery, setUploadedUrls);
+
+
+
+    const handleGoogleSuccess = async (credentialResponse: any) => {
+        googleLoginMutation.mutate({
+            data: {
+                idToken: credentialResponse.credential,
+                role: role as any,
+                phone: ""
+            }
+        }, {
+            onSuccess: (res: any) => {
+                const data = res?.data ?? res;
+
+                const user = data?.user;
+                const token = data?.token;
+
+                if (!user || !token) {
+                    toast.error("Invalid login response");
+                    return;
+                }
+
+                localStorage.setItem("token", token);
+                localStorage.setItem("user", JSON.stringify(user));
+
+                login({ user, token }); 
+
+                navigate(user.role === "student"
+                    ? "/dashboard/student"
+                    : "/dashboard/owner"
+                );
+            }
+        });
+    };
+
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-primary-100 p-6">
             <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-sm border border-primary-200">
                 <h2 className="text-2xl font-bold text-primary-700">Create Account</h2>
                 <p className="text-primary-500 mb-6 mt-2">Join the Student Welfare Platform</p>
+
+
+                {<GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={() => toast.error("Google login failed")}
+                />}
+
+                <div className="relative flex items-center justify-center mb-6">
+                    <div className="border-t border-primary-100 w-full"></div>
+                    <span className="bg-white px-3 text-xs text-primary-400 absolute">OR</span>
+                </div>
 
                 <form onSubmit={handleSubmit(handleRegister)} className="space-y-4">
                     {/* Role Selection */}

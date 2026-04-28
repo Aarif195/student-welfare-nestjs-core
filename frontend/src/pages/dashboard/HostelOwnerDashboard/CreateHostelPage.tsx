@@ -5,12 +5,34 @@ import { ArrowLeft, Upload, Building2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useHostelControllerCreate } from '../../../api/generated/hostels/hostels';
 import { CreateHostelResourceDtoFileType, type CreateHostelDto } from '../../../api/model';
+import { useCloudinaryControllerGetSignature } from '../../../api/generated/cloudinary/cloudinary';
+import { uploadToCloudinary } from '../../utils/cloudinaryUpload';
 
 export const CreateHostelPage = () => {
     const navigate = useNavigate();
     const [images, setImages] = useState<File[]>([]);
     const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
+    const [isUploading, setIsUploading] = useState(false);
+
     const createMutation = useHostelControllerCreate();
+
+    const signatureQuery = useCloudinaryControllerGetSignature(
+        { folder: 'avatars' },
+        { query: { enabled: false } }
+    );
+
+    // upload function
+    const handleFilesUpload = async (files: File[]) => {
+        setIsUploading(true);
+
+        const uploadPromises = files.map(file =>
+            uploadToCloudinary(file, signatureQuery, setUploadedUrls)
+        );
+
+        await Promise.all(uploadPromises);
+
+        setIsUploading(false);
+    };
 
     const { register, handleSubmit, formState: { errors } } = useForm();
 
@@ -95,7 +117,10 @@ export const CreateHostelPage = () => {
                             accept="image/*"
                             onChange={e => {
                                 if (!e.target.files) return;
-                                setImages(Array.from(e.target.files));
+                                const files = Array.from(e.target.files);
+                                setImages(files);
+                                setUploadedUrls([]);
+                                handleFilesUpload(files);
                             }}
                             className="w-full border border-primary-200 rounded-lg p-2.5 focus:ring-2 focus:ring-brand outline-none"
                         />
@@ -120,8 +145,8 @@ export const CreateHostelPage = () => {
                     {/* Submit Button */}
                     <button
                         type="submit"
-                        disabled={createMutation.isPending}
-                        className="w-full bg-brand hover:bg-blue-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                        disabled={createMutation.isPending || isUploading || uploadedUrls.length === 0}
+                        className="w-full bg-brand hover:bg-blue-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
                     >
                         {createMutation.isPending && (
                             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

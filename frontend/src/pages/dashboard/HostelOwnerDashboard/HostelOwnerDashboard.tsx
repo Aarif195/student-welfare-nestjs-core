@@ -1,12 +1,13 @@
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
-import { 
-  LayoutDashboard, 
-  Building2, 
-  BedDouble, 
-  ClipboardList, 
-  Bell, 
-  LogOut 
+import {
+    LayoutDashboard,
+    Building2,
+    ClipboardList,
+    Bell,
+    LogOut,
+    CalendarCheck,
+    Star
 } from 'lucide-react';
 
 export const HostelOwnerDashboard = () => {
@@ -17,8 +18,10 @@ export const HostelOwnerDashboard = () => {
     const navItems = [
         { name: 'Overview', path: '/dashboard/owner', icon: <LayoutDashboard size={20} /> },
         { name: 'My Hostels', path: '/dashboard/owner/hostels', icon: <Building2 size={20} /> },
+        { name: 'Bookings', path: '/dashboard/owner/bookings', icon: <CalendarCheck size={20} /> },
         { name: 'Maintenance', path: '/dashboard/owner/maintenance', icon: <ClipboardList size={20} /> },
         { name: 'Notifications', path: '/dashboard/owner/notifications', icon: <Bell size={20} /> },
+        { name: 'Reviews', path: '/dashboard/owner/reviews', icon: <Star size={20} /> },
     ];
 
     const handleLogout = () => {
@@ -39,11 +42,10 @@ export const HostelOwnerDashboard = () => {
                         <Link
                             key={item.name}
                             to={item.path}
-                            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${
-                                location.pathname === item.path
+                            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${location.pathname === item.path
                                     ? 'bg-brand text-white'
                                     : 'text-primary-600 hover:bg-primary-100'
-                            }`}
+                                }`}
                         >
                             {item.icon}
                             <span className="font-medium text-sm">{item.name}</span>

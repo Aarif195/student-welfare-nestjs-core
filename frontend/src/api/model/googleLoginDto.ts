@@ -10,6 +10,6 @@ import type { GoogleLoginDtoRole } from './googleLoginDtoRole';
 export interface GoogleLoginDto {
   /** Google ID Token */
   idToken: string;
-  role: GoogleLoginDtoRole;
+  role?: GoogleLoginDtoRole;
   phone?: string;
 }
