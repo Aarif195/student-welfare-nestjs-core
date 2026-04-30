@@ -15,7 +15,7 @@ export const EditRoomPage = () => {
     const { data: room, isLoading } = useHostelControllerGetSingleRoom(Number(hostelId), Number(roomId));
     const updateMutation = useHostelControllerUpdateRoom();
 
-    const { register, handleSubmit, reset, formState: { errors } } = useForm();
+    const { register, handleSubmit, reset } = useForm();
 
     useEffect(() => {
         if (room?.data) {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Upload, Building2 } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useHostelControllerCreate } from '../../../api/generated/hostels/hostels';
 import { CreateHostelResourceDtoFileType, type CreateHostelDto } from '../../../api/model';

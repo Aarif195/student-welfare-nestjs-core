@@ -15,7 +15,7 @@ export const EditHostelPage = () => {
     const navigate = useNavigate();
     const [images, setImages] = useState<File[]>([]);
     const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
-    const [isUploading, setIsUploading] = useState(false);
+    const [, setIsUploading] = useState(false);
 
     const { data: hostel, isLoading } = useHostelControllerGetOne(Number(id));
     const updateMutation = useHostelControllerUpdate();
