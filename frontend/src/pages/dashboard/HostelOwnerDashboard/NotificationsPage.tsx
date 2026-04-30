@@ -26,7 +26,7 @@ export const NotificationsPage = () => {
     const createMutation = useHostelControllerCreateNotification();
     const deleteMutation = useHostelControllerDeleteNotification();
 
-    const { register, handleSubmit, reset, formState: { errors } } = useForm({
+    const { register, handleSubmit, reset } = useForm({
         defaultValues: { title: '', message: '' }
     });
 

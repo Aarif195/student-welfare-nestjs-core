@@ -1,4 +1,3 @@
-import React from 'react';
 import {
     useHostelControllerGetMyHostels,
     useHostelControllerGetOwnerBookings,
@@ -8,7 +7,7 @@ import {
 } from '../../../api/generated/hostels/hostels';
 import {
     LayoutDashboard, Building2, Users, ClipboardList,
-    Star, ArrowUpRight, Calendar, Bell, MessageSquare
+    Star, Calendar, Bell
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -39,7 +38,7 @@ export const OwnerOverviewPage = () => {
         { query: { enabled: !!firstHostelId } }
     );
 
-        // Mapping of Hooks
+    // Mapping of Hooks
     const maintenanceList: any[] =
         (maintenance as any)?.data?.data?.MaintenanceRequests || [];
     const reviewList: any[] = (reviews?.data?.data as any[]) || [];
@@ -48,7 +47,7 @@ export const OwnerOverviewPage = () => {
     const pendingMaintenance = maintenanceList.filter(
         (m: any) => m.status === 'pending'
     );
-    
+
 
     const stats = [
         {

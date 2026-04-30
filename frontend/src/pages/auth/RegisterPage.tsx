@@ -32,9 +32,8 @@ const registerSchema = z.object({
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 export const RegisterPage = () => {
-    const [isUploading, setIsUploading] = useState(false);
-    const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
-    const [googleReady, setGoogleReady] = useState(false);
+    const [isUploading, ] = useState(false);
+    const [, setUploadedUrls] = useState<string[]>([]);
     const navigate = useNavigate();
     const { login } = useAuth();
 

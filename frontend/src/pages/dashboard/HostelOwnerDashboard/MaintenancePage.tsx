@@ -4,7 +4,7 @@ import {
     useHostelControllerGetHostelMaintenance,
     useHostelControllerUpdateMaintenanceStatus
 } from '../../../api/generated/hostels/hostels';
-import { ClipboardList, CheckCircle, Clock, XCircle, Building2, ImageIcon } from 'lucide-react';
+import { ClipboardList, Clock, Building2, ImageIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const MaintenancePage = () => {
