@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { DatabaseService } from '@/database/database.service';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class PaymentService {
@@ -49,36 +50,44 @@ export class PaymentService {
   }
 
   // verifyWebhook
-  // async verifyWebhook(signature: string, payload: Buffer) {
-  //   const webhookSecret = this.configService.get<string>('stripe.webhookSecret');
+ verifyWebhookSignature(signature: string, rawBody: Buffer): boolean {
+  const hash = crypto
+    .createHmac('sha512', this.secretKey)
+    .update(rawBody) 
+    .digest('hex');
+  return hash === signature;
+}
 
-  // if (!webhookSecret) {
-  //     throw new Error('STRIPE_WEBHOOK_SECRET is missing from configuration');
-  //   }
-
-  //   try {
-  //     return this.stripe.webhooks.constructEvent(
-  //       payload,
-  //       signature,
-  //       webhookSecret,
-  //     );
-  //   } catch (err) {
-  //     throw new Error(`Webhook Error: ${err.message}`);
-  //   }
-  // }
-
-  // payment process logic
-  async handlePaymentIntentSucceeded(paymentIntent: any) {
-    const { roomId, studentId } = paymentIntent.metadata;
-    const reference = paymentIntent.id;
-
+async handleWebhookEvent(event: any) {
+  if (event.event === 'charge.success') {
+    const { reference, metadata } = event.data;
+    
+    // Update payment status in database
     await this.prisma.payment.updateMany({
       where: { reference: reference },
-      data: { payment_status: 'success', paid_at: new Date() },
+      data: { 
+        payment_status: 'success', 
+        paid_at: new Date(),
+        payment_method: event.data.channel 
+      },
     });
 
-    console.log(`Verified: Room ${roomId} paid by Student ${studentId} ${reference} `);
+    console.log(`Payment successful for Room: ${metadata.roomId}`);
   }
+}
+
+  // payment process logic
+  // async handlePaymentIntentSucceeded(paymentIntent: any) {
+  //   const { roomId, studentId } = paymentIntent.metadata;
+  //   const reference = paymentIntent.id;
+
+  //   await this.prisma.payment.updateMany({
+  //     where: { reference: reference },
+  //     data: { payment_status: 'success', paid_at: new Date() },
+  //   });
+
+  //   console.log(`Verified: Room ${roomId} paid by Student ${studentId} ${reference} `);
+  // }
 
 
 
