@@ -36,8 +36,8 @@ export class StudentService {
     }
 
     //  Verify payment (Manual util check)
-    if (!data.reference.startsWith('pi_')) {
-      throw new BadRequestException('Invalid payment reference format');
+    if (!data.reference) {
+      throw new BadRequestException('payment reference is required');
     }
 
     // To Prevent Duplicate Bookings
@@ -49,9 +49,11 @@ export class StudentService {
       throw new BadRequestException('This payment reference has already been used.');
     }
 
-    const isValid = await verifyPayment(data.reference, this.stripe);
+    const secretKey = this.configService.get<string>('paystack.secretKey')!;
 
-    if (!isValid) {
+    const paymentData = await verifyPayment(data.reference, secretKey);
+
+    if (!paymentData) {
       throw new BadRequestException('Payment verification failed');
     }
 

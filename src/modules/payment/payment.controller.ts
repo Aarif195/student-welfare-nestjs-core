@@ -41,10 +41,10 @@ export class PaymentController {
     }
   }
 
-  // Route for Stripe to confirm payment success
+  // Route for Paystack to confirm payment success
   @Public()
   @Post('webhook')
-  @ApiOperation({ summary: 'Stripe Webhook Listener' })
+  @ApiOperation({ summary: 'Paystack Webhook Listener' })
   async handleWebhook(@Req() req: Request & { rawBody: Buffer }, @Res() res: Response) {
 
     const signature = req.headers['stripe-signature'] as string;
