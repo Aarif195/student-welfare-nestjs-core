@@ -21,8 +21,8 @@ export class PaymentController {
   @Post('create-intent')
   @Roles(Role.student)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Create a Stripe Payment Intent' })
-  @ApiOkResponse({ description: 'Intent created successfully', type: PaymentIntentResponseDto })
+  @ApiOperation({ summary: 'Initialize Paystack Payment' })
+  @ApiOkResponse({ type: PaymentIntentResponseDto,description: 'Payment initialized successfully' })
   @ApiBadRequestResponse({ type: ErrorResponseDto })
   async createIntent(
     @GetUser() user: { id: number },
@@ -31,11 +31,11 @@ export class PaymentController {
     console.log("user", user)
     console.log("body", body)
     try {
-      const data = await this.paymentService.createPaymentIntent(body.amount, {
+      const data = await this.paymentService.initializeTransaction(body.amount, body.email, {
         roomId: body.roomId,
         studentId: user.id.toString(),
       });
-      return { success: true, message: 'Payment intent created', data };
+      return { success: true, message: 'Payment initialized', data };
     } catch (error) {
       throw new BadRequestException(error.message);
     }

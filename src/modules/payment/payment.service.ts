@@ -16,25 +16,32 @@ export class PaymentService {
   ) {
     this.secretKey = this.configService.get<string>('paystack.secretKey');
   }
-}
+
 
 
 // To start the payment process
-async createPaymentIntent(amount: number, metadata: { roomId: string, studentId: string }) {
+async initializeTransaction(amount: number, email: string, metadata: any) {
   try {
-    const paymentIntent = await this.stripe.paymentIntents.create({
-      amount: Math.round(amount * 100),
-      currency: 'usd',
-      metadata,
-      automatic_payment_methods: { enabled: true },
-    });
+    const response = await firstValueFrom(
+      this.httpService.post(
+        `${this.baseUrl}/transaction/initialize`,
+        {
+          amount: Math.round(amount * 100), 
+          email,
+          metadata,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.secretKey}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      ),
+    );
 
-    return {
-      clientSecret: paymentIntent.client_secret,
-      id: paymentIntent.id,
-    };
+    return response.data.data;
   } catch (error) {
-    throw new Error(`Stripe Intent Error: ${error.message}`);
+    throw new Error(`Paystack Init Error: ${error.response?.data?.message || error.message}`);
   }
 }
 
@@ -69,6 +76,7 @@ async handlePaymentIntentSucceeded(paymentIntent: any) {
 
   console.log(`Verified: Room ${roomId} paid by Student ${studentId} ${reference} `);
 }
+
 
 
 }
