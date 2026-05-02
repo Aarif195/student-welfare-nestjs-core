@@ -16,9 +16,8 @@ export const envConfig = () => ({
   google: {
     clientId: process.env.GOOGLE_CLIENT_ID,
   },
-  stripe: {
-    secretKey: process.env.STRIPE_SECRET_KEY,
-    publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
-    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
-  },
+ paystack: {
+  secretKey: process.env.PAYSTACK_SECRET_KEY,
+  publicKey: process.env.PAYSTACK_PUBLIC_KEY,
+},
 });

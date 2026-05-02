@@ -1,24 +1,21 @@
-import { DatabaseService } from '@/database/database.service';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import Stripe from 'stripe';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+import { DatabaseService } from '@/database/database.service';
 
 @Injectable()
 export class PaymentService {
-  private stripe: Stripe;
+  private readonly baseUrl = 'https://api.paystack.co';
+  private readonly secretKey: string;
 
-constructor(private configService: ConfigService,
+  constructor(
+    private configService: ConfigService,
     private prisma: DatabaseService,
-) {
-  const secretKey = this.configService.get<string>('stripe.secretKey');
-  
-  if (!secretKey) {
-    throw new Error('STRIPE_SECRET_KEY is missing from config');
+    private readonly httpService: HttpService,
+  ) {
+    this.secretKey = this.configService.get<string>('paystack.secretKey');
   }
-
-  this.stripe = new Stripe(secretKey, {
-    apiVersion: '2026-03-25.dahlia',
-  });
 }
 
 
