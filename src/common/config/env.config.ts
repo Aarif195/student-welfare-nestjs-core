@@ -21,3 +21,5 @@ export const envConfig = () => ({
   publicKey: process.env.PAYSTACK_PUBLIC_KEY,
 },
 });
+
+// import HttpModule in PaymentModule to resolve HttpService dependency

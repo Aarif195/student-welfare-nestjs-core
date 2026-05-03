@@ -17,7 +17,7 @@ import { Public } from '@/common/decorators/public.decorator';
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) { }
 
-  // Route for Frontend to start the payment
+
   @Post('create-intent')
   @Roles(Role.student)
   @ApiBearerAuth()
@@ -61,7 +61,6 @@ async handleWebhook(
     return res.status(HttpStatus.BAD_REQUEST).send('Invalid Signature');
   }
 
-  // Use req.body (the object) for the actual logic
   await this.paymentService.handleWebhookEvent(req.body);
   
   return res.status(HttpStatus.OK).send('Webhook Received');
