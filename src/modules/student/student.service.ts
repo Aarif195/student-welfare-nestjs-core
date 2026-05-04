@@ -4,7 +4,6 @@ import { BadRequestException, ConflictException, ForbiddenException, Injectable 
 import { verifyPayment } from '@/common/utils/helpers';
 import { DatabaseService } from '@/database/database.service';
 import { ConfigService } from '@nestjs/config';
-import Stripe from 'stripe';
 
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { CreateMaintenanceDto } from './dto/create-maintenance.dto';
@@ -12,17 +11,9 @@ import { CreateReviewDto } from './dto/create-review.dto';
 
 @Injectable()
 export class StudentService {
-  private stripe: Stripe;
-  constructor(private prisma: DatabaseService, private configService: ConfigService,
-  ) {
-    const secretKey = this.configService.get<string>('stripe.secretKey');
-    if (!secretKey) {
-      throw new Error('STRIPE_SECRET_KEY is missing from config');
-    }
-    this.stripe = new Stripe(secretKey, {
-      apiVersion: '2026-03-25.dahlia',
-    });
-  }
+  constructor(private prisma: DatabaseService,
+    private configService: ConfigService,
+  ) { }
 
   // bookRoom
   async bookRoom(studentId: number, data: CreateBookingDto) {

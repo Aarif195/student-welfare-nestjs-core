@@ -20,8 +20,8 @@ export class CreatePaymentIntentDto {
 
 export class PaymentIntentResponseDto {
   @ApiProperty()
-  clientSecret: string;
+  authorization_url: string;
 
   @ApiProperty()
-  id: string;
+  reference: string;
 }
