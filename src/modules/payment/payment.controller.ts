@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Req, Res, HttpStatus, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, Req, Res, HttpStatus, BadRequestException, RawBodyRequest } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { PaymentService } from './payment.service';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -21,8 +21,8 @@ export class PaymentController {
   @Post('create-intent')
   @Roles(Role.student)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Create a Stripe Payment Intent' })
-  @ApiOkResponse({ description: 'Intent created successfully', type: PaymentIntentResponseDto })
+  @ApiOperation({ summary: 'Initialize Paystack Payment' })
+  @ApiOkResponse({ description: 'Payment initialized successfully', type: PaymentIntentResponseDto })
   @ApiBadRequestResponse({ type: ErrorResponseDto })
   async createIntent(
     @GetUser() user: { id: number },
@@ -31,36 +31,39 @@ export class PaymentController {
     console.log("user", user)
     console.log("body", body)
     try {
-      const data = await this.paymentService.createPaymentIntent(body.amount, {
+      const data = await this.paymentService.initializeTransaction(body.amount, body.email, {
         roomId: body.roomId,
         studentId: user.id.toString(),
       });
-      return { success: true, message: 'Payment intent created', data };
+      return { success: true, message: 'Payment initialized', data };
     } catch (error) {
       throw new BadRequestException(error.message);
     }
   }
 
-  // Route for Stripe to confirm payment success
+  // Route for Paystack to confirm payment success
   @Public()
   @Post('webhook')
-  @ApiOperation({ summary: 'Stripe Webhook Listener' })
-  async handleWebhook(@Req() req: Request & { rawBody: Buffer }, @Res() res: Response) {
+  @ApiOperation({ summary: 'Paystack Webhook Listener' })
+  async handleWebhook(
+    @Req() req: RawBodyRequest<Request>,
+    @Res() res: Response
+  ) {
+    const signature = req.headers['x-paystack-signature'] as string;
 
-    const signature = req.headers['stripe-signature'] as string;
-    const rawBody = req.rawBody;
-
-    try {
-      const event = await this.paymentService.verifyWebhook(signature, rawBody);
-
-      if (event.type === 'payment_intent.succeeded') {
-        await this.paymentService.handlePaymentIntentSucceeded(event.data.object);
-      }
-
-      return res.status(HttpStatus.OK).send();
-    } catch (err) {
-      return res.status(HttpStatus.BAD_REQUEST).send(`Webhook Error: ${err.message}`);
+    if (!req.rawBody) {
+      return res.status(HttpStatus.BAD_REQUEST).send('Missing raw body');
     }
+
+    const isValid = this.paymentService.verifyWebhookSignature(signature, req.rawBody);
+
+    if (!isValid) {
+      return res.status(HttpStatus.BAD_REQUEST).send('Invalid Signature');
+    }
+
+    await this.paymentService.handleWebhookEvent(req.body);
+
+    return res.status(HttpStatus.OK).send('Webhook Received');
   }
 
 

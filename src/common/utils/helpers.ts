@@ -1,7 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { JwtService } from '@nestjs/jwt';
-import Stripe from 'stripe';
+import axios from 'axios';
 
 export const hashPassword = async (password: string): Promise<string> => {
   const salt = await bcrypt.genSalt(10);
@@ -16,13 +16,22 @@ export const generateToken = (jwtService: JwtService, id: number): string => {
   return jwtService.sign({ id });
 };
 
-export const verifyPayment = async (reference: string, stripe: Stripe): Promise<boolean> => {
+export const verifyPayment = async (reference: string, secretKey: string): Promise<any> => {
   try {
-    const paymentIntent = await stripe.paymentIntents.retrieve(reference);
-    console.log('Stripe Status:', paymentIntent.status);
-    return paymentIntent.status === 'succeeded' || paymentIntent.status === 'requires_payment_method';
+    const response = await axios.get(
+      `https://api.paystack.co/transaction/verify/${reference}`,
+      {
+        headers: {
+          Authorization: `Bearer ${secretKey}`,
+        },
+      },
+    );
+
+    const data = response.data.data;
+    return data.status === 'success' ? data : null;
   } catch (error) {
-    return false;
+    console.error('Paystack Verify Error:', error.response?.data?.message || error.message);
+    return null;
   }
 };
 

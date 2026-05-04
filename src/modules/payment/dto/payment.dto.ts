@@ -12,16 +12,16 @@ export class CreatePaymentIntentDto {
   @IsNotEmpty()
   roomId: string;
 
-  @ApiProperty({ example: '123', description: 'The ID of the student' })
+  @ApiProperty({ example: 'user@example.com', description: 'Student email' })
   @IsString()
   @IsNotEmpty()
-  studentId: string;
+  email: string;
 }
 
 export class PaymentIntentResponseDto {
   @ApiProperty()
-  clientSecret: string;
+  authorization_url: string;
 
   @ApiProperty()
-  id: string;
+  reference: string;
 }
