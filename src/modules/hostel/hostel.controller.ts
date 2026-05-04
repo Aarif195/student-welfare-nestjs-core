@@ -53,7 +53,7 @@ export class HostelController {
     }
 
     // getMyHostels
-    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     @Get('my-hostels')
     @Roles(Role.hostelOwner)
     @ApiOkResponse({ type: MessageResponseDto })
@@ -69,8 +69,26 @@ export class HostelController {
         return this.hostelService.getMyHostels(user.id, page, limit);
     }
 
+       // getOwnerBookings
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
+    @Get('bookings')
+    @Roles(Role.hostelOwner)
+    @ApiOperation({ summary: 'Get all bookings for all hostels owned by the user' })
+    @ApiOkResponse({ type: MessageResponseDto })
+    @ApiBadRequestResponse({ type: ErrorResponseDto })
+    @ApiQuery({ name: 'page', required: false, type: Number })
+    @ApiQuery({ name: 'limit', required: false, type: Number })
+    getOwnerBookings(
+        @GetUser() user: { id: number },
+        @Query() pagination: PaginationDto,
+    ) {
+        const page = pagination.page || 1;
+        const limit = pagination.limit || 10;
+        return this.hostelService.getOwnerBookings(user.id, page, limit);
+    }
+
     // getSingleHostel
-    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     @Get(':id')
     @Roles(Role.hostelOwner)
     @ApiOperation({ summary: 'Get a single hostel by ID' })
@@ -98,7 +116,7 @@ export class HostelController {
 
 
     // createRoom
-    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     @Post(':hostelId/rooms')
     @Roles(Role.hostelOwner)
     @ApiOperation({ summary: 'Create a new room' })
@@ -113,7 +131,7 @@ export class HostelController {
     }
 
     // getRoomsByHostel
-    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     @Get(':hostelId/rooms')
     @Roles(Role.hostelOwner)
     @ApiOperation({ summary: 'Get all rooms in a hostel' })
@@ -132,7 +150,7 @@ export class HostelController {
     }
 
     // getSingleRoom
-    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     @Get(':hostelId/rooms/:roomId')
     @Roles(Role.hostelOwner)
     @ApiOperation({ summary: 'Get single room details' })
@@ -178,24 +196,6 @@ export class HostelController {
     }
 
 
-    // getOwnerBookings
-    @Throttle({ default: { limit: 3, ttl: 60000 } })
-    @Get('bookings')
-    @Roles(Role.hostelOwner)
-    @ApiOperation({ summary: 'Get all bookings for all hostels owned by the user' })
-    @ApiOkResponse({ type: MessageResponseDto })
-    @ApiBadRequestResponse({ type: ErrorResponseDto })
-    @ApiQuery({ name: 'page', required: false, type: Number })
-    @ApiQuery({ name: 'limit', required: false, type: Number })
-    getOwnerBookings(
-        @GetUser() user: { id: number },
-        @Query() pagination: PaginationDto,
-    ) {
-        const page = pagination.page || 1;
-        const limit = pagination.limit || 10;
-        return this.hostelService.getOwnerBookings(user.id, page, limit);
-    }
-
     // createHostelNotification
     @Throttle({ default: { limit: 3, ttl: 60000 } })
     @Post(':hostelId/notifications')
@@ -221,7 +221,7 @@ export class HostelController {
     }
 
     // getHostelNotifications
-    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     @Get(':hostelId/notifications')
     @Roles(Role.hostelOwner)
     @ApiBearerAuth()
@@ -257,7 +257,7 @@ export class HostelController {
     }
 
     // getHostelMaintenance
-    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     @Get('maintenance/:hostelId')
     @Roles(Role.hostelOwner)
     @ApiOperation({ summary: 'Owner views maintenance requests for a specific hostel' })
@@ -300,7 +300,7 @@ export class HostelController {
 
 
     // getHostelReviews
-    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     @Get(':hostelId/reviews')
     @Roles(Role.hostelOwner)
     @ApiOperation({ summary: 'Get all reviews for a specific owned hostel' })
@@ -345,7 +345,6 @@ export class HostelController {
         await this.hostelService.replyToReview(ownerId, reviewId, dto);
         return { success: true, message: 'Review replied to successfully' };
     }
-    
 
 
 }

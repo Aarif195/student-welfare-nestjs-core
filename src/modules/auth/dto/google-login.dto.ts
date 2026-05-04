@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString, IsEnum, IsOptional } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UserRole } from '@/common/guards/types';
 
 export class GoogleLoginDto {
@@ -8,10 +8,10 @@ export class GoogleLoginDto {
   @IsString()
   idToken: string;
 
-  @ApiProperty({ enum: UserRole, example: UserRole.STUDENT })
-  @IsNotEmpty()
+  @ApiPropertyOptional({ enum: UserRole })
+  @IsOptional()
   @IsEnum(UserRole)
-  role: UserRole;
+  role?: UserRole;
 
   @ApiProperty({ example: '08012345678', required: false })
   @IsOptional()

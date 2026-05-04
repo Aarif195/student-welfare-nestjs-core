@@ -13,5 +13,4 @@ export type CreateRoomResourceDtoFileType = typeof CreateRoomResourceDtoFileType
 export const CreateRoomResourceDtoFileType = {
   IMAGE: 'IMAGE',
   VIDEO: 'VIDEO',
-  PDF: 'PDF',
 } as const;

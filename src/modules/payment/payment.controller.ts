@@ -17,7 +17,7 @@ import { Public } from '@/common/decorators/public.decorator';
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) { }
 
-  // Route for Frontend to start the payment
+
   @Post('create-intent')
   @Roles(Role.student)
   @ApiBearerAuth()
@@ -65,6 +65,11 @@ export class PaymentController {
 
     return res.status(HttpStatus.OK).send('Webhook Received');
   }
+
+  await this.paymentService.handleWebhookEvent(req.body);
+  
+  return res.status(HttpStatus.OK).send('Webhook Received');
+}
 
 
 }
