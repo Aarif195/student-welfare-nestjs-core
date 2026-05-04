@@ -40,7 +40,7 @@ export const OwnerOverviewPage = () => {
 
     // Mapping of Hooks
     const maintenanceList: any[] =
-        (maintenance as any)?.data?.data?.MaintenanceRequests || [];
+        (maintenance as any)?.data?.MaintenanceRequests || [];
     const reviewList: any[] = (reviews?.data?.data as any[]) || [];
     const notificationList: any[] = (notifications as any)?.data?.data || [];
 
