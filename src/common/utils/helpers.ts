@@ -16,6 +16,7 @@ export const generateToken = (jwtService: JwtService, id: number): string => {
   return jwtService.sign({ id });
 };
 
+
 export const verifyPayment = async (reference: string, secretKey: string): Promise<any> => {
   try {
     const response = await axios.get(
