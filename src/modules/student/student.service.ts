@@ -28,7 +28,7 @@ export class StudentService {
 
     //  Verify payment (Manual util check)
     if (!data.reference) {
-      throw new BadRequestException('payment reference is required');
+      throw new BadRequestException('Payment reference is required');
     }
 
     // To Prevent Duplicate Bookings
