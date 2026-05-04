@@ -11,6 +11,6 @@ export interface CreatePaymentIntentDto {
   amount: number;
   /** The ID of the room being booked */
   roomId: string;
-  /** The ID of the student */
-  studentId: string;
+  /** Student email */
+  email: string;
 }

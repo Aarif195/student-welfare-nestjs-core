@@ -1,1 +1,0 @@
-export const StudentDashboard = () => <p className="p-8 text-primary-700">Student Dashboard: Welcome, Student!</p>;

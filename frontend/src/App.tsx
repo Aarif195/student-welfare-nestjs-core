@@ -10,8 +10,9 @@ import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { LoginPage } from './pages/auth/LoginPage';
 
 import { SuperAdminDashboard } from './pages/dashboard/SuperAdminDashboard';
-import { StudentDashboard } from './pages/dashboard/StudentDashboard';
 
+
+// HostelOwnerDashboard
 import { HostelOwnerDashboard } from './pages/dashboard/HostelOwnerDashboard/HostelOwnerDashboard';
 import { MyHostelsPage } from './pages/dashboard/HostelOwnerDashboard/MyHostelsPage';
 import { HostelDetailsPage } from './pages/dashboard/HostelOwnerDashboard/HostelDetailsPage';
@@ -24,6 +25,10 @@ import { NotificationsPage } from './pages/dashboard/HostelOwnerDashboard/Notifi
 import { MaintenancePage } from './pages/dashboard/HostelOwnerDashboard/MaintenancePage';
 import { ReviewsPage } from './pages/dashboard/HostelOwnerDashboard/ReviewsPage';
 import { OwnerOverviewPage } from './pages/dashboard/HostelOwnerDashboard/OwnerOverviewPage';
+
+// StudentDashboard
+import { StudentDashboardLayout } from './pages/dashboard/StudentDashboard/StudentDashboardLayout';
+import { StudentDiscoveryPage } from './pages/dashboard/StudentDashboard/StudentDashboard';
 
 function App() {
   return (
@@ -38,12 +43,15 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<Navigate to="/register" replace />} />
 
-{/* Student Routes */}
+        {/* Student Routes */}
         <Route element={<ProtectedRoute allowedRoles={['student']} />}>
-          <Route path="/dashboard/student" element={<StudentDashboard />} />
+          <Route element={<StudentDashboardLayout />}>
+            <Route path="/dashboard/student" element={<StudentDiscoveryPage />} />
+            {/* Other student routes like /bookings, /maintenance will go here later */}
+          </Route>
         </Route>
 
-{/* HostelOwner Routes */}
+        {/* HostelOwner Routes */}
         <Route element={<ProtectedRoute allowedRoles={['hostelOwner']} />}>
           <Route path="/dashboard/owner" element={<HostelOwnerDashboard />}>
 

@@ -7,6 +7,6 @@
  */
 
 export interface PaymentIntentResponseDto {
-  clientSecret: string;
-  id: string;
+  authorization_url: string;
+  reference: string;
 }
