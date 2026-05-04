@@ -36,34 +36,25 @@ export class StudentService {
     }
 
     //  Verify payment (Manual util check)
-    if (!data.reference.startsWith('pi_')) {
-      throw new BadRequestException('Invalid payment reference format');
+    if (!data.reference) {
+      throw new BadRequestException('payment reference is required');
     }
 
-    //  Checking if the payment reference has already been used in database
+    // To Prevent Duplicate Bookings
     const existingPayment = await this.prisma.payment.findUnique({
-      where: { reference: data.reference },
+      where: { reference: data.reference }
     });
 
     if (existingPayment) {
-      throw new BadRequestException('Payment reference already exists.');
+      throw new BadRequestException('This payment reference has already been used.');
     }
 
-    //  Verify payment
-    const isValid = await verifyPayment(data.reference, this.stripe);
+    const secretKey = this.configService.get<string>('paystack.secretKey')!;
 
-    if (!isValid) {
+    const paymentData = await verifyPayment(data.reference, secretKey);
+
+    if (!paymentData) {
       throw new BadRequestException('Payment verification failed');
-    }
-
-
-    //  Checking if the student already has a booking
-    const existingBooking = await this.prisma.booking.findFirst({
-      where: { student_id: studentId },
-    });
-
-    if (existingBooking) {
-      throw new BadRequestException('Student already has a booking');
     }
 
     //  Create Booking & Payment in Transaction
