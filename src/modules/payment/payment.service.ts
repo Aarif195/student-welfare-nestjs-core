@@ -76,19 +76,6 @@ async handleWebhookEvent(event: any) {
   }
 }
 
-  // payment process logic
-  // async handlePaymentIntentSucceeded(paymentIntent: any) {
-  //   const { roomId, studentId } = paymentIntent.metadata;
-  //   const reference = paymentIntent.id;
-
-  //   await this.prisma.payment.updateMany({
-  //     where: { reference: reference },
-  //     data: { payment_status: 'success', paid_at: new Date() },
-  //   });
-
-  //   console.log(`Verified: Room ${roomId} paid by Student ${studentId} ${reference} `);
-  // }
-
-
-
 }
+
+
