@@ -7,7 +7,8 @@ import {
     Bell,
     LogOut,
     Star,
-    User
+    User,
+    BookOpen
 } from 'lucide-react';
 
 export const StudentDashboardLayout = () => {
@@ -17,6 +18,7 @@ export const StudentDashboardLayout = () => {
 
     const navItems = [
         { name: 'Discover', path: '/dashboard/student', icon: <Search size={20} /> },
+        { name: 'Study Spaces', path: '/dashboard/student/study-spaces', icon: <BookOpen size={20} /> },
         { name: 'My Bookings', path: '/dashboard/student/bookings', icon: <BookmarkCheck size={20} /> },
         { name: 'Maintenance', path: '/dashboard/student/maintenance', icon: <Wrench size={20} /> },
         { name: 'Notifications', path: '/dashboard/student/notifications', icon: <Bell size={20} /> },

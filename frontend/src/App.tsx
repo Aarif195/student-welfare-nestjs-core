@@ -29,6 +29,7 @@ import { OwnerOverviewPage } from './pages/dashboard/HostelOwnerDashboard/OwnerO
 // StudentDashboard
 import { StudentDashboardLayout } from './pages/dashboard/StudentDashboard/StudentDashboardLayout';
 import { StudentDiscoveryPage } from './pages/dashboard/StudentDashboard/StudentDashboard';
+import { StudentStudySpacesPage } from './pages/dashboard/StudentDashboard/StudentStudySpacesPage';
 
 function App() {
   return (
@@ -47,8 +48,9 @@ function App() {
         <Route element={<ProtectedRoute allowedRoles={['student']} />}>
           <Route element={<StudentDashboardLayout />}>
             <Route path="/dashboard/student" element={<StudentDiscoveryPage />} />
-            {/* Other student routes like /bookings, /maintenance will go here later */}
+            <Route path="/dashboard/student/study-spaces" element={<StudentStudySpacesPage />} />
           </Route>
+          
         </Route>
 
         {/* HostelOwner Routes */}
