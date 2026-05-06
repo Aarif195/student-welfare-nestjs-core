@@ -30,6 +30,7 @@ import { OwnerOverviewPage } from './pages/dashboard/HostelOwnerDashboard/OwnerO
 import { StudentDashboardLayout } from './pages/dashboard/StudentDashboard/StudentDashboardLayout';
 import { StudentDiscoveryPage } from './pages/dashboard/StudentDashboard/StudentDashboard';
 import { StudentStudySpacesPage } from './pages/dashboard/StudentDashboard/StudentStudySpacesPage';
+import { PaymentSuccessPage } from './pages/dashboard/StudentDashboard/PaymentSuccess';
 
 function App() {
   return (
@@ -50,7 +51,7 @@ function App() {
             <Route path="/dashboard/student" element={<StudentDiscoveryPage />} />
             <Route path="/dashboard/student/study-spaces" element={<StudentStudySpacesPage />} />
           </Route>
-          
+           <Route path="/payment/success" element={<PaymentSuccessPage />} />
         </Route>
 
         {/* HostelOwner Routes */}
