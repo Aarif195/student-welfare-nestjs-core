@@ -7,6 +7,7 @@
  */
 
 export type StudentControllerGetAvailableHostelsParams = {
+search: string;
 limit?: number;
 page?: number;
 };
