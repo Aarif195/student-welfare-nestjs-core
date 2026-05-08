@@ -16,6 +16,20 @@ AXIOS_INSTANCE.interceptors.request.use((config) => {
   return config;
 });
 
+// Response interceptor to catch errors
+AXIOS_INSTANCE.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 export const customInstance = <T>(config: any): Promise<T> => {
   return AXIOS_INSTANCE(config).then((response) => response.data);
 };

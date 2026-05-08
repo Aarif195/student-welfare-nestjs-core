@@ -10,7 +10,7 @@ import { toast } from 'react-hot-toast';
 import { useAuth } from '../../../context/AuthContext.tsx';
 
 export const StudentDiscoveryPage = () => {
-    const { user } = useAuth();
+    const { user, token } = useAuth();
     const [selectedHostelId, setSelectedHostelId] = useState<number | null>(null);
     const [search, setSearch] = useState('');
     const [searchQuery, setSearchQuery] = useState("");
@@ -28,12 +28,14 @@ export const StudentDiscoveryPage = () => {
 
     const { data: hostelData, isLoading: loadingHostels } = useStudentControllerGetAvailableHostels(
         { page: 1, limit: 10, search: searchQuery || "" },
-        { query: { enabled: true } }
+        { query: { enabled: !!token, staleTime: 1000 * 60 * 5, 
+            refetchOnWindowFocus: false } }
     );
 
     const { data: roomData, isLoading: loadingRooms } = useStudentControllerGetAvailableRooms(
         { hostel_id: selectedHostelId || undefined },
-        { query: { enabled: !!selectedHostelId } }
+        { query: { enabled: !!token && !!selectedHostelId, staleTime: 1000 * 60 * 5,
+            refetchOnWindowFocus: false } }
     );
 
     const { mutate: initPayment, isPending: isInitializing } = usePaymentControllerCreateIntent();
@@ -62,7 +64,7 @@ export const StudentDiscoveryPage = () => {
                 window.location.href = authorization_url;
             },
             onError: (err: any) => {
-                console.error(err);``
+                console.error(err); ``
                 toast.error("Could not initialize payment. Please try again.");
             }
         });
