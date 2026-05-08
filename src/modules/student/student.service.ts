@@ -26,12 +26,21 @@ export class StudentService {
       throw new BadRequestException('Room unavailable');
     }
 
+    //  Check if student already has a booking
+    // const existingBooking = await this.prisma.booking.findFirst({
+    //   where: { student_id: studentId },
+    // });
+
+    // if (existingBooking) {
+    //   throw new BadRequestException('You already have an active booking. Only one booking per student is allowed.');
+    // }
+
     //  Verify payment (Manual util check)
     if (!data.reference) {
       throw new BadRequestException('Payment reference is required');
     }
 
-    // To Prevent Duplicate Bookings
+    // To Prevent Duplicate Payments
     const existingPayment = await this.prisma.payment.findUnique({
       where: { reference: data.reference }
     });
@@ -142,8 +151,18 @@ export class StudentService {
   }
 
   // getAvailableHostels
-  async getAvailableHostels(page: number, limit: number) {
+  async getAvailableHostels(page: number, limit: number, search?: string) {
     const skip = (page - 1) * limit;
+
+    const where: any = {
+      status: 'APPROVED',
+      ...(search && {
+        name: {
+          contains: search,
+          mode: 'insensitive',
+        },
+      }),
+    };
 
     const [total, hostels] = await this.prisma.$transaction([
       this.prisma.hostel.count({ where: { status: 'APPROVED' } }),
@@ -152,6 +171,9 @@ export class StudentService {
         orderBy: { created_at: 'desc' },
         skip,
         take: limit,
+        include: {
+          resources: true,
+        },
       }),
     ]);
 
@@ -189,7 +211,7 @@ export class StudentService {
         orderBy,
         skip,
         take: limit,
-        include: { hostel: true }
+        include: { hostel: true, resources: true }
       }),
     ]);
 

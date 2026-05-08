@@ -27,7 +27,7 @@ import { customInstance } from '../../axios-instance';
 
 
 /**
- * @summary Create a Stripe Payment Intent
+ * @summary Initialize Paystack Payment
  */
 export const paymentControllerCreateIntent = (
     createPaymentIntentDto: CreatePaymentIntentDto,
@@ -75,7 +75,7 @@ const {mutation: mutationOptions} = options ?
     export type PaymentControllerCreateIntentMutationError = ErrorResponseDto
 
     /**
- * @summary Create a Stripe Payment Intent
+ * @summary Initialize Paystack Payment
  */
 export const usePaymentControllerCreateIntent = <TError = ErrorResponseDto,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof paymentControllerCreateIntent>>, TError,{data: CreatePaymentIntentDto}, TContext>, }
@@ -91,7 +91,7 @@ export const usePaymentControllerCreateIntent = <TError = ErrorResponseDto,
       return useMutation(mutationOptions, queryClient);
     }
     /**
- * @summary Stripe Webhook Listener
+ * @summary Paystack Webhook Listener
  */
 export const paymentControllerHandleWebhook = (
     
@@ -137,7 +137,7 @@ const {mutation: mutationOptions} = options ?
     export type PaymentControllerHandleWebhookMutationError = unknown
 
     /**
- * @summary Stripe Webhook Listener
+ * @summary Paystack Webhook Listener
  */
 export const usePaymentControllerHandleWebhook = <TError = unknown,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof paymentControllerHandleWebhook>>, TError,void, TContext>, }

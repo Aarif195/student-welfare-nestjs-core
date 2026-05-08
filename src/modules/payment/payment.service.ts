@@ -33,6 +33,7 @@ export class PaymentService {
             amount: Math.round(amount * 100),
             email,
             metadata,
+            callback_url: process.env.FRONTEND_PAYMENT_CALLBACK_URL,
           },
           {
             headers: {

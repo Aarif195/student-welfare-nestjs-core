@@ -74,7 +74,7 @@ export class StudentController {
     }
 
     // getAvailableHostels
-    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Throttle({ default: { limit: 6, ttl: 60000 } })
     @Get('hostels')
     @Roles(Role.student)
     @ApiOperation({ summary: 'Get all available hostels' })
@@ -84,10 +84,11 @@ export class StudentController {
     @ApiBadRequestResponse({ type: ErrorResponseDto })
     @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
-    async getAvailableHostels(@Query() pagination: PaginationDto) {
+    async getAvailableHostels(@Query() pagination: PaginationDto,   @Query('search') search?: string,
+) {
         const page = Number(pagination.page) || 1;
         const limit = Number(pagination.limit) || 10;
-        const { total, hostels } = await this.studentService.getAvailableHostels(page, limit);
+        const { total, hostels } = await this.studentService.getAvailableHostels(page, limit, search);
 
         return {
             success: true,
@@ -97,7 +98,7 @@ export class StudentController {
     }
 
     // getAvailableRooms
-    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     @Get('rooms')
     @Roles(Role.student)
     @ApiOperation({ summary: 'Get available rooms with filters' })
