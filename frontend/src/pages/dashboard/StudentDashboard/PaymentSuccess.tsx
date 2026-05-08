@@ -8,25 +8,30 @@ export const PaymentSuccessPage = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const hasCalled = useRef(false);
-    
+
     const reference = searchParams.get('reference');
     const { mutate: finalizeBooking, isPending } = useStudentControllerBookRoom();
 
     useEffect(() => {
+
+        const savedRoomId = localStorage.getItem('pending_room_id');
+
+        // Prevent double-calling in Strict Mode
         if (reference && !hasCalled.current) {
             hasCalled.current = true;
-            
+
             finalizeBooking({
                 data: {
                     reference: reference,
-                    room_id: 0 
-                } as any
+                    room_id: Number(savedRoomId)
+                }
             }, {
                 onSuccess: () => {
                     toast.success("Room booked successfully!");
+                    localStorage.removeItem('pending_room_id');
                 },
                 onError: (err: any) => {
-                    toast.error("Payment verified but booking failed. Please contact support.");
+                    toast.error(err.response?.data?.message || "Booking failed.");
                 }
             });
         }
@@ -52,7 +57,7 @@ export const PaymentSuccessPage = () => {
                         <p className="text-primary-500 mb-8 text-sm">
                             Your payment was successful and your room has been allocated.
                         </p>
-                        <button 
+                        <button
                             onClick={() => navigate('/dashboard')}
                             className="w-full py-3 bg-primary-800 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary-900 transition-colors"
                         >

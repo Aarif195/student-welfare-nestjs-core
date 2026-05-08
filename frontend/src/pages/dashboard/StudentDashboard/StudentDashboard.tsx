@@ -7,8 +7,10 @@ import {
 } from 'lucide-react';
 import { Modal } from '../../../components/ui/Modal.tsx';
 import { toast } from 'react-hot-toast';
+import { useAuth } from '../../../context/AuthContext.tsx';
 
 export const StudentDiscoveryPage = () => {
+    const { user } = useAuth();
     const [selectedHostelId, setSelectedHostelId] = useState<number | null>(null);
     const [search, setSearch] = useState('');
     const [searchQuery, setSearchQuery] = useState("");
@@ -39,23 +41,28 @@ export const StudentDiscoveryPage = () => {
     const hostels = (hostelData as any)?.data?.AvailableHostels || [];
     const availableRooms = (roomData as any)?.data?.AvailableRooms || [];
 
+    // handleInitiatePayment
     const handleInitiatePayment = () => {
-        if (!bookingRoom) return;
+        if (!bookingRoom || !user?.email) {
+            toast.error("User information not found. Please log in again.");
+            return;
+        }
+
+        localStorage.setItem('pending_room_id', bookingRoom.id.toString());
 
         initPayment({
             data: {
-                amount: bookingRoom.price,
-                // Passing room_id in metadata so we know what room was paid for on the callback
-                metadata: {
-                    room_id: bookingRoom.id
-                }
-            } as any
+                amount: Number(bookingRoom.price),
+                roomId: bookingRoom.id.toString(),
+                email: user.email
+            }
         }, {
             onSuccess: (res: any) => {
                 const { authorization_url } = res.data.data;
                 window.location.href = authorization_url;
             },
-            onError: () => {
+            onError: (err: any) => {
+                console.error(err);``
                 toast.error("Could not initialize payment. Please try again.");
             }
         });
@@ -77,7 +84,7 @@ export const StudentDiscoveryPage = () => {
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter") {
                                         setSearchQuery(search.trim());
-                                        setSearch(""); 
+                                        setSearch("");
                                     }
                                 }}
                             />
@@ -169,7 +176,7 @@ export const StudentDiscoveryPage = () => {
                                             </span>
                                         </div>
                                     </div>
-                                    <button 
+                                    <button
                                         onClick={() => setBookingRoom(room)}
                                         className="w-full mt-4 sm:mt-0 bg-primary-800 text-white py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider group-hover:bg-brand transition-colors cursor-pointer"
                                     >
@@ -190,7 +197,7 @@ export const StudentDiscoveryPage = () => {
                             <p className="text-[10px] uppercase font-bold text-primary-400 mb-1">Selected Unit</p>
                             <h4 className="font-bold text-primary-800 text-lg">Room {bookingRoom.room_number}</h4>
                             <div className="flex items-center gap-2 mt-2 text-xs text-primary-600">
-                                <Users size={14}/> {bookingRoom.capacity} Students Capacity
+                                <Users size={14} /> {bookingRoom.capacity} Students Capacity
                             </div>
                         </div>
 
@@ -212,7 +219,7 @@ export const StudentDiscoveryPage = () => {
                             </p>
                         </div>
 
-                        <button 
+                        <button
                             onClick={handleInitiatePayment}
                             disabled={isInitializing}
                             className="w-full py-4 bg-brand text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-blue-700 transition-all disabled:opacity-70 cursor-pointer"
