@@ -71,14 +71,17 @@ export class StudentService {
           },
         });
 
+        const channel = paymentData.channel;
+
         await tx.payment.create({
           data: {
             booking_id: booking.id,
             student_id: studentId,
             amount: room.price,
             reference: data.reference,
-            payment_status: 'pending',
-            paid_at: null,
+            payment_status: 'success',
+            paid_at: new Date(),
+            payment_method: channel,
           },
         });
 
