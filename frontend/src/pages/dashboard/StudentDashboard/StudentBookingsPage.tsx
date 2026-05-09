@@ -6,10 +6,12 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
+import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 
 export const StudentBookingsPage = () => {
     const queryClient = useQueryClient();
     const [processingId, setProcessingId] = useState<number | null>(null);
+    const [cancelModalId, setCancelModalId] = useState<number | null>(null);
 
     const { data, isLoading } = useStudentControllerGetMyBookings({
         page: 1,
@@ -20,11 +22,17 @@ export const StudentBookingsPage = () => {
 
     const bookings = (data as any)?.data || [];
 
+    // handleCancel
     const handleCancel = (bookingId: number) => {
-        if (!window.confirm("Are you sure you want to cancel this booking?")) return;
+        setCancelModalId(bookingId);
+    };
 
-        setProcessingId(bookingId);
-        cancelBooking({ bookingId }, {
+    // confirmCancel
+    const confirmCancel = () => {
+        if (cancelModalId === null) return;
+
+        setProcessingId(cancelModalId);
+        cancelBooking({ bookingId: cancelModalId }, {
             onSuccess: () => {
                 toast.success("Booking cancelled successfully");
                 queryClient.invalidateQueries({ queryKey: ['student', 'bookings'] });
@@ -32,7 +40,10 @@ export const StudentBookingsPage = () => {
             onError: (err: any) => {
                 toast.error(err?.response?.data?.message || "Failed to cancel booking");
             },
-            onSettled: () => setProcessingId(null)
+            onSettled: () => {
+                setProcessingId(null);
+                setCancelModalId(null);
+            }
         });
     };
 
@@ -103,6 +114,7 @@ export const StudentBookingsPage = () => {
                                             <AlertCircle size={14} className="shrink-0" />
                                             Awaiting SuperAdmin approval. You can cancel this booking before it is approved.
                                         </div>
+                                        {/* handleCancel */}
                                         <button
                                             onClick={() => handleCancel(booking.booking_id)}
                                             disabled={processingId === booking.booking_id}
@@ -111,6 +123,7 @@ export const StudentBookingsPage = () => {
                                             {processingId === booking.booking_id ? <Loader2 size={14} className="animate-spin" /> : "Cancel Booking"}
                                         </button>
                                     </div>
+
                                 )}
                             </div>
                         </div>
@@ -124,6 +137,14 @@ export const StudentBookingsPage = () => {
                     )}
                 </div>
             )}
+            <ConfirmModal
+                open={cancelModalId !== null}
+                title="Cancel Booking"
+                message="Are you sure you want to cancel this booking? This action cannot be undone."
+                confirmText="Yes, Cancel"
+                onClose={() => setCancelModalId(null)}
+                onConfirm={confirmCancel}
+            />
         </div>
     );
 };
