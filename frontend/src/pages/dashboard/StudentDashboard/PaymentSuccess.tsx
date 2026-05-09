@@ -61,7 +61,7 @@ export const PaymentSuccessPage = () => {
                             Your payment was successful and your room has been allocated.
                         </p>
                         <button
-                            onClick={() => navigate('/dashboard')}
+                            onClick={() => navigate('/dashboard/student')}
                             className="w-full py-3 bg-green-800 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary-900 transition-colors cursor-pointer"
                         >
                             <Home size={18} /> Back to Dashboard

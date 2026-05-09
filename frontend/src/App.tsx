@@ -31,6 +31,7 @@ import { StudentDashboardLayout } from './pages/dashboard/StudentDashboard/Stude
 import { StudentDiscoveryPage } from './pages/dashboard/StudentDashboard/StudentDashboard';
 import { StudentStudySpacesPage } from './pages/dashboard/StudentDashboard/StudentStudySpacesPage';
 import { PaymentSuccessPage } from './pages/dashboard/StudentDashboard/PaymentSuccess';
+import { StudentBookingsPage } from './pages/dashboard/StudentDashboard/StudentBookingsPage';
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
           <Route element={<StudentDashboardLayout />}>
             <Route path="/dashboard/student" element={<StudentDiscoveryPage />} />
             <Route path="/dashboard/student/study-spaces" element={<StudentStudySpacesPage />} />
+            <Route path="/dashboard/student/bookings" element={<StudentBookingsPage />} />
           </Route>
            <Route path="/payment/success" element={<PaymentSuccessPage />} />
         </Route>
