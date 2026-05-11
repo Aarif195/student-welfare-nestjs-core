@@ -322,6 +322,10 @@ export class StudentService {
         description: dto.description,
         image_url: dto.image_url,
       },
+      include: {
+        hostel: { select: { name: true } },
+        room: { select: { room_number: true } },
+      },
     });
   }
 
@@ -336,7 +340,7 @@ export class StudentService {
         take: limit,
         include: {
           hostel: { select: { name: true } },
-          room: { select: { room_number: true } }
+          room: { select: { room_number: true } },
         },
         orderBy: { created_at: 'desc' }
       }),

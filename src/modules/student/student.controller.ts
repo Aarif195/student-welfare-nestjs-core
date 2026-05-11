@@ -186,7 +186,7 @@ export class StudentController {
 
 
     // getMyMaintenance
-    @Throttle({ default: { limit: 3, ttl: 60000 } })
+    @Throttle({ default: { limit: 10, ttl: 60000 } })
     @Get('maintenance')
     @Roles(Role.student)
     @ApiOperation({ summary: 'Get my maintenance request history' })
