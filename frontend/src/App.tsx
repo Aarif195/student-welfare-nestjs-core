@@ -33,6 +33,7 @@ import { StudentStudySpacesPage } from './pages/dashboard/StudentDashboard/Stude
 import { PaymentSuccessPage } from './pages/dashboard/StudentDashboard/PaymentSuccess';
 import { StudentBookingsPage } from './pages/dashboard/StudentDashboard/StudentBookingsPage';
 import { StudentMaintenancePage } from './pages/dashboard/StudentDashboard/StudentMaintenancePage';
+import { StudentNotificationsPage } from './pages/dashboard/StudentDashboard/StudentNotificationsPage';
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
             <Route path="/dashboard/student/study-spaces" element={<StudentStudySpacesPage />} />
             <Route path="/dashboard/student/bookings" element={<StudentBookingsPage />} />
             <Route path="/dashboard/student/maintenance" element={<StudentMaintenancePage />} />
+            <Route path="/dashboard/student/notifications" element={<StudentNotificationsPage />} />
           </Route>
            <Route path="/payment/success" element={<PaymentSuccessPage />} />
         </Route>
