@@ -1,10 +1,9 @@
-import React from 'react';
 import { 
     useStudentControllerGetMyNotifications, 
     useStudentControllerMarkAsRead 
 } from '../../../api/generated/student/student';
 import { 
-    Bell, CheckCircle, Clock, 
+    Bell, Clock, 
     Info, Megaphone, Check,
     Building2, User
 } from 'lucide-react';
