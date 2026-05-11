@@ -14,6 +14,8 @@ export const MyHostelsPage = () => {
         toast.error("Failed to load hostels");
     }
 
+    const hostelsArray = (hostels?.data?.data as any[]) || [];
+
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
@@ -34,7 +36,7 @@ export const MyHostelsPage = () => {
                 <div className="flex justify-center py-20">
                     <div className="w-10 h-10 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
                 </div>
-            ) : hostels?.data?.length === 0 ? (
+            ) : hostelsArray.length === 0 ? (
                 <div className="bg-white border border-dashed border-primary-300 rounded-xl p-12 text-center">
                     <div className="bg-primary-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                         <Building2 className="text-primary-400" size={32} />
