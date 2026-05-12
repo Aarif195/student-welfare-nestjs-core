@@ -71,14 +71,17 @@ export class StudentService {
           },
         });
 
+        const channel = paymentData.channel;
+
         await tx.payment.create({
           data: {
             booking_id: booking.id,
             student_id: studentId,
             amount: room.price,
             reference: data.reference,
-            payment_status: 'pending',
-            paid_at: null,
+            payment_status: 'success',
+            paid_at: new Date(),
+            payment_method: channel,
           },
         });
 
@@ -319,6 +322,10 @@ export class StudentService {
         description: dto.description,
         image_url: dto.image_url,
       },
+      include: {
+        hostel: { select: { name: true } },
+        room: { select: { room_number: true } },
+      },
     });
   }
 
@@ -333,7 +340,7 @@ export class StudentService {
         take: limit,
         include: {
           hostel: { select: { name: true } },
-          room: { select: { room_number: true } }
+          room: { select: { room_number: true } },
         },
         orderBy: { created_at: 'desc' }
       }),

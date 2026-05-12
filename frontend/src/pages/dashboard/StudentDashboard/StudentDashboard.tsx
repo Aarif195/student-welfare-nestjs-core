@@ -169,7 +169,7 @@ export const StudentDiscoveryPage = () => {
                                 <div className="flex-1 flex flex-col justify-between">
                                     <div>
                                         <div className="flex justify-between items-start">
-                                            <h3 className="font-bold text-primary-800">Room {room.room_number}</h3>
+                                            <h3 className="font-bold text-primary-800">{room.room_number}</h3>
                                             <span className="text-brand font-bold text-sm">₦{room.price.toLocaleString()}</span>
                                         </div>
                                         <div className="flex gap-3 mt-2">
@@ -197,7 +197,7 @@ export const StudentDiscoveryPage = () => {
                     <div className="space-y-6">
                         <div className="p-4 bg-primary-50 rounded-xl border border-primary-100">
                             <p className="text-[10px] uppercase font-bold text-primary-400 mb-1">Selected Unit</p>
-                            <h4 className="font-bold text-primary-800 text-lg">Room {bookingRoom.room_number}</h4>
+                            <h4 className="font-bold text-primary-800 text-lg"> {bookingRoom.room_number}</h4>
                             <div className="flex items-center gap-2 mt-2 text-xs text-primary-600">
                                 <Users size={14} /> {bookingRoom.capacity} Students Capacity
                             </div>

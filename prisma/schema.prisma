@@ -73,6 +73,9 @@ model HostelResource {
 
   hostel Hostel @relation(fields: [hostel_id], references: [id], onDelete: Cascade)
 
+  maintenance_id Int?
+  maintenance    MaintenanceRequest? @relation("MaintenanceResources", fields: [maintenance_id], references: [id], onDelete: Cascade)
+
   @@map("hostel_resources")
 }
 
@@ -214,6 +217,7 @@ model MaintenanceRequest {
   student      User              @relation("StudentRequests", fields: [student_id], references: [id])
   hostel       Hostel            @relation(fields: [hostel_id], references: [id])
   room         Room              @relation(fields: [room_id], references: [id])
+  resources   HostelResource[]  @relation("MaintenanceResources")
 }
 
 enum MaintenanceStatus {

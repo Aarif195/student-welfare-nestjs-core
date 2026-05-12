@@ -1,7 +1,7 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { useStudentControllerGetAvailableStudySpaces } from '../../../api/generated/student/student';
 import { BookOpen, MapPin, Clock, Users, Circle, Calendar } from 'lucide-react';
-import { Modal } from '../../../components/ui/Modal'; 
+import { Modal } from '../../../components/ui/Modal';
 
 export const StudentStudySpacesPage = () => {
     const [selectedSpace, setSelectedSpace] = useState<any | null>(null);
@@ -22,8 +22,15 @@ export const StudentStudySpacesPage = () => {
             {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className="h-48 bg-white animate-pulse rounded-2xl border border-primary-100" />
+                        <div key={i} className="h-48 bg-primary-50 animate-pulse rounded-2xl border border-primary-100" />
                     ))}
+                </div>
+            ) : spaces.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-dashed border-primary-200">
+                    <div className="p-4 bg-primary-50 rounded-full mb-4">
+                        <BookOpen size={32} className="text-primary-300" />
+                    </div>
+                    <p className="text-primary-500 font-medium">No study spaces created yet.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -33,9 +40,8 @@ export const StudentStudySpacesPage = () => {
                                 <div className="p-2 bg-blue-50 rounded-lg text-brand">
                                     <BookOpen size={20} />
                                 </div>
-                                <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-md flex items-center gap-1 ${
-                                    space.status === 'open' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'
-                                }`}>
+                                <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-md flex items-center gap-1 ${space.status === 'open' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'
+                                    }`}>
                                     <Circle size={8} className="fill-current" />
                                     {space.status}
                                 </span>
@@ -46,7 +52,7 @@ export const StudentStudySpacesPage = () => {
                                 <MapPin size={14} /> {space.location}
                             </p>
 
-                            <button 
+                            <button
                                 onClick={() => setSelectedSpace(space)}
                                 className="w-full mt-4 py-2 bg-primary-50 text-primary-700 hover:bg-brand hover:text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
                             >
@@ -59,8 +65,8 @@ export const StudentStudySpacesPage = () => {
 
             {/* Details Modal */}
             <Modal
-                isOpen={!!selectedSpace} 
-                onClose={() => setSelectedSpace(null)} 
+                isOpen={!!selectedSpace}
+                onClose={() => setSelectedSpace(null)}
                 title="Study Space Details"
             >
                 {selectedSpace && (
@@ -75,7 +81,7 @@ export const StudentStudySpacesPage = () => {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="p-3 border border-primary-100 rounded-xl">
                                 <p className="text-[10px] uppercase text-primary-400 font-bold mb-1 flex items-center gap-1">
-                                    <Clock size={12}/> Hours
+                                    <Clock size={12} /> Hours
                                 </p>
                                 <p className="text-sm font-bold text-primary-700">
                                     {selectedSpace.opening_time} - {selectedSpace.closing_time}
@@ -83,7 +89,7 @@ export const StudentStudySpacesPage = () => {
                             </div>
                             <div className="p-3 border border-primary-100 rounded-xl">
                                 <p className="text-[10px] uppercase text-primary-400 font-bold mb-1 flex items-center gap-1">
-                                    <Users size={12}/> Capacity
+                                    <Users size={12} /> Capacity
                                 </p>
                                 <p className="text-sm font-bold text-primary-700">
                                     {selectedSpace.available_slots} / {selectedSpace.total_capacity} Slots
@@ -101,7 +107,7 @@ export const StudentStudySpacesPage = () => {
                             </div>
                         </div>
 
-                        <button 
+                        <button
                             onClick={() => setSelectedSpace(null)}
                             className="w-full py-3 bg-primary-800 text-white rounded-xl font-bold text-sm hover:bg-primary-900 transition-colors cursor-pointer"
                         >

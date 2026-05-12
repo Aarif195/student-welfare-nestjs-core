@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import {useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useStudentControllerBookRoom } from '../../../api/generated/student/student';
 import { CheckCircle2, Loader2, Home } from 'lucide-react';
@@ -8,6 +8,7 @@ export const PaymentSuccessPage = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const hasCalled = useRef(false);
+    const [isSuccess, setIsSuccess] = useState(false);
 
     const reference = searchParams.get('reference');
     const { mutate: finalizeBooking, isPending } = useStudentControllerBookRoom();
@@ -27,10 +28,12 @@ export const PaymentSuccessPage = () => {
                 }
             }, {
                 onSuccess: () => {
+                    setIsSuccess(true);
                     toast.success("Room booked successfully!");
                     localStorage.removeItem('pending_room_id');
                 },
                 onError: (err: any) => {
+                setIsSuccess(false);
                     toast.error(err.response?.data?.message || "Booking failed.");
                 }
             });
@@ -40,7 +43,7 @@ export const PaymentSuccessPage = () => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-primary-50 p-4">
             <div className="max-w-md w-full bg-white rounded-3xl p-8 text-center shadow-xl border border-primary-100">
-                {isPending ? (
+                {isSuccess ? (
                     <>
                         <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
                             <Loader2 className="text-brand animate-spin" size={40} />
@@ -58,8 +61,8 @@ export const PaymentSuccessPage = () => {
                             Your payment was successful and your room has been allocated.
                         </p>
                         <button
-                            onClick={() => navigate('/dashboard')}
-                            className="w-full py-3 bg-primary-800 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary-900 transition-colors"
+                            onClick={() => navigate('/dashboard/student')}
+                            className="w-full py-3 bg-green-800 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-primary-900 transition-colors cursor-pointer"
                         >
                             <Home size={18} /> Back to Dashboard
                         </button>
