@@ -23,6 +23,7 @@ export const StudentDashboardLayout = () => {
         { name: 'Maintenance', path: '/dashboard/student/maintenance', icon: <Wrench size={20} /> },
         { name: 'Notifications', path: '/dashboard/student/notifications', icon: <Bell size={20} /> },
         { name: 'Reviews', path: '/dashboard/student/reviews', icon: <Star size={20} /> },
+        { name: 'Profile', path: '/dashboard/student/profile', icon: <User size={20} /> },
     ];
 
     const handleLogout = () => {
