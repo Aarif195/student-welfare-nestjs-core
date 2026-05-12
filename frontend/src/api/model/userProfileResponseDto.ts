@@ -14,6 +14,7 @@ export interface UserProfileResponseDto {
   phone: string;
   image: string;
   role: string;
+  address?: string;
   createdAt: string;
   updatedAt: string;
 }
