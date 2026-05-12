@@ -2,16 +2,19 @@ import React, { useState } from 'react';
 import {
     useStudentControllerGetMyMaintenance,
     useStudentControllerCreateRequest,
-    getStudentControllerGetMyMaintenanceQueryKey
+    getStudentControllerGetMyMaintenanceQueryKey,
+    useStudentControllerDeleteRequest
 } from '../../../api/generated/student/student';
 import {
     Plus, Loader2, X, Building2, UploadCloud,
-    ClipboardList
+    ClipboardList,
+    Trash2
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCloudinaryControllerGetSignature } from '../../../api/generated/cloudinary/cloudinary';
 import { uploadToCloudinary } from '../../utils/cloudinaryUpload';
+import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 
 export const StudentMaintenancePage = () => {
     const queryClient = useQueryClient();
@@ -22,10 +25,12 @@ export const StudentMaintenancePage = () => {
     const [formData, setFormData] = useState({ title: '', description: '' });
     const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
     const [isUploading, setIsUploading] = useState(false);
+    const [deleteId, setDeleteId] = useState<number | null>(null);
 
     // API Hooks
     const { data, isLoading } = useStudentControllerGetMyMaintenance({ page: 1, limit: 10 });
     const { mutate: createRequest, isPending } = useStudentControllerCreateRequest();
+    const { mutate: deleteRequest, isPending: isDeleting } = useStudentControllerDeleteRequest();
 
     // Cloudinary Signature Hook
     const signatureQuery = useCloudinaryControllerGetSignature(
@@ -61,34 +66,51 @@ export const StudentMaintenancePage = () => {
 
     // handleSubmit
     const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+        e.preventDefault();
 
-    const imageToSubmit = uploadedUrls.length > 0 ? uploadedUrls[uploadedUrls.length - 1] : "";
+        const imageToSubmit = uploadedUrls.length > 0 ? uploadedUrls[uploadedUrls.length - 1] : "";
 
-    const payload = {
-        title: formData.title,
-        description: formData.description,
-        image_url: imageToSubmit, 
+        const payload = {
+            title: formData.title,
+            description: formData.description,
+            image_url: imageToSubmit,
+        };
+
+        createRequest({ data: payload as any }, {
+            onSuccess: () => {
+                toast.success("Request submitted successfully");
+                setIsModalOpen(false);
+                setFormData({ title: '', description: '' });
+                setUploadedUrls([]);
+                setPreviewUrl('');
+                queryClient.invalidateQueries({
+                    queryKey: getStudentControllerGetMyMaintenanceQueryKey({ page: 1, limit: 10 })
+                });
+            },
+            onError: (err: any) => {
+                toast.error(err?.response?.data?.message || "Failed to submit request");
+            }
+        });
     };
 
-    createRequest({ data: payload as any }, {
-        onSuccess: () => {
-            toast.success("Request submitted successfully");
-            setIsModalOpen(false);
-            setFormData({ title: '', description: '' });
-            setUploadedUrls([]);
-            setPreviewUrl('');
-            queryClient.invalidateQueries({
-                queryKey: getStudentControllerGetMyMaintenanceQueryKey({ page: 1, limit: 10 })
+    const confirmDelete = () => {
+        if (deleteId) {
+            deleteRequest({ id: deleteId }, {
+                onSuccess: () => {
+                    toast.success("Record deleted successfully");
+                    setDeleteId(null);
+                    queryClient.invalidateQueries({
+                        queryKey: ['/api/v1/student/maintenance']
+                    });
+                },
+                onError: (err: any) => {
+                    toast.error(err?.response?.data?.message || "Delete failed");
+                }
             });
-        },
-        onError: (err: any) => {
-            toast.error(err?.response?.data?.message || "Failed to submit request");
         }
-    });
-};
+    };
 
-// getStatusStyles
+    // getStatusStyles
     const getStatusStyles = (status: string) => {
         switch (status?.toLowerCase()) {
             case 'completed': return 'bg-green-50 text-green-700 border-green-100';
@@ -128,7 +150,7 @@ export const StudentMaintenancePage = () => {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                    
+
                     {requests.map((req: any) => (
                         <div key={req.id} className="bg-white rounded-2xl border border-primary-100 p-5 shadow-sm">
                             <div className="flex justify-between items-start mb-4">
@@ -169,6 +191,16 @@ export const StudentMaintenancePage = () => {
                                     <Building2 size={14} className="text-brand" />
                                     {req.hostel?.name} • {req.room?.room_number}
                                 </div>
+
+                                {req.status === 'resolved' && (
+                                    <button
+                                        onClick={() => setDeleteId(req.id)}
+                                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                )}
+
                             </div>
                         </div>
                     ))}
@@ -248,6 +280,15 @@ export const StudentMaintenancePage = () => {
                     </div>
                 </div>
             )}
+            <ConfirmModal
+                open={deleteId !== null}
+                title="Delete Record"
+                message="Are you sure you want to delete this maintenance record? This action cannot be undone."
+                confirmText={isDeleting ? "Deleting..." : "Yes, Delete"}
+                onClose={() => setDeleteId(null)}
+                onConfirm={confirmDelete}
+            />
+
         </div>
     );
 };

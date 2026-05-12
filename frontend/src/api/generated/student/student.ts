@@ -755,6 +755,67 @@ export function useStudentControllerGetMyMaintenance<TData = Awaited<ReturnType<
 
 
 /**
+ * @summary Student deletes a resolved maintenance request
+ */
+export const studentControllerDeleteRequest = (
+    id: number,
+ ) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/student/maintenance/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  
+
+
+export const getStudentControllerDeleteRequestMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof studentControllerDeleteRequest>>, TError,{id: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof studentControllerDeleteRequest>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['studentControllerDeleteRequest'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof studentControllerDeleteRequest>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  studentControllerDeleteRequest(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StudentControllerDeleteRequestMutationResult = NonNullable<Awaited<ReturnType<typeof studentControllerDeleteRequest>>>
+    
+    export type StudentControllerDeleteRequestMutationError = void
+
+    /**
+ * @summary Student deletes a resolved maintenance request
+ */
+export const useStudentControllerDeleteRequest = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof studentControllerDeleteRequest>>, TError,{id: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof studentControllerDeleteRequest>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+
+      const mutationOptions = getStudentControllerDeleteRequestMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
  * @summary Student creates a review for a hostel
  */
 export const studentControllerCreateReview = (
