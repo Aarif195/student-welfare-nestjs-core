@@ -25,6 +25,7 @@ import { NotificationsPage } from './pages/dashboard/HostelOwnerDashboard/Notifi
 import { MaintenancePage } from './pages/dashboard/HostelOwnerDashboard/MaintenancePage';
 import { ReviewsPage } from './pages/dashboard/HostelOwnerDashboard/ReviewsPage';
 import { OwnerOverviewPage } from './pages/dashboard/HostelOwnerDashboard/OwnerOverviewPage';
+import { OwnerProfilePage } from './pages/dashboard/HostelOwnerDashboard/OwnerProfilePage';
 
 // StudentDashboard
 import { StudentDashboardLayout } from './pages/dashboard/StudentDashboard/StudentDashboardLayout';
@@ -36,6 +37,7 @@ import { StudentMaintenancePage } from './pages/dashboard/StudentDashboard/Stude
 import { StudentNotificationsPage } from './pages/dashboard/StudentDashboard/StudentNotificationsPage';
 import { StudentReviewsPage } from './pages/dashboard/StudentDashboard/StudentReviewsPage';
 import { StudentProfilePage } from './pages/dashboard/StudentDashboard/StudentProfilePage';
+
 
 function App() {
   return (
@@ -83,7 +85,9 @@ function App() {
             <Route path="notifications" element={<NotificationsPage />} />
             <Route path="maintenance" element={<MaintenancePage />} />
             <Route path="reviews" element={<ReviewsPage />} />
+            <Route path="profile" element={<OwnerProfilePage />} />
           </Route>
+          
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={['superadmin']} />}>

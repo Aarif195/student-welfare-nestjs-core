@@ -7,7 +7,8 @@ import {
     Bell,
     LogOut,
     CalendarCheck,
-    Star
+    Star,
+    User
 } from 'lucide-react';
 
 export const HostelOwnerDashboard = () => {
@@ -22,6 +23,7 @@ export const HostelOwnerDashboard = () => {
         { name: 'Maintenance', path: '/dashboard/owner/maintenance', icon: <ClipboardList size={20} /> },
         { name: 'Notifications', path: '/dashboard/owner/notifications', icon: <Bell size={20} /> },
         { name: 'Reviews', path: '/dashboard/owner/reviews', icon: <Star size={20} /> },
+        { name: 'Profile', path: '/dashboard/owner/profile', icon: <User size={20} /> },
     ];
 
     const handleLogout = () => {
