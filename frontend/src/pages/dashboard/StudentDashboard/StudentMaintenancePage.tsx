@@ -127,6 +127,8 @@ export const StudentMaintenancePage = () => {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    
                     {requests.map((req: any) => (
                         <div key={req.id} className="bg-white rounded-2xl border border-primary-100 p-5 shadow-sm">
                             <div className="flex justify-between items-start mb-4">
@@ -170,6 +172,8 @@ export const StudentMaintenancePage = () => {
                             </div>
                         </div>
                     ))}
+
+
                 </div>
             )}
 

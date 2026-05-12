@@ -24,6 +24,7 @@ export const HostelOwnerDashboard = () => {
         { name: 'Notifications', path: '/dashboard/owner/notifications', icon: <Bell size={20} /> },
         { name: 'Reviews', path: '/dashboard/owner/reviews', icon: <Star size={20} /> },
         { name: 'Profile', path: '/dashboard/owner/profile', icon: <User size={20} /> },
+
     ];
 
     const handleLogout = () => {

@@ -1,6 +1,6 @@
-import { BadRequestException, Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 
-import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiQuery } from '@nestjs/swagger';
 
 import { Roles } from '@/common/decorators/roles.decorator';
 import { Role, StudySpaceStatus } from '@prisma/client';
@@ -84,8 +84,8 @@ export class StudentController {
     @ApiBadRequestResponse({ type: ErrorResponseDto })
     @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
-    async getAvailableHostels(@Query() pagination: PaginationDto,   @Query('search') search?: string,
-) {
+    async getAvailableHostels(@Query() pagination: PaginationDto, @Query('search') search?: string,
+    ) {
         const page = Number(pagination.page) || 1;
         const limit = Number(pagination.limit) || 10;
         const { total, hostels } = await this.studentService.getAvailableHostels(page, limit, search);
@@ -208,6 +208,21 @@ export class StudentController {
             meta: { page, limit, total },
             MaintenanceRequests: requests,
         };
+    }
+
+    // deleteRequest
+    @Delete('maintenance/:id')
+    @Roles(Role.student)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Student deletes a resolved maintenance request' })
+    @ApiOkResponse({ type: MessageResponseDto })
+    @ApiNotFoundResponse({ description: 'Request not found' })
+    async deleteRequest(
+        @GetUser() user: { id: number },
+        @Param('id', ParseIntPipe) requestId: number,
+    ) {
+        await this.studentService.deleteRequest(user.id, requestId);
+        return { success: true, message: 'Maintenance record deleted successfully' };
     }
 
     // createReview
