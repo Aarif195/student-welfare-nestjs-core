@@ -16,7 +16,7 @@ import { Role } from '@prisma/client';
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) { }
 
-  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Get('me')
   @Roles(Role.student, Role.hostelOwner, Role.superadmin)
   @ApiOperation({ summary: 'Get current user profile' })

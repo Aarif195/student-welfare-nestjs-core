@@ -22,6 +22,9 @@ export class UserProfileResponseDto {
   @ApiProperty({ example: 'superadmin' })
   role: string;
 
+  @ApiProperty({ example: '123 Main St', required: false })
+  address?: string;
+
   @ApiProperty({ example: '2022-01-01T00:00:00.000Z' })
   createdAt: Date;
 
