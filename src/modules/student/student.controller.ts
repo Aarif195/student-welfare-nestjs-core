@@ -84,7 +84,8 @@ export class StudentController {
     @ApiBadRequestResponse({ type: ErrorResponseDto })
     @ApiQuery({ name: 'page', required: false, type: Number })
     @ApiQuery({ name: 'limit', required: false, type: Number })
-    async getAvailableHostels(@Query() pagination: PaginationDto, @Query('search') search?: string,
+    @ApiQuery({ name: 'search', required: false, type: String })
+    async getAvailableHostels(@Query() pagination: PaginationDto, @Query('search') search: string = "",
     ) {
         const page = Number(pagination.page) || 1;
         const limit = Number(pagination.limit) || 10;
