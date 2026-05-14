@@ -9,8 +9,6 @@ import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { LoginPage } from './pages/auth/LoginPage';
 
-import { SuperAdminDashboard } from './pages/dashboard/SuperAdminDashboard';
-
 
 // HostelOwnerDashboard
 import { HostelOwnerDashboard } from './pages/dashboard/HostelOwnerDashboard/HostelOwnerDashboard';
@@ -37,6 +35,8 @@ import { StudentMaintenancePage } from './pages/dashboard/StudentDashboard/Stude
 import { StudentNotificationsPage } from './pages/dashboard/StudentDashboard/StudentNotificationsPage';
 import { StudentReviewsPage } from './pages/dashboard/StudentDashboard/StudentReviewsPage';
 import { StudentProfilePage } from './pages/dashboard/StudentDashboard/StudentProfilePage';
+
+import { SuperAdminDashboardLayout } from './pages/dashboard/SuperAdminDashboard/SuperAdminDashboardLayout';
 
 
 function App() {
@@ -91,7 +91,7 @@ function App() {
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={['superadmin']} />}>
-          <Route path="/dashboard/admin" element={<SuperAdminDashboard />} />
+          <Route path="/dashboard/admin" element={<SuperAdminDashboardLayout />} />
         </Route>
       </Routes>
     </>

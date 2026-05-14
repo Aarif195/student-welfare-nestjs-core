@@ -1,1 +1,0 @@
-export const SuperAdminDashboard = () => <p className="p-8 text-primary-700">Admin Dashboard: Welcome, Superadmin!</p>;

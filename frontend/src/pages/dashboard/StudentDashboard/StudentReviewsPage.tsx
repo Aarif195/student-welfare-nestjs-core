@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { 
-    useStudentControllerGetMyReviews, 
+import {
+    useStudentControllerGetMyReviews,
     useStudentControllerCreateReview,
     useStudentControllerGetMyBookings
 } from '../../../api/generated/student/student';
-import { 
-    Star, Plus, 
-    X, Loader2, Quote, 
+import {
+    Star, Plus,
+    X, Loader2, Quote,
     Reply, Building2
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
@@ -57,7 +57,7 @@ export const StudentReviewsPage = () => {
                     <h1 className="text-xl font-bold text-primary-800">My Reviews</h1>
                     <p className="text-sm text-primary-500">Share your experience with the hostels you've stayed in.</p>
                 </div>
-                <button 
+                <button
                     onClick={() => setIsModalOpen(true)}
                     className="flex items-center gap-2 bg-brand text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all cursor-pointer shadow-lg shadow-blue-100"
                 >
@@ -72,49 +72,67 @@ export const StudentReviewsPage = () => {
                     ))}
                 </div>
             ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    {reviews.map((review: any) => (
-                        <div key={review.id} className="bg-white rounded-3xl border border-primary-50 p-6 shadow-sm hover:shadow-md transition-all">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="space-y-1">
-                                    <h3 className="font-bold text-primary-800 flex items-center gap-2">
-                                        <Building2 size={16} className="text-brand" /> {review.hostel?.name}
-                                    </h3>
-                                    <div className="flex items-center gap-0.5">
-                                        {[...Array(5)].map((_, i) => (
-                                            <Star 
-                                                key={i} 
-                                                size={14} 
-                                                className={i < review.rating ? `${getStarColor(review.rating)} fill-current` : 'text-primary-100'} 
-                                            />
-                                        ))}
+                <>
+                    {/* Review Grid */}
+                    {reviews.length > 0 && (
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            {reviews.map((review: any) => (
+                                <div key={review.id} className="bg-white rounded-3xl border border-primary-50 p-6 shadow-sm hover:shadow-md transition-all">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div className="space-y-1">
+                                            <h3 className="font-bold text-primary-800 flex items-center gap-2">
+                                                <Building2 size={16} className="text-brand" /> {review.hostel?.name}
+                                            </h3>
+                                            <div className="flex items-center gap-0.5">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <Star
+                                                        key={i}
+                                                        size={14}
+                                                        className={i < review.rating ? `${getStarColor(review.rating)} fill-current` : 'text-primary-100'}
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <span className="text-[10px] font-bold text-primary-300 uppercase italic">
+                                            {new Date(review.created_at).toLocaleDateString()}
+                                        </span>
                                     </div>
-                                </div>
-                                <span className="text-[10px] font-bold text-primary-300 uppercase italic">
-                                    {new Date(review.created_at).toLocaleDateString()}
-                                </span>
-                            </div>
 
-                            <div className="relative">
-                                <Quote className="absolute -left-2 -top-2 text-primary-50 opacity-50" size={24} />
-                                <p className="text-xs text-primary-600 leading-relaxed italic pl-4">
-                                    "{review.comment}"
-                                </p>
-                            </div>
-
-                            {review.owner_reply && (
-                                <div className="mt-4 p-4 bg-primary-50/50 rounded-2xl border border-primary-50 space-y-2">
-                                    <div className="flex items-center gap-2 text-[10px] font-bold text-brand uppercase">
-                                        <Reply size={12} className="rotate-180" /> Owner Response
+                                    <div className="relative">
+                                        <Quote className="absolute -left-2 -top-2 text-primary-50 opacity-50" size={24} />
+                                        <p className="text-xs text-primary-600 leading-relaxed italic pl-4">
+                                            "{review.comment}"
+                                        </p>
                                     </div>
-                                    <p className="text-xs text-primary-500 leading-relaxed italic">
-                                        {review.owner_reply}
-                                    </p>
+
+                                    {review.owner_reply && (
+                                        <div className="mt-4 p-4 bg-primary-50/50 rounded-2xl border border-primary-50 space-y-2">
+                                            <div className="flex items-center gap-2 text-[10px] font-bold text-brand uppercase">
+                                                <Reply size={12} className="rotate-180" /> Owner Response
+                                            </div>
+                                            <p className="text-xs text-primary-500 leading-relaxed italic">
+                                                {review.owner_reply}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
+                            ))}
                         </div>
-                    ))}
-                </div>
+                    )}
+
+                    {/* Empty State */}
+                    {reviews.length === 0 && (
+                        <div className="flex flex-col items-center justify-center text-center py-20 px-6 bg-white rounded-[2.5rem] border border-dashed border-primary-200">
+                            <div className="bg-primary-50 p-4 rounded-full mb-4">
+                                <Quote className="text-primary-200" size={32} />
+                            </div>
+                            <h3 className="text-primary-800 font-bold text-lg mb-1">No reviews yet</h3>
+                            <p className="text-primary-500 font-medium italic text-sm max-w-xs">
+                                You haven't shared your experience with any hostels yet.
+                            </p>
+                        </div>
+                    )}
+                </>
             )}
 
             {/* Modal */}
@@ -130,10 +148,10 @@ export const StudentReviewsPage = () => {
                         <form onSubmit={handleSubmit} className="p-6 space-y-5">
                             <div>
                                 <label className="block text-[10px] font-bold uppercase text-primary-400 mb-2">Select Hostel</label>
-                                <select 
+                                <select
                                     className="w-full bg-primary-50 border-none rounded-2xl p-4 text-sm outline-none font-semibold text-primary-800 appearance-none"
                                     value={formData.hostel_id}
-                                    onChange={e => setFormData({...formData, hostel_id: Number(e.target.value)})}
+                                    onChange={e => setFormData({ ...formData, hostel_id: Number(e.target.value) })}
                                     required
                                 >
                                     <option value={0}>Choose a hostel...</option>
@@ -155,17 +173,16 @@ export const StudentReviewsPage = () => {
                                                 type="button"
                                                 key={ratingValue}
                                                 className="cursor-pointer transition-transform active:scale-90 "
-                                                onClick={() => setFormData({...formData, rating: ratingValue})}
+                                                onClick={() => setFormData({ ...formData, rating: ratingValue })}
                                                 onMouseEnter={() => setHover(ratingValue)}
                                                 onMouseLeave={() => setHover(0)}
                                             >
-                                                <Star 
-                                                    size={32} 
-                                                    className={`${
-                                                        ratingValue <= (hover || formData.rating) 
-                                                        ? `${getStarColor(hover || formData.rating)} fill-current` 
-                                                        : 'text-primary-100'
-                                                    } transition-colors`} 
+                                                <Star
+                                                    size={32}
+                                                    className={`${ratingValue <= (hover || formData.rating)
+                                                            ? `${getStarColor(hover || formData.rating)} fill-current`
+                                                            : 'text-primary-100'
+                                                        } transition-colors`}
                                                 />
                                             </button>
                                         );
@@ -175,18 +192,18 @@ export const StudentReviewsPage = () => {
 
                             <div>
                                 <label className="block text-[10px] font-bold uppercase text-primary-400 mb-2 text-left">Feedback</label>
-                                <textarea 
+                                <textarea
                                     required
                                     rows={4}
                                     className="w-full bg-primary-50 border-none rounded-3xl p-4 text-sm outline-none focus:ring-2 ring-brand/20 transition-all resize-none"
                                     placeholder="Tell us what you liked or what could be improved..."
                                     value={formData.comment}
-                                    onChange={e => setFormData({...formData, comment: e.target.value})}
+                                    onChange={e => setFormData({ ...formData, comment: e.target.value })}
                                 />
                             </div>
 
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 disabled={isPending}
                                 className="w-full bg-primary-800 text-white py-4 rounded-2xl font-bold text-sm uppercase tracking-widest hover:bg-brand disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-xl shadow-primary-100 cursor-pointer"
                             >
