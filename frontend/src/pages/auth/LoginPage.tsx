@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { GoogleLogin } from '@react-oauth/google';
+import { useAdminControllerLogin } from '../../api/generated/superadmin-dashboard/superadmin-dashboard';
 
 // Validation Schema
 const loginSchema = z.object({
@@ -21,6 +22,7 @@ export const LoginPage = () => {
     const navigate = useNavigate();
     const { login } = useAuth();
     const loginMutation = useAuthControllerLogin();
+    const adminMutation = useAdminControllerLogin();
     const googleLoginMutation = useAuthControllerGoogleLogin();
 
 
@@ -33,28 +35,27 @@ export const LoginPage = () => {
         resolver: zodResolver(loginSchema),
     });
 
-    // onLoginSubmit
+    // onLoginSubmit: handle both login and admin login
     const onLoginSubmit = (data: LoginFormData) => {
-        loginMutation.mutate({
+        const normalizedEmail = data.email.toLowerCase().trim();
+        const isAdminAccount = normalizedEmail.includes('admin');
+
+        const targetedMutation = isAdminAccount ? adminMutation : loginMutation;
+
+        targetedMutation.mutate({
             data: { email: data.email, password: data.password }
         }, {
             onSuccess: (response: any) => {
-                // Save to context and localStorage
-                login(response.data);
-
-                const role = response.data.user?.role || response.data.admin?.role;
-
-                console.log(response.data)
-
-                // Role-based redirection
-                if (role === 'student') {
-                    navigate('/dashboard/student');
+                const apiResponse = response.data;
+                login(apiResponse);
+                
+                const role = apiResponse.user?.role || apiResponse.admin?.role;
+                if (role === 'superadmin') {
+                    navigate('/dashboard/admin');
                 } else if (role === 'hostelOwner') {
                     navigate('/dashboard/owner');
-                } else if (role === 'superadmin') {
-                    navigate('/dashboard/admin');
                 } else {
-                    navigate('/');
+                    navigate('/dashboard/student');
                 }
             },
             onError: (error: any) => {
@@ -63,7 +64,7 @@ export const LoginPage = () => {
         });
     };
 
-
+    // handleGoogleSuccess
     const handleGoogleSuccess = (credentialResponse: any) => {
         googleLoginMutation.mutate({
             data: {
@@ -93,6 +94,8 @@ export const LoginPage = () => {
         });
     };
 
+    const isLoading = loginMutation.isPending || adminMutation.isPending || googleLoginMutation.isPending;
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-primary-100 p-6">
             <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-sm border border-primary-200">
@@ -116,6 +119,7 @@ export const LoginPage = () => {
                             {...register('email')}
                             className={`w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-brand ${errors.email ? 'border-red-500' : 'border-primary-200'}`}
                             placeholder="yomoyeh345@nyspring.com"
+                        // value="admin@hostel.com"
                         />
                         {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
                     </div>
@@ -132,19 +136,20 @@ export const LoginPage = () => {
                             {...register('password')}
                             className={`w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-brand ${errors.password ? 'border-red-500' : 'border-primary-200'}`}
                             placeholder="••••••••"
+                        // value="Admin@123"
                         />
                         {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password.message}</p>}
                     </div>
 
                     <button
                         type="submit"
-                        disabled={loginMutation.isPending}
+                        disabled={isLoading}
                         className="w-full bg-brand hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
                     >
-                        {loginMutation.isPending && (
+                        {isLoading && (
                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         )}
-                        {loginMutation.isPending ? 'Logging in...' : 'Login'}
+                        {isLoading ? 'Logging in...' : 'Login'}
                     </button>
 
                     <p className="text-center text-sm text-primary-500 mt-4">
