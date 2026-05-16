@@ -37,6 +37,7 @@ import { StudentReviewsPage } from './pages/dashboard/StudentDashboard/StudentRe
 import { StudentProfilePage } from './pages/dashboard/StudentDashboard/StudentProfilePage';
 
 import { SuperAdminDashboardLayout } from './pages/dashboard/SuperAdminDashboard/SuperAdminDashboardLayout';
+import { AdminHostelsPage } from './pages/dashboard/SuperAdminDashboard/AdminHostelsPage';
 
 
 function App() {
@@ -90,9 +91,14 @@ function App() {
           
         </Route>
 
+       {/* SuperAdmin Routes */}
         <Route element={<ProtectedRoute allowedRoles={['superadmin']} />}>
-          <Route path="/dashboard/admin" element={<SuperAdminDashboardLayout />} />
+          <Route element={<SuperAdminDashboardLayout />}>
+            <Route path="/dashboard/admin" element={<p className="p-8 text-primary-700">Overview Panel Coming Soon</p>} />
+            <Route path="/dashboard/admin/hostels" element={<AdminHostelsPage />} />
+          </Route>
         </Route>
+        
       </Routes>
     </>
   );

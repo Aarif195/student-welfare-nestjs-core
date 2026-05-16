@@ -11,7 +11,7 @@ export const SuperAdminDashboardLayout = () => {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
-    const { logout, user } = useAuth(); 
+    const { logout } = useAuth(); 
 
     const navItems = [
         { name: 'Overview', path: '/dashboard/admin', icon: <LayoutDashboard size={18} /> },
