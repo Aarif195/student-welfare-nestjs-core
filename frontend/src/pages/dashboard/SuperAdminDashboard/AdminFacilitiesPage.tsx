@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { useStudentControllerGetAvailableStudySpaces } from '../../../api/generated/student/student';
-import { 
+import {
     useAdminControllerCreateStudySpace,
     useAdminControllerUpdateStudySpace,
-    useAdminControllerDeleteStudySpace
+    useAdminControllerDeleteStudySpace,
+    useAdminControllerGetAllStudySpaces
 } from '../../../api/generated/superadmin-dashboard/superadmin-dashboard';
-import { 
-    BookOpen, Plus, Edit3, Trash2, 
-    MapPin, Users, Clock, 
-    X, Loader2, Search,  
+import { ConfirmModal } from '../../../components/ui/ConfirmModal';
+import {
+    BookOpen, Plus, Edit3, Trash2,
+    MapPin, Users, Clock,
+    X, Loader2, Search,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useQueryClient } from '@tanstack/react-query';
@@ -16,10 +17,12 @@ import { useQueryClient } from '@tanstack/react-query';
 export const AdminFacilitiesPage = () => {
     const queryClient = useQueryClient();
     const [searchTerm, setSearchTerm] = useState('');
-    
+
     // Modal Management System
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingSpace, setEditingSpace] = useState<any | null>(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [spaceIdToDelete, setSpaceIdToDelete] = useState<number | null>(null);
 
     // Controlled Form State fields
     const [formData, setFormData] = useState({
@@ -32,14 +35,15 @@ export const AdminFacilitiesPage = () => {
         closing_time: '22:00'
     });
 
-    const { data: spacesData, isLoading } = useStudentControllerGetAvailableStudySpaces();
+
+    const { data: spacesData, isLoading } = useAdminControllerGetAllStudySpaces({ page: 1, limit: 10 });
     const { mutate: createSpace, isPending: isCreating } = useAdminControllerCreateStudySpace();
     const { mutate: updateSpace, isPending: isUpdating } = useAdminControllerUpdateStudySpace();
-    const { mutate: deleteSpace, isPending: isDeleting } = useAdminControllerDeleteStudySpace();
+    const { mutate: deleteSpace } = useAdminControllerDeleteStudySpace();
 
     const spacesList = (spacesData as any)?.data?.data || [];
 
-    const filteredSpaces = spacesList.filter((space: any) => 
+    const filteredSpaces = spacesList.filter((space: any) =>
         space.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         space.location.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -82,7 +86,7 @@ export const AdminFacilitiesPage = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         const payload = {
             ...formData,
             total_capacity: Number(formData.total_capacity),
@@ -94,7 +98,7 @@ export const AdminFacilitiesPage = () => {
                 onSuccess: () => {
                     toast.success("Study space updated successfully");
                     setIsFormOpen(false);
-                    queryClient.invalidateQueries();
+                    queryClient.invalidateQueries({ queryKey: ['studentControllerGetAvailableStudySpaces'] });
                 },
                 onError: (err: any) => toast.error(err?.response?.data?.message || "Update failed")
             });
@@ -111,15 +115,29 @@ export const AdminFacilitiesPage = () => {
     };
 
     // handleDelete
-    const handleDelete = (id: number) => {
-        if (!window.confirm("Are you sure you want to delete this study space resource?")) return;
-        deleteSpace({ id }, {
-            onSuccess: () => {
-                toast.success("Study space deleted successfully");
-                queryClient.invalidateQueries();
-            },
-            onError: (err: any) => toast.error(err?.response?.data?.message || "Deletion failed")
-        });
+    // Triggers when the trash icon is clicked
+    const handleDeleteClick = (id: number) => {
+        setSpaceIdToDelete(id);
+        setIsDeleteModalOpen(true);
+    };
+
+    // Triggers when they click "Confirm" inside your ConfirmModal
+    const handleConfirmDelete = () => {
+        if (spaceIdToDelete !== null) {
+            deleteSpace({ id: spaceIdToDelete }, {
+                onSuccess: () => {
+                    toast.success("Study space deleted successfully");
+                    queryClient.invalidateQueries();
+                    setIsDeleteModalOpen(false);
+                    setSpaceIdToDelete(null);
+                },
+                onError: (err: any) => {
+                    toast.error(err?.response?.data?.message || "Deletion failed");
+                    setIsDeleteModalOpen(false);
+                    setSpaceIdToDelete(null);
+                }
+            });
+        }
     };
 
     return (
@@ -140,7 +158,7 @@ export const AdminFacilitiesPage = () => {
             {/* Filter controls layer */}
             <div className="relative max-w-sm">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-primary-400" size={16} />
-                <input 
+                <input
                     className="w-full bg-white border border-primary-100 rounded-2xl py-3 pl-11 pr-4 text-xs font-semibold text-primary-800 outline-none focus:ring-2 ring-primary-900/10 transition-all"
                     placeholder="Search resources by designation or sector..."
                     value={searchTerm}
@@ -177,11 +195,10 @@ export const AdminFacilitiesPage = () => {
                                             <MapPin size={12} /> {space.location}
                                         </p>
                                     </div>
-                                    <span className={`px-2.5 py-1 rounded-full text-[9px] font-bold uppercase border ${
-                                        space.status === 'open' ? 'bg-green-50 text-green-600 border-green-100' :
+                                    <span className={`px-2.5 py-1 rounded-full text-[9px] font-bold uppercase border ${space.status === 'open' ? 'bg-green-50 text-green-600 border-green-100' :
                                         space.status === 'full' ? 'bg-amber-50 text-amber-600 border-amber-100' :
-                                        'bg-red-50 text-red-600 border-red-100'
-                                    }`}>
+                                            'bg-red-50 text-red-600 border-red-100'
+                                        }`}>
                                         {space.status}
                                     </span>
                                 </div>
@@ -205,7 +222,7 @@ export const AdminFacilitiesPage = () => {
                             {/* Execution Deck Controls */}
                             <div className="flex gap-2 mt-5 pt-3 border-t border-primary-50/80">
                                 <button
-                                    onClick={() => handleDelete(space.id)}
+                                    onClick={() => handleDeleteClick(space.id)}
                                     className="p-2.5 border border-red-100 text-red-500 rounded-xl hover:bg-red-50 transition-all cursor-pointer"
                                     title="De-provision space"
                                 >
@@ -215,7 +232,7 @@ export const AdminFacilitiesPage = () => {
                                     onClick={() => openEditModal(space)}
                                     className="flex-1 bg-primary-50 text-primary-800 py-2 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-primary-100 transition-all cursor-pointer flex items-center justify-center gap-1.5"
                                 >
-                                    <Edit3 size={13} /> Adjust Settings
+                                    <Edit3 size={13} /> Update Details
                                 </button>
                             </div>
                         </div>
@@ -238,34 +255,34 @@ export const AdminFacilitiesPage = () => {
                         <form onSubmit={handleSubmit} className="p-5 space-y-4 max-h-[75vh] overflow-y-auto">
                             <div className="space-y-1">
                                 <label className="text-[10px] font-bold uppercase text-primary-400">Designation Name</label>
-                                <input 
+                                <input
                                     type="text" required
                                     className="w-full bg-primary-50 rounded-xl p-3 text-xs font-semibold text-primary-800 outline-none"
                                     placeholder="e.g. Govok Library"
                                     value={formData.name}
-                                    onChange={e => setFormData({...formData, name: e.target.value})}
+                                    onChange={e => setFormData({ ...formData, name: e.target.value })}
                                 />
                             </div>
 
                             <div className="space-y-1">
                                 <label className="text-[10px] font-bold uppercase text-primary-400">Location / Sector Desk</label>
-                                <input 
+                                <input
                                     type="text" required
                                     className="w-full bg-primary-50 rounded-xl p-3 text-xs font-semibold text-primary-800 outline-none"
                                     placeholder="e.g. Block D, Floor 15"
                                     value={formData.location}
-                                    onChange={e => setFormData({...formData, location: e.target.value})}
+                                    onChange={e => setFormData({ ...formData, location: e.target.value })}
                                 />
                             </div>
 
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-bold uppercase text-primary-400">Total Capacity</label>
-                                    <input 
+                                    <input
                                         type="number" required min={0}
                                         className="w-full bg-primary-50 rounded-xl p-3 text-xs font-semibold text-primary-800 outline-none"
                                         value={formData.total_capacity}
-                                        onChange={e => setFormData({...formData, total_capacity: Number(e.target.value)})}
+                                        onChange={e => setFormData({ ...formData, total_capacity: Number(e.target.value) })}
                                         onBlur={() => {
                                             if (!editingSpace) setFormData(prev => ({ ...prev, available_slots: prev.total_capacity }));
                                         }}
@@ -273,12 +290,12 @@ export const AdminFacilitiesPage = () => {
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-bold uppercase text-primary-400">Available Slots</label>
-                                    <input 
+                                    <input
                                         type="number" required min={0}
                                         disabled={formData.status === 'full' || formData.status === 'closed'}
                                         className="w-full bg-primary-50 rounded-xl p-3 text-xs font-semibold text-primary-800 outline-none disabled:opacity-50"
                                         value={formData.available_slots}
-                                        onChange={e => setFormData({...formData, available_slots: Number(e.target.value)})}
+                                        onChange={e => setFormData({ ...formData, available_slots: Number(e.target.value) })}
                                     />
                                 </div>
                             </div>
@@ -286,22 +303,22 @@ export const AdminFacilitiesPage = () => {
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-bold uppercase text-primary-400">Opening Hours</label>
-                                    <input 
+                                    <input
                                         type="text" required pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"
                                         className="w-full bg-primary-50 rounded-xl p-3 text-xs font-semibold text-primary-800 outline-none"
                                         placeholder="08:00"
                                         value={formData.opening_time}
-                                        onChange={e => setFormData({...formData, opening_time: e.target.value})}
+                                        onChange={e => setFormData({ ...formData, opening_time: e.target.value })}
                                     />
                                 </div>
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-bold uppercase text-primary-400">Closing Hours</label>
-                                    <input 
+                                    <input
                                         type="text" required pattern="^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$"
                                         className="w-full bg-primary-50 rounded-xl p-3 text-xs font-semibold text-primary-800 outline-none"
                                         placeholder="22:00"
                                         value={formData.closing_time}
-                                        onChange={e => setFormData({...formData, closing_time: e.target.value})}
+                                        onChange={e => setFormData({ ...formData, closing_time: e.target.value })}
                                     />
                                 </div>
                             </div>
@@ -314,11 +331,10 @@ export const AdminFacilitiesPage = () => {
                                             key={statusOption}
                                             type="button"
                                             onClick={() => handleStatusChange(statusOption)}
-                                            className={`py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border cursor-pointer ${
-                                                formData.status === statusOption
+                                            className={`py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border cursor-pointer ${formData.status === statusOption
                                                 ? 'bg-blue-400 text-white border-primary-900 shadow-sm'
                                                 : 'bg-white text-primary-500 border-primary-100 hover:bg-primary-50'
-                                            }`}
+                                                }`}
                                         >
                                             {statusOption}
                                         </button>
@@ -327,15 +343,15 @@ export const AdminFacilitiesPage = () => {
                             </div>
 
                             <div className="flex gap-2 pt-2">
-                                <button 
+                                <button
                                     type="button"
                                     onClick={() => setIsFormOpen(false)}
                                     className="flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-wider text-primary-400 hover:bg-primary-50 transition-all cursor-pointer"
                                 >
                                     Abort
                                 </button>
-                                <button 
-                                    type="submit" 
+                                <button
+                                    type="submit"
                                     disabled={isCreating || isUpdating}
                                     className="flex-1 bg-green-600 text-white hover:bg-green-700 py-3 rounded-xl text-xs font-bold uppercase tracking-wider hover:opacity-90 transition-all flex items-center justify-center gap-1 cursor-pointer"
                                 >
@@ -346,6 +362,19 @@ export const AdminFacilitiesPage = () => {
                     </div>
                 </div>
             )}
+            {/* Confirm Modal */}
+            <ConfirmModal
+                open={isDeleteModalOpen}
+                title="Delete Study Space"
+                message="Are you sure you want to delete this study space resource? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                onConfirm={handleConfirmDelete}
+                onClose={() => {
+                    setIsDeleteModalOpen(false);
+                    setSpaceIdToDelete(null);
+                }}
+            />
         </div>
     );
 };
