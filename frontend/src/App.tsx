@@ -41,6 +41,7 @@ import { AdminHostelsPage } from './pages/dashboard/SuperAdminDashboard/AdminHos
 import { AdminBookingsPage } from './pages/dashboard/SuperAdminDashboard/AdminBookingsPage';
 import { AdminUsersPage } from './pages/dashboard/SuperAdminDashboard/AdminUsersPage';
 import { AdminFacilitiesPage } from './pages/dashboard/SuperAdminDashboard/AdminFacilitiesPage';
+import { AdminMaintenancePage } from './pages/dashboard/SuperAdminDashboard/AdminMaintenancePage';
 
 
 function App() {
@@ -102,6 +103,7 @@ function App() {
             <Route path="/dashboard/admin/bookings" element={<AdminBookingsPage />} />
             <Route path="/dashboard/admin/users" element={<AdminUsersPage />} />
             <Route path="/dashboard/admin/facilities" element={<AdminFacilitiesPage />} />
+            <Route path="/dashboard/admin/maintenance" element={<AdminMaintenancePage />} />
           </Route>
         </Route>
         
