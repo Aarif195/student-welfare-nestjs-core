@@ -6,8 +6,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export type StudentControllerGetAvailableHostelsParams = {
-search?: string;
+export type AdminControllerGetAllStudySpacesParams = {
 limit?: number;
 page?: number;
 };

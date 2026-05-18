@@ -12,6 +12,7 @@ export * from './adminControllerGetAllNotificationsParams';
 export * from './adminControllerGetAllOwnersParams';
 export * from './adminControllerGetAllReviewsParams';
 export * from './adminControllerGetAllStudentsParams';
+export * from './adminControllerGetAllStudySpacesParams';
 export * from './adminControllerGetPendingBookingsParams';
 export * from './adminData';
 export * from './adminLoginDto';
