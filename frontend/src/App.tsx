@@ -39,6 +39,7 @@ import { StudentProfilePage } from './pages/dashboard/StudentDashboard/StudentPr
 import { SuperAdminDashboardLayout } from './pages/dashboard/SuperAdminDashboard/SuperAdminDashboardLayout';
 import { AdminHostelsPage } from './pages/dashboard/SuperAdminDashboard/AdminHostelsPage';
 import { AdminBookingsPage } from './pages/dashboard/SuperAdminDashboard/AdminBookingsPage';
+import { AdminUsersPage } from './pages/dashboard/SuperAdminDashboard/AdminUsersPage';
 
 
 function App() {
@@ -98,8 +99,8 @@ function App() {
             <Route path="/dashboard/admin" element={<p className="p-8 text-primary-700">Overview Panel Coming Soon</p>} />
             <Route path="/dashboard/admin/hostels" element={<AdminHostelsPage />} />
             <Route path="/dashboard/admin/bookings" element={<AdminBookingsPage />} />
+            <Route path="/dashboard/admin/users" element={<AdminUsersPage />} />
           </Route>
-
         </Route>
         
       </Routes>

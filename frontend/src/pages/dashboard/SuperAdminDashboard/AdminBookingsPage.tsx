@@ -203,7 +203,7 @@ export const AdminBookingsPage = () => {
             {/* Rejection Overlay Portal Modal */}
             {rejectingBookingId && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary-900/40 backdrop-blur-sm">
-                    <div className="bg-white w-full max-w-md rounded-[2rem] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-150">
+                    <div className="bg-white w-full max-w-md rounded-4xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-150">
                         <div className="p-5 border-b border-primary-50 flex justify-between items-center">
                             <h2 className="text-sm font-bold text-primary-800 uppercase tracking-wider">Decline Booking Assignment</h2>
                             <button onClick={() => setRejectingBookingId(null)} className="text-primary-400 hover:bg-primary-50 p-1.5 rounded-full cursor-pointer">
