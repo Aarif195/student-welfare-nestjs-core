@@ -113,7 +113,7 @@ export const AdminReviewsPage = () => {
             {isLoading ? (
                 <div className="space-y-4">
                     {[...Array(2)].map((_, i) => (
-                        <div key={i} className="h-40 bg-white animate-pulse rounded-2xl border border-primary-100" />
+                        <div key={i} className="h-40 bg-primary-300 animate-pulse rounded-2xl border border-primary-100" />
                     ))}
                 </div>
             ) : filteredReviews.length === 0 ? (
