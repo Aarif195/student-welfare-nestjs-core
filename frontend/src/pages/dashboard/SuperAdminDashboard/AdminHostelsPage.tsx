@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAdminControllerGetAllHostels, useAdminControllerApproveHostel, useAdminControllerRejectHostel } from '../../../api/generated/superadmin-dashboard/superadmin-dashboard';
+import { useAdminControllerGetAllHostels, useAdminControllerApproveHostel, useAdminControllerRejectHostel, getAdminControllerGetAllHostelsQueryKey } from '../../../api/generated/superadmin-dashboard/superadmin-dashboard';
 import {
     Building2, CheckCircle2, XCircle,
     Clock, AlertCircle, MapPin,
@@ -36,7 +36,9 @@ export const AdminHostelsPage = () => {
         approveHostel({ hostelId }, {
             onSuccess: () => {
                 toast.success("Hostel approved successfully");
-                queryClient.invalidateQueries({ queryKey: ['admin', 'hostels'] });
+                queryClient.invalidateQueries({
+                    queryKey: getAdminControllerGetAllHostelsQueryKey()
+                });
             },
             onError: (err: any) => {
                 toast.error(err?.response?.data?.message || "Approval failed");
@@ -57,7 +59,9 @@ export const AdminHostelsPage = () => {
                 toast.success("Hostel execution updated to rejected");
                 setRejectingHostelId(null);
                 setRejectionReason('');
-                queryClient.invalidateQueries({ queryKey: ['admin', 'hostels'] });
+                queryClient.invalidateQueries({
+                    queryKey: getAdminControllerGetAllHostelsQueryKey()
+                });
             },
             onError: (err: any) => {
                 toast.error(err?.response?.data?.message || "Rejection failed");
@@ -112,8 +116,8 @@ export const AdminHostelsPage = () => {
                             key={status}
                             onClick={() => setSelectedStatus(status)}
                             className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${selectedStatus === status
-                                    ? 'bg-primary-900 text-white shadow-md'
-                                    : 'bg-white text-primary-500 border border-primary-100 hover:bg-primary-50'
+                                ? 'bg-primary-900 text-white shadow-md'
+                                : 'bg-white text-primary-500 border border-primary-100 hover:bg-primary-50'
                                 }`}
                         >
                             {status}

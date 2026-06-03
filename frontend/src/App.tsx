@@ -44,6 +44,7 @@ import { AdminFacilitiesPage } from './pages/dashboard/SuperAdminDashboard/Admin
 import { AdminMaintenancePage } from './pages/dashboard/SuperAdminDashboard/AdminMaintenancePage';
 import { AdminReviewsPage } from './pages/dashboard/SuperAdminDashboard/AdminReviewsPage';
 import { AdminNotificationsPage } from './pages/dashboard/SuperAdminDashboard/AdminNotificationsPage';
+import { AdminOverviewPage } from './pages/dashboard/SuperAdminDashboard/AdminOverviewPage';
 
 
 function App() {
@@ -100,7 +101,8 @@ function App() {
         {/* SuperAdmin Routes */}
         <Route element={<ProtectedRoute allowedRoles={['superadmin']} />}>
           <Route element={<SuperAdminDashboardLayout />}>
-            <Route path="/dashboard/admin" element={<p className="p-8 text-primary-700">Overview Panel Coming Soon</p>} />
+            {/* <Route path="/dashboard/admin" element={<p className="p-8 text-primary-700">Overview Panel Coming Soon</p>} /> */}
+             <Route path="/dashboard/admin" element={<AdminOverviewPage />} />
             <Route path="/dashboard/admin/hostels" element={<AdminHostelsPage />} />
             <Route path="/dashboard/admin/bookings" element={<AdminBookingsPage />} />
             <Route path="/dashboard/admin/users" element={<AdminUsersPage />} />
@@ -108,8 +110,9 @@ function App() {
             <Route path="/dashboard/admin/maintenance" element={<AdminMaintenancePage />} />
             <Route path="/dashboard/admin/reviews" element={<AdminReviewsPage />} />
             <Route path="/dashboard/admin/notifications" element={<AdminNotificationsPage />} />
+           
 
-          </Route> 
+          </Route>
         </Route>
 
       </Routes>
