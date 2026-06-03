@@ -66,12 +66,6 @@ export class PaymentController {
     return res.status(HttpStatus.OK).send('Webhook Received');
   }
 
-  await this.paymentService.handleWebhookEvent(req.body);
-  
-  return res.status(HttpStatus.OK).send('Webhook Received');
-}
-
-
 }
 
 
