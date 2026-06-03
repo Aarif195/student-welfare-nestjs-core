@@ -22,7 +22,7 @@ export class PaymentController {
   @Roles(Role.student)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Initialize Paystack Payment' })
-  @ApiOkResponse({ type: PaymentIntentResponseDto,description: 'Payment initialized successfully' })
+  @ApiOkResponse({ description: 'Payment initialized successfully', type: PaymentIntentResponseDto })
   @ApiBadRequestResponse({ type: ErrorResponseDto })
   async createIntent(
     @GetUser() user: { id: number },
@@ -42,23 +42,28 @@ export class PaymentController {
   }
 
   // Route for Paystack to confirm payment success
-@Public()
-@Post('webhook')
-@ApiOperation({ summary: 'Paystack Webhook Listener' })
-async handleWebhook(
-  @Req() req: RawBodyRequest<Request>, 
-  @Res() res: Response
-) {
-  const signature = req.headers['x-paystack-signature'] as string;
+  @Public()
+  @Post('webhook')
+  @ApiOperation({ summary: 'Paystack Webhook Listener' })
+  async handleWebhook(
+    @Req() req: RawBodyRequest<Request>,
+    @Res() res: Response
+  ) {
+    const signature = req.headers['x-paystack-signature'] as string;
 
-  if (!req.rawBody) {
-    return res.status(HttpStatus.BAD_REQUEST).send('Missing raw body');
-  }
+    if (!req.rawBody) {
+      return res.status(HttpStatus.BAD_REQUEST).send('Missing raw body');
+    }
 
-  const isValid = this.paymentService.verifyWebhookSignature(signature, req.rawBody);
+    const isValid = this.paymentService.verifyWebhookSignature(signature, req.rawBody);
 
-  if (!isValid) {
-    return res.status(HttpStatus.BAD_REQUEST).send('Invalid Signature');
+    if (!isValid) {
+      return res.status(HttpStatus.BAD_REQUEST).send('Invalid Signature');
+    }
+
+    await this.paymentService.handleWebhookEvent(req.body);
+
+    return res.status(HttpStatus.OK).send('Webhook Received');
   }
 
   await this.paymentService.handleWebhookEvent(req.body);

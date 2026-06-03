@@ -202,17 +202,29 @@ export class AdminService {
       throw new BadRequestException('Payment not found for this booking.');
     }
 
-    if (payment.payment_status !== 'success') {
-      throw new BadRequestException('Payment not successful.');
+    if (payment.payment_status !== 'pending' && payment.payment_status !== 'success') {
+      throw new BadRequestException('Payment status is invalid for approval.');
     }
 
     const result = await this.prisma.$transaction(async (tx) => {
+
+       // Update Payment status to success
+      await tx.payment.update({
+        where: { booking_id: bookingId },
+        data: {
+          payment_status: 'success',
+          paid_at: new Date()
+        },
+      });
+      
       // Update Booking status
       const booking = await tx.booking.update({
         where: { id: bookingId },
         data: { booking_status: 'approved' },
         include: { student: { select: { email: true } } },
       });
+
+     
 
       // Flip Room Availability to false
       await tx.room.update({
@@ -539,13 +551,13 @@ async deleteStudySpace(id: number) {
     where: { id },
   });
 
-  if (!space) {
-    throw new NotFoundException('Study space not found');
-  }
+    if (!space) {
+      throw new NotFoundException('Study space not found');
+    }
 
-  return this.prisma.studySpace.delete({
-    where: { id },
-  });
-}
+    return this.prisma.studySpace.delete({
+      where: { id },
+    });
+  }
 
 }
