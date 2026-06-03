@@ -13,6 +13,6 @@ export interface RegisterDto {
   email: string;
   password: string;
   phone: string;
-  image: Blob;
+  image?: string;
   role: RegisterDtoRole;
 }

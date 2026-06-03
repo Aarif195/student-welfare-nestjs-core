@@ -1,5 +1,5 @@
 import { Prisma, StudySpaceStatus } from '@prisma/client';
-import { BadRequestException, ConflictException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { verifyPayment } from '@/common/utils/helpers';
 import { DatabaseService } from '@/database/database.service';
@@ -368,6 +368,31 @@ export class StudentService {
 
     return request;
   }
+
+  // deleteRequest
+async deleteRequest(studentId: number, requestId: number) {
+  const request = await this.prisma.maintenanceRequest.findUnique({
+    where: { id: requestId },
+  });
+
+  if (!request) {
+    throw new NotFoundException('Maintenance request not found');
+  }
+
+  // Security Check: Ensure the student owns this request
+  if (request.student_id !== studentId) {
+    throw new ForbiddenException('You are not authorized to delete this request');
+  }
+
+  // Status Check: Only allow deletion if RESOLVED
+  if (request.status !== 'resolved') {
+    throw new BadRequestException('You can only delete maintenance requests that are resolved.');
+  }
+
+  return this.prisma.maintenanceRequest.delete({
+    where: { id: requestId },
+  });
+}
 
   // createReview
   async createReview(studentId: number, dto: CreateReviewDto) {

@@ -23,6 +23,7 @@ export const StudentDashboardLayout = () => {
         { name: 'Maintenance', path: '/dashboard/student/maintenance', icon: <Wrench size={20} /> },
         { name: 'Notifications', path: '/dashboard/student/notifications', icon: <Bell size={20} /> },
         { name: 'Reviews', path: '/dashboard/student/reviews', icon: <Star size={20} /> },
+        { name: 'Profile', path: '/dashboard/student/profile', icon: <User size={20} /> },
     ];
 
     const handleLogout = () => {
@@ -44,8 +45,8 @@ export const StudentDashboardLayout = () => {
                             key={item.name}
                             to={item.path}
                             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${location.pathname === item.path
-                                    ? 'bg-brand text-white shadow-lg shadow-blue-100'
-                                    : 'text-primary-600 hover:bg-primary-50'
+                                ? 'bg-brand text-white shadow-lg shadow-blue-100'
+                                : 'text-primary-600 hover:bg-primary-50'
                                 }`}
                         >
                             {item.icon}

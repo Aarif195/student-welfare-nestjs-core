@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString, Matches, MinLength, IsEnum } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, Matches, MinLength, IsEnum, IsUrl } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserRole } from '@/common/guards/types';
 
@@ -31,9 +31,13 @@ export class RegisterDto {
   @IsString()
   address?: string;
 
-  @ApiProperty({ type: 'string', format: 'binary', required: true })
+  @ApiProperty({
+    example: 'https://res.cloudinary.com/dqrohc20b/image/upload/v1/avatars/user.jpg',
+    required: false
+  })
   @IsOptional()
-  image?: any;
+  @IsUrl({}, { message: 'Image must be a valid URL address' })
+  image?: string;
 
   @ApiProperty({ example: 'student', enum: ['student', 'hostelOwner'] })
   @IsOptional()

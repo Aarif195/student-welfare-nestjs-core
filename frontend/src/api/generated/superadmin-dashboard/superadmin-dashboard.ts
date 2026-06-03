@@ -31,6 +31,7 @@ import type {
   AdminControllerGetAllOwnersParams,
   AdminControllerGetAllReviewsParams,
   AdminControllerGetAllStudentsParams,
+  AdminControllerGetAllStudySpacesParams,
   AdminControllerGetPendingBookingsParams,
   AdminLoginDto,
   AdminNotificationDto,
@@ -1388,6 +1389,98 @@ export const useAdminControllerCreateStudySpace = <TError = ErrorResponseDto,
       return useMutation(mutationOptions, queryClient);
     }
     /**
+ * @summary Get all registered study spaces with pagination
+ */
+export const adminControllerGetAllStudySpaces = (
+    params?: AdminControllerGetAllStudySpacesParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/admin/study-spaces`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+
+
+export const getAdminControllerGetAllStudySpacesQueryKey = (params?: AdminControllerGetAllStudySpacesParams,) => {
+    return [
+    `/api/v1/admin/study-spaces`, ...(params ? [params]: [])
+    ] as const;
+    }
+
+    
+export const getAdminControllerGetAllStudySpacesQueryOptions = <TData = Awaited<ReturnType<typeof adminControllerGetAllStudySpaces>>, TError = ErrorResponseDto>(params?: AdminControllerGetAllStudySpacesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllStudySpaces>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getAdminControllerGetAllStudySpacesQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof adminControllerGetAllStudySpaces>>> = ({ signal }) => adminControllerGetAllStudySpaces(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllStudySpaces>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type AdminControllerGetAllStudySpacesQueryResult = NonNullable<Awaited<ReturnType<typeof adminControllerGetAllStudySpaces>>>
+export type AdminControllerGetAllStudySpacesQueryError = ErrorResponseDto
+
+
+export function useAdminControllerGetAllStudySpaces<TData = Awaited<ReturnType<typeof adminControllerGetAllStudySpaces>>, TError = ErrorResponseDto>(
+ params: undefined |  AdminControllerGetAllStudySpacesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllStudySpaces>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminControllerGetAllStudySpaces>>,
+          TError,
+          Awaited<ReturnType<typeof adminControllerGetAllStudySpaces>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminControllerGetAllStudySpaces<TData = Awaited<ReturnType<typeof adminControllerGetAllStudySpaces>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllStudySpacesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllStudySpaces>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof adminControllerGetAllStudySpaces>>,
+          TError,
+          Awaited<ReturnType<typeof adminControllerGetAllStudySpaces>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useAdminControllerGetAllStudySpaces<TData = Awaited<ReturnType<typeof adminControllerGetAllStudySpaces>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllStudySpacesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllStudySpaces>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get all registered study spaces with pagination
+ */
+
+export function useAdminControllerGetAllStudySpaces<TData = Awaited<ReturnType<typeof adminControllerGetAllStudySpaces>>, TError = ErrorResponseDto>(
+ params?: AdminControllerGetAllStudySpacesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof adminControllerGetAllStudySpaces>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getAdminControllerGetAllStudySpacesQueryOptions(params,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+/**
  * @summary Update a study space
  */
 export const adminControllerUpdateStudySpace = (

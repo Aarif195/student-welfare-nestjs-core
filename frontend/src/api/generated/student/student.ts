@@ -265,7 +265,7 @@ export const useStudentControllerCancelBooking = <TError = ErrorResponseDto,
  * @summary Get all available hostels
  */
 export const studentControllerGetAvailableHostels = (
-    params: StudentControllerGetAvailableHostelsParams,
+    params?: StudentControllerGetAvailableHostelsParams,
  signal?: AbortSignal
 ) => {
       
@@ -287,7 +287,7 @@ export const getStudentControllerGetAvailableHostelsQueryKey = (params?: Student
     }
 
     
-export const getStudentControllerGetAvailableHostelsQueryOptions = <TData = Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError = ErrorResponseDto>(params: StudentControllerGetAvailableHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError, TData>>, }
+export const getStudentControllerGetAvailableHostelsQueryOptions = <TData = Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError = ErrorResponseDto>(params?: StudentControllerGetAvailableHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
@@ -310,7 +310,7 @@ export type StudentControllerGetAvailableHostelsQueryError = ErrorResponseDto
 
 
 export function useStudentControllerGetAvailableHostels<TData = Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError = ErrorResponseDto>(
- params: StudentControllerGetAvailableHostelsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError, TData>> & Pick<
+ params: undefined |  StudentControllerGetAvailableHostelsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>,
           TError,
@@ -320,7 +320,7 @@ export function useStudentControllerGetAvailableHostels<TData = Awaited<ReturnTy
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useStudentControllerGetAvailableHostels<TData = Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError = ErrorResponseDto>(
- params: StudentControllerGetAvailableHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError, TData>> & Pick<
+ params?: StudentControllerGetAvailableHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>,
           TError,
@@ -330,7 +330,7 @@ export function useStudentControllerGetAvailableHostels<TData = Awaited<ReturnTy
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useStudentControllerGetAvailableHostels<TData = Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError = ErrorResponseDto>(
- params: StudentControllerGetAvailableHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError, TData>>, }
+ params?: StudentControllerGetAvailableHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -338,7 +338,7 @@ export function useStudentControllerGetAvailableHostels<TData = Awaited<ReturnTy
  */
 
 export function useStudentControllerGetAvailableHostels<TData = Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError = ErrorResponseDto>(
- params: StudentControllerGetAvailableHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError, TData>>, }
+ params?: StudentControllerGetAvailableHostelsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof studentControllerGetAvailableHostels>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
@@ -755,6 +755,67 @@ export function useStudentControllerGetMyMaintenance<TData = Awaited<ReturnType<
 
 
 /**
+ * @summary Student deletes a resolved maintenance request
+ */
+export const studentControllerDeleteRequest = (
+    id: number,
+ ) => {
+      
+      
+      return customInstance<MessageResponseDto>(
+      {url: `/api/v1/student/maintenance/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  
+
+
+export const getStudentControllerDeleteRequestMutationOptions = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof studentControllerDeleteRequest>>, TError,{id: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof studentControllerDeleteRequest>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['studentControllerDeleteRequest'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof studentControllerDeleteRequest>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  studentControllerDeleteRequest(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StudentControllerDeleteRequestMutationResult = NonNullable<Awaited<ReturnType<typeof studentControllerDeleteRequest>>>
+    
+    export type StudentControllerDeleteRequestMutationError = void
+
+    /**
+ * @summary Student deletes a resolved maintenance request
+ */
+export const useStudentControllerDeleteRequest = <TError = void,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof studentControllerDeleteRequest>>, TError,{id: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof studentControllerDeleteRequest>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+
+      const mutationOptions = getStudentControllerDeleteRequestMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    /**
  * @summary Student creates a review for a hostel
  */
 export const studentControllerCreateReview = (

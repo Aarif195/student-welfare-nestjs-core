@@ -26,16 +26,27 @@ export const StudentDiscoveryPage = () => {
         return () => clearTimeout(timer);
     }, [search]);
 
-    const { data: hostelData, isLoading: loadingHostels } = useStudentControllerGetAvailableHostels(
+    const { data: hostelData, isFetching: loadingHostels } = useStudentControllerGetAvailableHostels(
         { page: 1, limit: 10, search: searchQuery || "" },
-        { query: { enabled: !!token, staleTime: 1000 * 60 * 5, 
-            refetchOnWindowFocus: false } }
+        {
+            query: {
+                enabled: !!token,
+                gcTime: 0,
+                refetchOnWindowFocus: false
+            }
+        }
     );
 
     const { data: roomData, isLoading: loadingRooms } = useStudentControllerGetAvailableRooms(
         { hostel_id: selectedHostelId || undefined },
-        { query: { enabled: !!token && !!selectedHostelId, staleTime: 1000 * 60 * 5,
-            refetchOnWindowFocus: false } }
+        {
+            query: {
+                enabled: !!token && !!selectedHostelId,
+                gcTime: 0,
+                // staleTime: 1000 * 60 * 5,
+                refetchOnWindowFocus: false
+            }
+        }
     );
 
     const { mutate: initPayment, isPending: isInitializing } = usePaymentControllerCreateIntent();

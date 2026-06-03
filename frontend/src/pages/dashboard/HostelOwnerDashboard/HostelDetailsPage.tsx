@@ -195,7 +195,7 @@ export const HostelDetailsPage = () => {
                                         })()}
 
                                         <div>
-                                            <p className="font-bold text-primary-700">Room {room.room_number}</p>
+                                            <p className="font-bold text-primary-700">{room.room_number}</p>
                                             <p className="text-sm text-primary-500">
                                                 {room.type} • {room.capacity} Students
                                             </p>

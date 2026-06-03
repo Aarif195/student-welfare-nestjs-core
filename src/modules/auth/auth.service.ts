@@ -40,7 +40,7 @@ export class AuthService {
     const user = await this.prisma.user.create({
       data: {
         ...userData,
-        image: dto.image,
+        image: dto.image || null,
         role: (dto.role as unknown as Role) || Role.student,
         password: hashedPassword,
         is_verified: false,

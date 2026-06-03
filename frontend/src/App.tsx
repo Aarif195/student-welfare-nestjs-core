@@ -9,8 +9,6 @@ import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { LoginPage } from './pages/auth/LoginPage';
 
-import { SuperAdminDashboard } from './pages/dashboard/SuperAdminDashboard';
-
 
 // HostelOwnerDashboard
 import { HostelOwnerDashboard } from './pages/dashboard/HostelOwnerDashboard/HostelOwnerDashboard';
@@ -25,6 +23,7 @@ import { NotificationsPage } from './pages/dashboard/HostelOwnerDashboard/Notifi
 import { MaintenancePage } from './pages/dashboard/HostelOwnerDashboard/MaintenancePage';
 import { ReviewsPage } from './pages/dashboard/HostelOwnerDashboard/ReviewsPage';
 import { OwnerOverviewPage } from './pages/dashboard/HostelOwnerDashboard/OwnerOverviewPage';
+import { OwnerProfilePage } from './pages/dashboard/HostelOwnerDashboard/OwnerProfilePage';
 
 // StudentDashboard
 import { StudentDashboardLayout } from './pages/dashboard/StudentDashboard/StudentDashboardLayout';
@@ -35,6 +34,18 @@ import { StudentBookingsPage } from './pages/dashboard/StudentDashboard/StudentB
 import { StudentMaintenancePage } from './pages/dashboard/StudentDashboard/StudentMaintenancePage';
 import { StudentNotificationsPage } from './pages/dashboard/StudentDashboard/StudentNotificationsPage';
 import { StudentReviewsPage } from './pages/dashboard/StudentDashboard/StudentReviewsPage';
+import { StudentProfilePage } from './pages/dashboard/StudentDashboard/StudentProfilePage';
+
+import { SuperAdminDashboardLayout } from './pages/dashboard/SuperAdminDashboard/SuperAdminDashboardLayout';
+import { AdminHostelsPage } from './pages/dashboard/SuperAdminDashboard/AdminHostelsPage';
+import { AdminBookingsPage } from './pages/dashboard/SuperAdminDashboard/AdminBookingsPage';
+import { AdminUsersPage } from './pages/dashboard/SuperAdminDashboard/AdminUsersPage';
+import { AdminFacilitiesPage } from './pages/dashboard/SuperAdminDashboard/AdminFacilitiesPage';
+import { AdminMaintenancePage } from './pages/dashboard/SuperAdminDashboard/AdminMaintenancePage';
+import { AdminReviewsPage } from './pages/dashboard/SuperAdminDashboard/AdminReviewsPage';
+import { AdminNotificationsPage } from './pages/dashboard/SuperAdminDashboard/AdminNotificationsPage';
+import { AdminOverviewPage } from './pages/dashboard/SuperAdminDashboard/AdminOverviewPage';
+
 
 function App() {
   return (
@@ -58,8 +69,9 @@ function App() {
             <Route path="/dashboard/student/maintenance" element={<StudentMaintenancePage />} />
             <Route path="/dashboard/student/notifications" element={<StudentNotificationsPage />} />
             <Route path="/dashboard/student/reviews" element={<StudentReviewsPage />} />
+            <Route path="/dashboard/student/profile" element={<StudentProfilePage />} />
           </Route>
-           <Route path="/payment/success" element={<PaymentSuccessPage />} />
+          <Route path="/payment/success" element={<PaymentSuccessPage />} />
         </Route>
 
         {/* HostelOwner Routes */}
@@ -81,12 +93,28 @@ function App() {
             <Route path="notifications" element={<NotificationsPage />} />
             <Route path="maintenance" element={<MaintenancePage />} />
             <Route path="reviews" element={<ReviewsPage />} />
+            <Route path="profile" element={<OwnerProfilePage />} />
+          </Route>
+
+        </Route>
+
+        {/* SuperAdmin Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['superadmin']} />}>
+          <Route element={<SuperAdminDashboardLayout />}>
+            {/* <Route path="/dashboard/admin" element={<p className="p-8 text-primary-700">Overview Panel Coming Soon</p>} /> */}
+             <Route path="/dashboard/admin" element={<AdminOverviewPage />} />
+            <Route path="/dashboard/admin/hostels" element={<AdminHostelsPage />} />
+            <Route path="/dashboard/admin/bookings" element={<AdminBookingsPage />} />
+            <Route path="/dashboard/admin/users" element={<AdminUsersPage />} />
+            <Route path="/dashboard/admin/facilities" element={<AdminFacilitiesPage />} />
+            <Route path="/dashboard/admin/maintenance" element={<AdminMaintenancePage />} />
+            <Route path="/dashboard/admin/reviews" element={<AdminReviewsPage />} />
+            <Route path="/dashboard/admin/notifications" element={<AdminNotificationsPage />} />
+           
+
           </Route>
         </Route>
 
-        <Route element={<ProtectedRoute allowedRoles={['superadmin']} />}>
-          <Route path="/dashboard/admin" element={<SuperAdminDashboard />} />
-        </Route>
       </Routes>
     </>
   );

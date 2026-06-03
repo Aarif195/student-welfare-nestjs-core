@@ -529,11 +529,27 @@ export class AdminService {
     });
   }
 
-  // deleteStudySpace
-  async deleteStudySpace(id: number) {
-    const space = await this.prisma.studySpace.findUnique({
-      where: { id },
-    });
+// getAllStudySpaces
+  async getAllStudySpaces(page: number, limit: number) {
+    const skip = (page - 1) * limit;
+
+    const [spaces, total] = await Promise.all([
+      this.prisma.studySpace.findMany({
+        skip,
+        take: limit,
+        orderBy: { created_at: 'desc' },
+      }),
+      this.prisma.studySpace.count(),
+    ]);
+
+    return { spaces, total };
+  }
+
+// deleteStudySpace
+async deleteStudySpace(id: number) {
+  const space = await this.prisma.studySpace.findUnique({
+    where: { id },
+  });
 
     if (!space) {
       throw new NotFoundException('Study space not found');

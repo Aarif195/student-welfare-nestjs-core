@@ -132,7 +132,7 @@ export class AdminController {
 
 
   // getPendingBookings
-  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Get('bookings')
   @Roles(Role.superadmin)
   @ApiBearerAuth()
@@ -198,7 +198,7 @@ export class AdminController {
   }
 
   // getAllOwners
-  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Get('owners')
   @Roles(Role.superadmin)
   @ApiBearerAuth()
@@ -223,7 +223,7 @@ export class AdminController {
   }
 
   // getAllStudents
-  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Get('students')
   @Roles(Role.superadmin)
   @ApiBearerAuth()
@@ -270,7 +270,7 @@ export class AdminController {
   }
 
   // getAllNotifications
-  @Throttle({ default: { limit: 3, ttl: 60000 } })
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Get('notifications')
   @Roles(Role.superadmin)
   @ApiBearerAuth()
@@ -425,7 +425,6 @@ export class AdminController {
     };
   }
   
-
   // updateStudySpace
   @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Patch('study-spaces/:id')
@@ -445,6 +444,29 @@ export class AdminController {
       success: true,
       message: 'Study space updated successfully',
       data,
+    };
+  }
+
+// getAllStudySpaces
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Get('study-spaces')
+  @Roles(Role.superadmin)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all registered study spaces with pagination' })
+  @ApiOkResponse({ type: MessageResponseDto })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async getAllStudySpaces(@Query() pagination: PaginationDto) {
+    const page = Number(pagination.page) || 1;
+    const limit = Number(pagination.limit) || 10;
+
+    const { spaces, total } = await this.adminService.getAllStudySpaces(page, limit);
+
+    return {
+      success: true,
+      meta: { page, limit, total },
+      data: spaces,
     };
   }
 
