@@ -84,7 +84,7 @@ export const EditHostelPage = () => {
             </button>
 
             <div className="bg-white p-8 rounded-xl border border-primary-200 shadow-sm">
-                <h2 className="text-2xl font-bold mb-6">Edit Hostel Details</h2>
+                <h2 className="text-xl sm:text-2xl font-bold mb-6">Edit Hostel Details</h2>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                     <div>
                         <label className="block text-sm font-semibold mb-1">Hostel Name</label>
@@ -144,7 +144,7 @@ export const EditHostelPage = () => {
                     <button
                         type="submit"
                         disabled={updateMutation.isPending}
-                        className="w-full bg-brand text-white py-3 rounded-lg flex items-center justify-center gap-2 cursor-pointer"
+                        className="text-xs sm:text-sm w-full bg-brand text-white py-3 rounded-lg flex items-center justify-center gap-2 cursor-pointer"
                     >
                         <Save size={20} />
                         {updateMutation.isPending ? 'Saving...' : 'Save Changes'}

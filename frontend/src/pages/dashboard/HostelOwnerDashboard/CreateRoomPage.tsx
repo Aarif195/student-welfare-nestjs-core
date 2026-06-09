@@ -94,7 +94,7 @@ export const CreateRoomPage = () => {
                     <div className="bg-brand/10 p-2 rounded-lg text-brand">
                         <Bed size={24} />
                     </div>
-                    <h2 className="text-2xl font-bold text-primary-700">Add New Room</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold text-primary-700">Add New Room</h2>
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -177,7 +177,7 @@ export const CreateRoomPage = () => {
                     <button
                         type="submit"
                         disabled={createRoomMutation.isPending || isUploading || uploadedUrls.length === 0}
-                        className="w-full bg-brand hover:bg-blue-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
+                        className="text-xs sm:text-sm w-full bg-brand hover:bg-blue-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
                     >
                         {(createRoomMutation.isPending || isUploading) && (
                             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

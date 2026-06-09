@@ -248,7 +248,7 @@ export const HostelDetailsPage = () => {
                         </div>
                         <div className="pt-4 border-t border-primary-100">
                             <p className="text-[10px] text-primary-400 uppercase font-bold tracking-wider mb-1.5">Description</p>
-                            <p className="text-xs sm:text-sm text-primary-600 leading-relaxed break-words">
+                            <p className="text-xs sm:text-sm text-primary-600 leading-relaxed wrap-break-word">
                                 {hostelData?.description || "No description provided."}
                             </p>
                         </div>
