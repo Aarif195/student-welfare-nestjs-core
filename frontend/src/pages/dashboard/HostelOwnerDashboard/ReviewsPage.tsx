@@ -48,7 +48,7 @@ export const ReviewsPage = () => {
     return (
         <div className="max-w-6xl mx-auto p-4 sm:px-6 space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <h1 className="text-2xl font-bold text-primary-700 flex items-center gap-2">
+                <h1 className="text-lg sm:text-lg md:text-2xl font-bold text-primary-700 flex items-center gap-2">
                     <Star className="text-brand fill-brand" size={24} /> Student Reviews
                 </h1>
                 <select

@@ -20,12 +20,12 @@ export const MyHostelsPage = () => {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <div>
-                    <h2 className="text-2xl font-bold text-primary-700">My Hostels</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold text-primary-700">My Hostels</h2>
                     <p className="text-primary-500 text-sm">Manage your properties and room availability</p>
                 </div>
                 <button
                     onClick={() => navigate('/dashboard/owner/hostels/create')}
-                    className="bg-brand text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-blue-700 transition-colors cursor-pointer"
+                    className="text-xs sm:text-sm bg-brand text-white px-2 py-1.5 md:px-3 md:py-2 rounded-lg font-semibold flex items-center gap-2 hover:bg-blue-700 transition-colors cursor-pointer"
                 >
                     <Plus size={20} />
                     Add New Hostel
