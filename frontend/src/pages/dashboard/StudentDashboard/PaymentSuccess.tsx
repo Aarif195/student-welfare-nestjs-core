@@ -11,7 +11,7 @@ export const PaymentSuccessPage = () => {
     const [isSuccess, setIsSuccess] = useState(false);
 
     const reference = searchParams.get('reference');
-    const { mutate: finalizeBooking, isPending } = useStudentControllerBookRoom();
+    const { mutate: finalizeBooking,  } = useStudentControllerBookRoom();
 
     useEffect(() => {
 
