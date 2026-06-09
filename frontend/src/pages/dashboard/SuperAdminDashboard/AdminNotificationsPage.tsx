@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { 
+import {
     useAdminControllerGetAllNotifications,
     useAdminControllerCreateNotification,
     useAdminControllerDeleteNotification,
@@ -7,8 +7,8 @@ import {
 } from '../../../api/generated/superadmin-dashboard/superadmin-dashboard';
 import { ConfirmModal } from '../../../components/ui/ConfirmModal';
 
-import { 
-    Bell, Trash2, Megaphone, Plus, X, 
+import {
+    Bell, Trash2, Megaphone, Plus, X,
     Loader2, Users, Building2,
     Calendar, Mail
 } from 'lucide-react';
@@ -18,7 +18,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 export const AdminNotificationsPage = () => {
     const queryClient = useQueryClient();
-    
+
     // Modal states
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -97,16 +97,18 @@ export const AdminNotificationsPage = () => {
 
     return (
         <div className="space-y-6 pb-10">
-            <div className="flex justify-between items-start">
-                <div>
+
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                <div className="min-w-0">
                     <h1 className="text-xl font-bold text-primary-800">Broadcast Channels</h1>
-                    <p className="text-sm text-primary-500">Dispatch urgent warnings, policy updates, or direct announcements to systemic nodes.</p>
+                    <p className="text-sm text-primary-500 wrap-break-word">Dispatch urgent warnings, policy updates, or direct announcements to systemic nodes.</p>
                 </div>
                 <button
                     onClick={() => setIsCreateOpen(true)}
-                    className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-primary-400 hover:opacity-90 text-green text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md"
+                    className="text-white bg-green-600 hover:bg-green-700 inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2.5 hover:opacity-90 text-[10px] sm:text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md shrink-0 self-start sm:self-auto"
                 >
-                    <Plus size={14} /> New Broadcast
+                    <Plus size={14} className="shrink-0" />
+                    <span>New Broadcast</span>
                 </button>
             </div>
 
@@ -131,11 +133,10 @@ export const AdminNotificationsPage = () => {
                         <div key={notif.id} className="bg-white rounded-3xl border border-primary-100 p-6 shadow-sm flex justify-between gap-4 items-start">
                             <div className="space-y-3 flex-1">
                                 <div className="flex flex-wrap items-center gap-2">
-                                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${
-                                        notif.type === 'global' 
-                                            ? 'bg-amber-50 text-amber-600 border border-amber-100' 
+                                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${notif.type === 'global'
+                                            ? 'bg-amber-50 text-amber-600 border border-amber-100'
                                             : 'bg-blue-50 text-blue-600 border border-blue-100'
-                                    }`}>
+                                        }`}>
                                         {notif.type === 'global' ? <Users size={11} /> : <Building2 size={11} />}
                                         {notif.type} broadcast
                                     </span>
@@ -194,18 +195,16 @@ export const AdminNotificationsPage = () => {
                                 <button
                                     type="button"
                                     onClick={() => setType('global')}
-                                    className={`py-2 text-[11px] font-bold uppercase rounded-lg transition-all cursor-pointer ${
-                                        type === 'global' ? 'bg-white text-primary-900 shadow-sm' : 'text-primary-400'
-                                    }`}
+                                    className={`py-2 text-[11px] font-bold uppercase rounded-lg transition-all cursor-pointer ${type === 'global' ? 'bg-white text-primary-900 shadow-sm' : 'text-primary-400'
+                                        }`}
                                 >
                                     Global Network
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setType('hostel')}
-                                    className={`py-2 text-[11px] font-bold uppercase rounded-lg transition-all cursor-pointer ${
-                                        type === 'hostel' ? 'bg-white text-primary-900 shadow-sm' : 'text-primary-400'
-                                    }`}
+                                    className={`py-2 text-[11px] font-bold uppercase rounded-lg transition-all cursor-pointer ${type === 'hostel' ? 'bg-white text-primary-900 shadow-sm' : 'text-primary-400'
+                                        }`}
                                 >
                                     Hostel Specific
                                 </button>
