@@ -69,7 +69,7 @@ export const RegisterPage = () => {
                 firstName: data.firstName,
                 lastName: data.lastName,
                 phone: data.phone,
-                image: data.image as unknown as Blob
+                image: data.image
             }
         }, {
             onSuccess: () => {
