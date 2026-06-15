@@ -92,7 +92,7 @@ export const StudentProfilePage = () => {
 
     return (
         <div className="max-w-4xl space-y-6 pb-10">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <h1 className="text-xl font-bold text-primary-800">Account Settings</h1>
                     <p className="text-sm text-primary-500">Manage your personal information and profile visibility.</p>
@@ -100,7 +100,7 @@ export const StudentProfilePage = () => {
                 {!isEditing && (
                     <button
                         onClick={() => setIsEditing(true)}
-                        className="flex items-center gap-2 bg-primary-50 text-primary-700 px-4 py-2 rounded-xl text-xs font-bold uppercase hover:bg-primary-100 transition-all cursor-pointer"
+                        className="flex items-center justify-center gap-2 bg-primary-50 text-primary-700 px-4 py-2.5 sm:py-2 rounded-xl text-xs font-bold uppercase hover:bg-primary-100 transition-all cursor-pointer shrink-0 w-full sm:w-auto self-start sm:self-auto"
                     >
                         <Edit2 size={14} /> Edit Profile
                     </button>
