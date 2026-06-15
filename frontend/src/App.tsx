@@ -45,6 +45,7 @@ import { AdminMaintenancePage } from './pages/dashboard/SuperAdminDashboard/Admi
 import { AdminReviewsPage } from './pages/dashboard/SuperAdminDashboard/AdminReviewsPage';
 import { AdminNotificationsPage } from './pages/dashboard/SuperAdminDashboard/AdminNotificationsPage';
 import { AdminOverviewPage } from './pages/dashboard/SuperAdminDashboard/AdminOverviewPage';
+import { AdminProfilePage } from './pages/dashboard/SuperAdminDashboard/AdminProfilePage';
 
 
 function App() {
@@ -110,7 +111,7 @@ function App() {
             <Route path="/dashboard/admin/maintenance" element={<AdminMaintenancePage />} />
             <Route path="/dashboard/admin/reviews" element={<AdminReviewsPage />} />
             <Route path="/dashboard/admin/notifications" element={<AdminNotificationsPage />} />
-           
+            <Route path="/dashboard/admin/profile" element={<AdminProfilePage />} />
 
           </Route>
         </Route>
