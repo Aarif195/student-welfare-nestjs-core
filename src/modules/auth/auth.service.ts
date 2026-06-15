@@ -305,14 +305,18 @@ export class AuthService {
       let user = await this.prisma.user.findUnique({ where: { email } });
 
       if (!user) {
+
+        const assignedRole = dto.role && Object.values(Role).includes(dto.role as any)
+          ? (dto.role as unknown as Role)
+          : Role.student;
+
         user = await this.prisma.user.create({
           data: {
             email,
             firstName,
             lastName,
             image,
-            // role: dto.role as unknown as Role,
-            role: Role.student,
+            role: assignedRole,
             phone: dto.phone || '',
             password: await hashPassword(Math.random().toString(36).slice(-10)),
             is_verified: true,

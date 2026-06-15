@@ -4,7 +4,8 @@ import { useAuth } from '../../../context/AuthContext';
 import { 
     LayoutDashboard, Building2, ClipboardList, 
     Users, BookOpen, Wrench, Star, 
-    Bell, LogOut, Menu, X, ShieldAlert 
+    Bell, LogOut, Menu, X, ShieldAlert, 
+    User
 } from 'lucide-react';
 
 export const SuperAdminDashboardLayout = () => {
@@ -22,6 +23,7 @@ export const SuperAdminDashboardLayout = () => {
         { name: 'Maintenance', path: '/dashboard/admin/maintenance', icon: <Wrench size={18} /> },
         { name: 'Reviews', path: '/dashboard/admin/reviews', icon: <Star size={18} /> },
         { name: 'Communications', path: '/dashboard/admin/notifications', icon: <Bell size={18} /> },
+        { name: 'Profile', path: '/dashboard/admin/profile', icon: <User size={18} /> },
     ];
 
     const handleLogout = () => {

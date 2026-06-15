@@ -94,10 +94,13 @@ export const RegisterPage = () => {
 
 
     const handleGoogleSuccess = async (credentialResponse: any) => {
+
+        const selectedRole = watch('role') || 'student';
+
         googleLoginMutation.mutate({
             data: {
                 idToken: credentialResponse.credential,
-                role: role as any,
+                role: selectedRole as any,
                 phone: ""
             }
         }, {
