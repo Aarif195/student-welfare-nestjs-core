@@ -174,10 +174,10 @@ model Notification {
   type         String   // "global" or "hostel"
   
   hostel_id    Int?
-  hostel       Hostel?  @relation(fields: [hostel_id], references: [id])
+  hostel       Hostel?  @relation(fields: [hostel_id], references: [id], onDelete: Cascade)
   
   created_by   Int
-  author       User     @relation(fields: [created_by], references: [id])
+  author       User     @relation(fields: [created_by], references: [id], onDelete: Cascade)
   
   creator_role Role     // This uses your existing Role enum
   createdAt    DateTime @default(now())
@@ -214,9 +214,9 @@ model MaintenanceRequest {
   updated_at   DateTime          @updatedAt
 
   // Relations
-  student      User              @relation("StudentRequests", fields: [student_id], references: [id])
-  hostel       Hostel            @relation(fields: [hostel_id], references: [id])
-  room         Room              @relation(fields: [room_id], references: [id])
+  student      User              @relation("StudentRequests", fields: [student_id], references: [id], onDelete: Cascade)
+  hostel       Hostel            @relation(fields: [hostel_id], references: [id], onDelete: Cascade)
+  room         Room              @relation(fields: [room_id], references: [id], onDelete: Cascade)
   resources   HostelResource[]  @relation("MaintenanceResources")
 }
 
@@ -238,8 +238,8 @@ model Review {
   replied_at     DateTime?
 
   // Relations
-  student    User     @relation(fields: [student_id], references: [id])
-  hostel     Hostel   @relation(fields: [hostel_id], references: [id])
+  student    User     @relation(fields: [student_id], references: [id], onDelete: Cascade)
+  hostel     Hostel   @relation(fields: [hostel_id], references: [id], onDelete: Cascade)
 
   @@unique([student_id, hostel_id]) 
 }
@@ -257,7 +257,7 @@ model StudySpace {
   created_at     DateTime         @default(now())
   updated_at     DateTime         @updatedAt
 
-  admin          User             @relation("AdminCreatedSpaces", fields: [created_by], references: [id])
+  admin          User             @relation("AdminCreatedSpaces", fields: [created_by], references: [id], onDelete: Cascade)
 }
 
 enum StudySpaceStatus {
