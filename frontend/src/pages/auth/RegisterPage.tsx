@@ -5,6 +5,7 @@ import { useAuthControllerGoogleLogin, useAuthControllerRegister } from '../../a
 import { useCloudinaryControllerGetSignature } from '../../api/generated/cloudinary/cloudinary';
 import { uploadToCloudinary } from '../utils/cloudinaryUpload';
 
+
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -32,7 +33,7 @@ const registerSchema = z.object({
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 export const RegisterPage = () => {
-    const [isUploading, ] = useState(false);
+    const [isUploading,] = useState(false);
     const [, setUploadedUrls] = useState<string[]>([]);
     const navigate = useNavigate();
     const { login } = useAuth();
@@ -89,9 +90,14 @@ export const RegisterPage = () => {
     );
 
     // handleFileUpload
-    const handleFileUpload = (file: File) => uploadToCloudinary(file, signatureQuery, setUploadedUrls);
+    // const handleFileUpload = (file: File) => uploadToCloudinary(file, signatureQuery, setUploadedUrls);
 
-
+    const handleFileUpload = async (file: File) => {
+        const url = await uploadToCloudinary(file, signatureQuery, setUploadedUrls);
+        if (url) {
+            setValue('image', url, { shouldValidate: true });
+        }
+    };
 
     const handleGoogleSuccess = async (credentialResponse: any) => {
 
@@ -118,7 +124,7 @@ export const RegisterPage = () => {
                 localStorage.setItem("token", token);
                 localStorage.setItem("user", JSON.stringify(user));
 
-                login({ user, token }); 
+                login({ user, token });
 
                 navigate(user.role === "student"
                     ? "/dashboard/student"
