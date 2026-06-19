@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import {
@@ -12,6 +13,8 @@ import {
 } from 'lucide-react';
 
 export const StudentDashboardLayout = () => {
+    const [showMobileMenu, setShowMobileMenu] = useState(false);
+
     const { logout } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
@@ -68,10 +71,40 @@ export const StudentDashboardLayout = () => {
                 {/* Mobile Top Header */}
                 <div className="lg:hidden bg-white border-b border-primary-100 p-4 flex justify-between items-center sticky top-0 z-30">
                     <h1 className="font-bold text-brand italic">StudentPortal</h1>
-                    <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-brand">
-                        <User size={18} />
+
+                    {/* Profile Dropdown Menu for Mobile Logout */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowMobileMenu(!showMobileMenu)}
+                            className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center text-brand cursor-pointer focus:outline-none"
+                        >
+                            <User size={18} />
+                        </button>
+
+                        {/* Dropdown Modal Menu */}
+                        {showMobileMenu && (
+                            <>
+                                {/* Backdrop overlay to close when clicking outside */}
+                                <div className="fixed inset-0 z-40" onClick={() => setShowMobileMenu(false)} />
+
+                                <div className="absolute right-0 mt-2 w-48 bg-white border border-primary-100 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
+                                    <button
+                                        onClick={() => {
+                                            setShowMobileMenu(false);
+                                            handleLogout();
+                                        }}
+                                        className="flex items-center gap-3 px-4 py-3 w-full text-red-500 hover:bg-red-50 transition-colors cursor-pointer text-left"
+                                    >
+                                        <LogOut size={18} />
+                                        <span className="font-bold text-sm">Logout</span>
+                                    </button>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
+
+
 
                 <div className="p-4 lg:p-8">
                     <Outlet />
