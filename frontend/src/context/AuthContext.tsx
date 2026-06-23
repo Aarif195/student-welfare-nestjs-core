@@ -10,30 +10,46 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
- 
-  const [user, setUser] = useState(() => {
-  try {
-    return JSON.parse(localStorage.getItem('user') || 'null');
-  } catch {
-    return null;
-  }
-});
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  // Helper function to find any active user token across roles
+  const getStoredAuth = () => {
+    const roles = ['student', 'hostelOwner', 'superadmin'];
+    for (const role of roles) {
+      const token = localStorage.getItem(`${role}_token`);
+      const userStr = localStorage.getItem(`${role}_user`);
+      if (token && userStr) {
+        return { token, user: JSON.parse(userStr) };
+      }
+    }
+    return { token: null, user: null };
+  };
+
+  const cachedAuth = getStoredAuth();
+  const [user, setUser] = useState(cachedAuth.user);
+  const [token, setToken] = useState(cachedAuth.token);
 
   const login = (authData: any) => {
-    // Handle the difference between Student and Admin
     const receivedToken = authData.token || authData.accessToken;
     const receivedUser = authData.user || authData.admin;
+    const role = receivedUser?.role; // e.g., 'student', 'superadmin'
 
-    localStorage.setItem('token', receivedToken);
-    localStorage.setItem('user', JSON.stringify(receivedUser));
-    
+    if (role) {
+      // Save using a role-specific key so tabs do not overwrite each other
+      localStorage.setItem(`${role}_token`, receivedToken);
+      localStorage.setItem(`${role}_user`, JSON.stringify(receivedUser));
+    }
+
     setToken(receivedToken);
     setUser(receivedUser);
   };
 
   const logout = () => {
-    localStorage.clear();
+    const role = user?.role;
+    if (role) {
+      localStorage.removeItem(`${role}_token`);
+      localStorage.removeItem(`${role}_user`);
+    } else {
+      localStorage.clear();
+    }
     setToken(null);
     setUser(null);
   };
