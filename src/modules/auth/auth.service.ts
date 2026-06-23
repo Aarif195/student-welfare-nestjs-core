@@ -48,7 +48,7 @@ export class AuthService {
     });
 
     // Generate 6-digit OTP
-    const otpLength = Number(this.configService.get('OTP_LENGTH'));
+    const otpLength = Number(this.configService.get('OTP_LENGTH')) || 6;
     const otpCode = generateOTP(otpLength);
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 mins expiry
 
@@ -130,7 +130,7 @@ export class AuthService {
     }
 
     //  Generate new OTP
-    const otpLength = Number(this.configService.get('OTP_LENGTH'));
+    const otpLength = Number(this.configService.get('OTP_LENGTH')) || 6;
     const otpCode = generateOTP(otpLength);
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 
@@ -171,7 +171,7 @@ export class AuthService {
     }
 
     //  Generate new OTP
-    const otpLength = Number(this.configService.get('OTP_LENGTH'));
+    const otpLength = Number(this.configService.get('OTP_LENGTH')) || 6;
     const otpCode = generateOTP(otpLength);
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
 

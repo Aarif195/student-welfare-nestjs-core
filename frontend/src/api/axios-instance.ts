@@ -9,7 +9,18 @@ export const AXIOS_INSTANCE = axios.create({
 
 // Interceptor logic
 AXIOS_INSTANCE.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  // Check storage for whichever token is active for the current session context
+  const roles = ['student', 'hostelOwner', 'superadmin'];
+  let token = null;
+
+  for (const role of roles) {
+    const activeToken = localStorage.getItem(`${role}_token`);
+    if (activeToken) {
+      token = activeToken;
+      break;
+    }
+  }
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -20,11 +31,16 @@ AXIOS_INSTANCE.interceptors.request.use((config) => {
 AXIOS_INSTANCE.interceptors.response.use(
   (response) => response,
   (error) => {
-    
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      const roles = ['student', 'hostelOwner', 'superadmin'];
+      roles.forEach((role) => {
+        localStorage.removeItem(`${role}_token`);
+        localStorage.removeItem(`${role}_user`);
+      });
+
+      if (!window.location.pathname.includes('/login')) {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

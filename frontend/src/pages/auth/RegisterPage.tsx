@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { Eye, EyeOff } from 'lucide-react';
 
 import { useAuthControllerGoogleLogin, useAuthControllerRegister } from '../../api/generated/authentication/authentication';
 import { useCloudinaryControllerGetSignature } from '../../api/generated/cloudinary/cloudinary';
@@ -35,6 +36,7 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export const RegisterPage = () => {
     const [isUploading,] = useState(false);
     const [, setUploadedUrls] = useState<string[]>([]);
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
 
@@ -175,6 +177,8 @@ export const RegisterPage = () => {
                         </button>
                     </div>
 
+
+                    {/* First Name and Last Name Input */}
                     <div className="flex gap-4">
                         <div className="flex-1">
                             <label className="block text-sm font-medium text-primary-600 mb-1">First Name</label>
@@ -194,6 +198,8 @@ export const RegisterPage = () => {
                         </div>
                     </div>
 
+
+                    {/* Phone Number Input */}
                     <div>
                         <label className="block text-sm font-medium text-primary-600 mb-1">Phone Number</label>
                         <input
@@ -202,6 +208,7 @@ export const RegisterPage = () => {
                         />
                         {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>}
                     </div>
+
 
                     <div>
                         <label className="block text-sm font-medium text-primary-600 mb-1">Email</label>
@@ -213,16 +220,28 @@ export const RegisterPage = () => {
                         {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
                     </div>
 
+                    {/* Password Input */}
                     <div>
                         <label className="block text-sm font-medium text-primary-600 mb-1">Password</label>
-                        <input
-                            type="password"
-                            {...register('password')}
-                            className={`w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-brand outline-none ${errors.password ? 'border-red-500' : 'border-primary-200'}`}
-                        />
+                        <div className="relative flex items-center">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                {...register('password')}
+                                className={`w-full p-2.5 pr-10 border rounded-lg focus:ring-2 focus:ring-brand outline-none transition-all ${errors.password ? 'border-red-500' : 'border-primary-200'
+                                    }`}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 text-primary-400 hover:text-primary-600 cursor-pointer focus:outline-none flex items-center justify-center"
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        </div>
                         {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password.message}</p>}
                     </div>
 
+                    {/* Profile Image Input */}
                     <div className="space-y-1">
                         <label className="block text-sm font-medium text-primary-600">Profile Image</label>
                         <input
@@ -245,6 +264,7 @@ export const RegisterPage = () => {
                     {isUploading && <p className="text-xs text-brand animate-pulse">Uploading to Cloudinary...</p>}
                     {image && <p className="text-xs text-green-600 font-bold">✓ Image Ready</p>}
 
+                    {/* Submit Button */}
                     <button
                         type="submit"
                         disabled={registerMutation.isPending || isUploading}
@@ -266,6 +286,7 @@ export const RegisterPage = () => {
 
                 </form>
 
+                {/* Error Message */}
                 {registerMutation.isError && (
                     <p className="mt-4 text-red-500 text-sm text-center">Registration failed. Try again.</p>
                 )}
