@@ -27,6 +27,7 @@ export const VerifyOtpPage = () => {
     const {
         handleSubmit,
         setValue,
+        register,
         formState: { errors },
     } = useForm<OtpFormData>({
         resolver: zodResolver(otpSchema),
@@ -54,9 +55,24 @@ export const VerifyOtpPage = () => {
         }
     };
 
+    // handleKeyDown
     const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
         if (e.key === 'Backspace' && !otp[index] && index > 0) {
             inputRefs.current[index - 1]?.focus();
+        }
+    };
+
+    // handlePaste
+    const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        const pastedData = e.clipboardData.getData('text').trim();
+
+        // Validate that the pasted content is numeric and matching your length requirement
+        if (/^\d{6}$/.test(pastedData)) {
+            const newOtp = pastedData.split('');
+            setOtp(newOtp);
+            // Focus the very last input box
+            inputRefs.current[5]?.focus();
         }
     };
 
@@ -94,11 +110,27 @@ export const VerifyOtpPage = () => {
         <div className="min-h-screen flex items-center justify-center bg-primary-100 p-6">
             <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-sm border border-primary-200">
                 <h2 className="text-2xl font-bold text-primary-700">Verify Email</h2>
-                <p className="text-primary-500 mb-6 text-sm">Sent to: <b>{email}</b></p>
+                <p className="text-primary-500 mb-6 text-sm">Please provide your registered email address to verify your account credentials.</p>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                    <div className="flex flex-col items-center">
-                        <div className="flex justify-between gap-2">
+                    <div className="w-full flex flex-col gap-1">
+                        <label className="text-xs font-bold text-primary-600 uppercase tracking-wider">
+                            Email Address
+                        </label>
+                        <input
+                            type="email"
+                            placeholder="Enter your registered email"
+                            className="w-full px-4 py-2.5 border border-primary-200 rounded-xl text-sm focus:ring-2 focus:ring-brand outline-none transition-all"
+                            {...register('email')}
+                        />
+                        {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
+                    </div>
+
+                    <div className="flex flex-col items-center gap-4">
+                        <label className="text-xs font-bold text-primary-600 uppercase tracking-wider self-start">
+                            Verification Code
+                        </label>
+                        <div className="flex justify-between gap-2 w-full max-w-sm sm:max-w-md">
                             {otp.map((digit, index) => (
                                 <input
                                     key={index}
@@ -108,7 +140,9 @@ export const VerifyOtpPage = () => {
                                     value={digit}
                                     onChange={(e) => handleChange(e.target.value, index)}
                                     onKeyDown={(e) => handleKeyDown(e, index)}
-                                    className={`w-12 h-12 text-center text-xl font-bold border rounded-lg focus:ring-2 focus:ring-brand outline-none ${errors.otp_code ? 'border-red-500' : 'border-primary-200'}`}
+                                    onPaste={handlePaste}
+                                    className={`w-full max-w-12 aspect-square text-center text-xl font-bold border rounded-lg focus:ring-2 focus:ring-brand outline-none transition-all ${errors.otp_code ? 'border-red-500' : 'border-primary-200'
+                                        }`}
                                 />
                             ))}
                         </div>
