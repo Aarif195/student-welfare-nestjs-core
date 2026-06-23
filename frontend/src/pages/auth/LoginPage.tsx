@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -9,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAdminControllerLogin } from '../../api/generated/superadmin-dashboard/superadmin-dashboard';
+import { Eye, EyeOff } from 'lucide-react';
 
 // Validation Schema
 const loginSchema = z.object({
@@ -19,6 +21,7 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export const LoginPage = () => {
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuth();
     const loginMutation = useAuthControllerLogin();
@@ -48,7 +51,7 @@ export const LoginPage = () => {
             onSuccess: (response: any) => {
                 const apiResponse = response.data;
                 login(apiResponse);
-                
+
                 const role = apiResponse.user?.role || apiResponse.admin?.role;
                 if (role === 'superadmin') {
                     navigate('/dashboard/admin');
@@ -124,6 +127,8 @@ export const LoginPage = () => {
                         {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
                     </div>
 
+
+                    {/* Password Input */}
                     <div>
                         <div className="flex justify-between mb-1">
                             <label className="text-sm font-medium text-primary-700">Password</label>
@@ -131,16 +136,26 @@ export const LoginPage = () => {
                                 Forgot Password?
                             </Link>
                         </div>
-                        <input
-                            type="password"
-                            {...register('password')}
-                            className={`w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-brand ${errors.password ? 'border-red-500' : 'border-primary-200'}`}
-                            placeholder="••••••••"
-                        // value="Admin@123"
-                        />
+                        <div className="relative flex items-center">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                {...register('password')}
+                                className={`w-full px-4 py-2 pr-10 border rounded-lg outline-none focus:ring-2 focus:ring-brand transition-all ${errors.password ? 'border-red-500' : 'border-primary-200'
+                                    }`}
+                                placeholder="••••••••"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 text-primary-400 hover:text-primary-600 cursor-pointer focus:outline-none flex items-center justify-center"
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        </div>
                         {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password.message}</p>}
                     </div>
 
+                    {/* Login Button */}
                     <button
                         type="submit"
                         disabled={isLoading}
