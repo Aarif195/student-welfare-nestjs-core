@@ -8,17 +8,24 @@ export const AXIOS_INSTANCE = axios.create({
 });
 
 // Interceptor logic
+
 AXIOS_INSTANCE.interceptors.request.use((config) => {
-  // Check storage for whichever token is active for the current session context
-  const roles = ['student', 'hostelOwner', 'superadmin'];
+  const currentPath = window.location.pathname.toLowerCase();
   let token = null;
 
-  for (const role of roles) {
-    const activeToken = localStorage.getItem(`${role}_token`);
-    if (activeToken) {
-      token = activeToken;
-      break;
-    }
+  if (currentPath.includes('admin') || currentPath.includes('superadmin')) {
+    token = localStorage.getItem('superadmin_token');
+  } else if (currentPath.includes('owner') || currentPath.includes('hostel')) {
+    token = localStorage.getItem('hostelOwner_token');
+  } else {
+    token = localStorage.getItem('student_token');
+  }
+
+  // Fallback if the path didn't match perfectly but a token exists
+  if (!token) {
+    token = localStorage.getItem('student_token') || 
+            localStorage.getItem('hostelOwner_token') || 
+            localStorage.getItem('superadmin_token');
   }
 
   if (token) {
