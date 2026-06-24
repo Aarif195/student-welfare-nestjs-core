@@ -10,16 +10,34 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  // Helper function to find any active user token across roles
+  
+  // Helper function to safely find the active user token for the current context
   const getStoredAuth = () => {
-    const roles = ['student', 'hostelOwner', 'superadmin'];
-    for (const role of roles) {
-      const token = localStorage.getItem(`${role}_token`);
-      const userStr = localStorage.getItem(`${role}_user`);
-      if (token && userStr) {
-        return { token, user: JSON.parse(userStr) };
-      }
+    const studentToken = localStorage.getItem('student_token');
+    const ownerToken = localStorage.getItem('hostelOwner_token');
+    const adminToken = localStorage.getItem('superadmin_token');
+
+    // If you are currently testing/viewing an admin page route, prioritize loading the admin session
+    if (window.location.pathname.includes('admin') && adminToken) {
+      return { token: adminToken, user: JSON.parse(localStorage.getItem('superadmin_user') || 'null') };
     }
+    
+    // If you are viewing a hostel/owner page route, prioritize loading the owner session
+    if ((window.location.pathname.includes('owner') || window.location.pathname.includes('hostel')) && ownerToken) {
+      return { token: ownerToken, user: JSON.parse(localStorage.getItem('hostelOwner_user') || 'null') };
+    }
+
+    // Default fallback to student session or whatever active session is present
+    if (studentToken) {
+      return { token: studentToken, user: JSON.parse(localStorage.getItem('student_user') || 'null') };
+    }
+    if (ownerToken) {
+      return { token: ownerToken, user: JSON.parse(localStorage.getItem('hostelOwner_user') || 'null') };
+    }
+    if (adminToken) {
+      return { token: adminToken, user: JSON.parse(localStorage.getItem('superadmin_user') || 'null') };
+    }
+
     return { token: null, user: null };
   };
 
