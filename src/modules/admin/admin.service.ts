@@ -221,9 +221,11 @@ export class AdminService {
       });
 
       return booking;
+    }, {
+      timeout: 15000
     });
 
-    // Send Email (outside transaction remains unchanged)
+    // Send Email (outside transaction)
     try {
       const emailBody = bookingApprovedEmailTemplate(bookingId);
       await this.mailService.sendMail(result.student.email, 'Booking Approved!', emailBody);
