@@ -221,6 +221,8 @@ export class AdminService {
       });
 
       return booking;
+    }, {
+      timeout: 15000
     });
 
     // Send Email (outside transaction)
