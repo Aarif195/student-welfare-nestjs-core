@@ -223,7 +223,7 @@ export class AdminService {
       return booking;
     });
 
-    // Send Email (outside transaction remains unchanged)
+    // Send Email (outside transaction)
     try {
       const emailBody = bookingApprovedEmailTemplate(bookingId);
       await this.mailService.sendMail(result.student.email, 'Booking Approved!', emailBody);
@@ -539,13 +539,13 @@ async deleteStudySpace(id: number) {
     where: { id },
   });
 
-  if (!space) {
-    throw new NotFoundException('Study space not found');
-  }
+    if (!space) {
+      throw new NotFoundException('Study space not found');
+    }
 
-  return this.prisma.studySpace.delete({
-    where: { id },
-  });
-}
+    return this.prisma.studySpace.delete({
+      where: { id },
+    });
+  }
 
 }
