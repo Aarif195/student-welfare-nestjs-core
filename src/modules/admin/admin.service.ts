@@ -193,20 +193,20 @@ export class AdminService {
 
   // approveBooking
   async approveBooking(bookingId: number) {
-
-    const payment = await this.prisma.payment.findUnique({
-      where: { booking_id: bookingId },
-    });
-
-    if (!payment) {
-      throw new BadRequestException('Payment not found for this booking.');
-    }
-
-    if (payment.payment_status !== 'success') {
-      throw new BadRequestException('Payment not successful.');
-    }
-
     const result = await this.prisma.$transaction(async (tx) => {
+      // Validate payment inside the transaction loop
+      const payment = await tx.payment.findUnique({
+        where: { booking_id: bookingId },
+      });
+
+      if (!payment) {
+        throw new BadRequestException('Payment not found for this booking.');
+      }
+
+      if (payment.payment_status !== 'success') {
+        throw new BadRequestException('Payment not successful.');
+      }
+
       // Update Booking status
       const booking = await tx.booking.update({
         where: { id: bookingId },
@@ -223,7 +223,7 @@ export class AdminService {
       return booking;
     });
 
-    // Send Email (outside transaction)
+    // Send Email (outside transaction remains unchanged)
     try {
       const emailBody = bookingApprovedEmailTemplate(bookingId);
       await this.mailService.sendMail(result.student.email, 'Booking Approved!', emailBody);
